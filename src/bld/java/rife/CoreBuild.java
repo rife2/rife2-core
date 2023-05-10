@@ -7,6 +7,7 @@ package rife;
 import rife.bld.BuildCommand;
 import rife.bld.Project;
 import rife.bld.extension.Antlr4Operation;
+import rife.bld.extension.TestsBadgeOperation;
 import rife.bld.operations.*;
 import rife.bld.publish.*;
 import rife.tools.FileUtils;
@@ -66,7 +67,7 @@ public class CoreBuild extends Project {
             .compileOptions()
             .debuggingInfo(JavacOptions.DebuggingInfo.ALL);
 
-        propagateJavaProperties(testOperation().javaOptions(),
+        propagateJavaProperties(testsBadgeOperation.javaOptions(),
             "test.postgres",
             "test.mysql",
             "test.mariadb",
@@ -150,6 +151,15 @@ public class CoreBuild extends Project {
     throws Exception {
         generateGrammar();
         super.compile();
+    }
+
+    private final TestsBadgeOperation testsBadgeOperation = new TestsBadgeOperation();
+    public void test()
+    throws Exception {
+        testsBadgeOperation.executeOnce(() -> testsBadgeOperation
+            .url(property("testsBadgeUrl"))
+            .apiKey(property("testsBadgeApiKey"))
+            .fromProject(this));
     }
 
     public static void main(String[] args)

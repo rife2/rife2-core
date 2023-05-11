@@ -4,6 +4,8 @@
  */
 package rife.tools;
 
+import rife.CoreVersion;
+import rife.bld.BldVersion;
 import rife.tools.exceptions.FileUtilsErrorException;
 
 import java.io.*;
@@ -527,6 +529,7 @@ public final class FileUtils {
         try {
             var connection = source.openConnection();
             connection.setUseCaches(false);
+            connection.setRequestProperty("User-Agent", "RIFE2 " + CoreVersion.getVersion());
             try (var input_stream = connection.getInputStream()) {
                 if (null == encoding) {
                     return readString(input_stream);
@@ -626,6 +629,7 @@ public final class FileUtils {
         try {
             var connection = source.openConnection();
             connection.setUseCaches(false);
+            connection.setRequestProperty("User-Agent", "RIFE2 " + CoreVersion.getVersion());
             try (var input_stream = connection.getInputStream()) {
                 return readBytes(input_stream);
             }

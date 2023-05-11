@@ -5,6 +5,7 @@
 package rife.tools;
 
 import rife.CoreVersion;
+import rife.resources.ResourceFinderClasspath;
 import rife.tools.exceptions.FileUtilsErrorException;
 
 import java.io.*;
@@ -1096,5 +1097,38 @@ public final class FileUtils {
      */
     public static Path path(Path path, String... paths) {
         return Path.of(path.toAbsolutePath().toString(), paths);
+    }
+
+    /**
+     * Reads the contents of a resource for use as a version number.
+     *
+     * @param name the name of the resource to look for
+     * @return the version number; or "{@code unknown version}" if the version resource couldn't be found
+     * @since 1.7
+     */
+    public static String versionFromResource(String name) {
+        String version = null;
+        var resource = ResourceFinderClasspath.class.getClassLoader().getResource(name);
+        try {
+            if (resource == null) {
+            } else {
+                var connection = resource.openConnection();
+                connection.setUseCaches(false);
+                try (var input_stream = connection.getInputStream()) {
+                    version = FileUtils.readString(input_stream);
+                }
+            }
+        } catch (IOException e) {
+        }
+
+        if (version != null) {
+            version = version.trim();
+        }
+
+        if (null == version) {
+            version = "unknown version";
+        }
+
+        return version;
     }
 }

@@ -5,7 +5,6 @@
 package rife.tools;
 
 import rife.CoreVersion;
-import rife.bld.BldVersion;
 import rife.tools.exceptions.FileUtilsErrorException;
 
 import java.io.*;

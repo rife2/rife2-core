@@ -5,7 +5,6 @@
 package rife.tools;
 
 import rife.CoreVersion;
-import rife.resources.ResourceFinderClasspath;
 import rife.tools.exceptions.FileUtilsErrorException;
 
 import java.io.*;
@@ -1108,7 +1107,7 @@ public final class FileUtils {
      */
     public static String versionFromResource(String name) {
         String version = null;
-        var resource = ResourceFinderClasspath.class.getClassLoader().getResource(name);
+        var resource = FileUtils.class.getClassLoader().getResource(name);
         try {
             if (resource == null) {
             } else {

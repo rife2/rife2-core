@@ -4,8 +4,10 @@
  */
 package rife;
 
-import rife.resources.ResourceFinderClasspath;
-import rife.resources.exceptions.ResourceFinderErrorException;
+import rife.tools.FileUtils;
+
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * Singleton class that provides access to the current core version as a string.
@@ -17,10 +19,19 @@ public class CoreVersion {
     private String version_;
 
     CoreVersion() {
-        ResourceFinderClasspath resource_finder = ResourceFinderClasspath.instance();
+        URL resource = getClass().getClassLoader().getResource("CORE_VERSION");
+
         try {
-            version_ = resource_finder.getContent("CORE_VERSION");
-        } catch (ResourceFinderErrorException e) {
+            if (resource == null) {
+                version_ = null;
+            } else {
+                var connection = resource.openConnection();
+                connection.setUseCaches(false);
+                try (var input_stream = connection.getInputStream()) {
+                    version_ = FileUtils.readString(input_stream);
+                }
+            }
+        } catch (IOException e) {
             version_ = null;
         }
 
@@ -34,10 +45,6 @@ public class CoreVersion {
 
     private String getVersionString() {
         return version_;
-    }
-
-    public static boolean isInitialized() {
-        return CoreVersionSingleton.INSTANCE != null;
     }
 
     public static String getVersion() {

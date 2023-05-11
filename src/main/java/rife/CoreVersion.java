@@ -36,6 +36,10 @@ public class CoreVersion {
         return version_;
     }
 
+    public static boolean isInitialized() {
+        return CoreVersionSingleton.INSTANCE != null;
+    }
+
     public static String getVersion() {
         return CoreVersionSingleton.INSTANCE.getVersionString();
     }

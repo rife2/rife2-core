@@ -69,6 +69,7 @@ public class Datasource implements AutoCloseable, Cloneable {
         sDriverNames.put("Oracle JDBC driver", DRIVER_NAME_ORACLE);
         sDriverNames.put("PostgreSQL Native Driver", DRIVER_NAME_PGSQL);
         sDriverNames.put("PostgreSQL JDBC Driver", DRIVER_NAME_PGSQL);
+        sDriverNames.put("MariaDB Connector/J", DRIVER_NAME_MYSQL);
     }
 
     private static final Set<Datasource> activeDatasources = Collections.newSetFromMap(new WeakHashMap<>());

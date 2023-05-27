@@ -10,8 +10,6 @@ import rife.tools.*;
 import rife.tools.exceptions.BeanUtilsException;
 import rife.validation.*;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -96,7 +94,8 @@ public abstract class AbstractFormBuilder implements FormBuilder {
             return Collections.emptyList();
         }
 
-        if (bean instanceof Class) throw new IllegalArgumentException("bean should be a bean instance, not a bean class.");
+        if (bean instanceof Class)
+            throw new IllegalArgumentException("bean should be a bean instance, not a bean class.");
 
         return generateForm(template, bean.getClass(), bean, values, prefix);
     }
@@ -362,7 +361,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                 values[0] != null) {
                 value = template.getEncoder().encode(values[0]);
             } else if (property != null &&
-                       property.hasDefaultValue()) {
+                property.hasDefaultValue()) {
                 value = template.getEncoder().encode(property.getDefaultValue().toString());
             }
 
@@ -529,7 +528,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                 if (propertyType.isEnum()) {
                     list_values = ClassUtils.getEnumClassValues(propertyType);
                 } else if (propertyType.isArray() &&
-                           propertyType.getComponentType().isEnum()) {
+                    propertyType.getComponentType().isEnum()) {
                     list_values = ClassUtils.getEnumClassValues(propertyType.getComponentType());
                 }
             }
@@ -551,7 +550,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                             values[0] != null) {
                             template.setValue(ID_FORM_VALUE, template.getEncoder().encode(values[0]));
                         } else if (property != null &&
-                                   property.hasDefaultValue()) {
+                            property.hasDefaultValue()) {
                             template.setValue(ID_FORM_VALUE, template.getEncoder().encode(property.getDefaultValue().toString()));
                         }
                     }
@@ -740,7 +739,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                 if (propertyType.isEnum()) {
                     list_values = ClassUtils.getEnumClassValues(propertyType);
                 } else if (propertyType.isArray() &&
-                           propertyType.getComponentType().isEnum()) {
+                    propertyType.getComponentType().isEnum()) {
                     list_values = ClassUtils.getEnumClassValues(propertyType.getComponentType());
                 }
             }
@@ -868,7 +867,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                     values[counter] != null) {
                     value = template.getEncoder().encode(values[counter]);
                 } else if (property != null &&
-                           property.hasDefaultValue()) {
+                    property.hasDefaultValue()) {
                     value = template.getEncoder().encode(property.getDefaultValue().toString());
                 }
 
@@ -906,7 +905,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                     // if the field is a constrained property that is constrained
                     // to a list, display the label instead of the value
                     if ((property != null && property.isInList() ||
-                         propertyType != null && (propertyType.isEnum() || propertyType.isArray() && propertyType.getComponentType().isEnum()))) {
+                        propertyType != null && (propertyType.isEnum() || propertyType.isArray() && propertyType.getComponentType().isEnum()))) {
                         builderTemplate.setValue(getIdValue(), generateLabel(template, templateFieldName, value));
                     } else {
                         builderTemplate.setValue(getIdValue(), value);
@@ -1047,44 +1046,56 @@ public abstract class AbstractFormBuilder implements FormBuilder {
     }
 
     public Collection<String> selectParameter(Template template, String name, String[] values) {
-        var set_values = new ArrayList<String>();
-
         if (null == template ||
             null == name ||
             0 == name.length() ||
             null == values ||
             0 == values.length) {
-            return set_values;
+            return Collections.emptyList();
         }
 
-        StringBuilder value_id_buffer;
-        String value_id;
-        for (var value : values) {
-            if (null == value) {
-                continue;
+        if (!template.hasFilteredValues(FormBuilder.TAG_SELECTED) &&
+            !template.hasFilteredValues(FormBuilder.TAG_CHECKED)) {
+            return Collections.emptyList();
+        }
+
+        var set_values = new ArrayList<String>();
+
+        var values_set = new HashSet<>(Arrays.asList(values));
+
+        if (template.hasFilteredValues(FormBuilder.TAG_SELECTED)) {
+            var selected_tags = template.getFilteredValues(FormBuilder.TAG_SELECTED);
+            for (var captured_groups : selected_tags) {
+                var tag = captured_groups[0];
+
+                if (captured_groups[1].equals(name) &&
+                    values_set.contains(captured_groups[2])) {
+                    template.setValue(tag, getValueSelected());
+                    set_values.add(tag);
+                }
             }
+        }
 
-            value_id_buffer = new StringBuilder(name);
-            value_id_buffer.append(":");
-            value_id_buffer.append(value);
+        if (template.hasFilteredValues(FormBuilder.TAG_CHECKED)) {
+            var checked_tags = template.getFilteredValues(FormBuilder.TAG_CHECKED);
+            for (var captured_groups : checked_tags) {
+                var tag = captured_groups[0];
 
-            value_id = value_id_buffer + SUFFIX_SELECTED;
-            if (template.hasValueId(value_id)) {
-                template.setValue(value_id, getValueSelected());
-                set_values.add(value_id);
-            }
-
-            value_id = value_id_buffer + SUFFIX_CHECKED;
-            if (template.hasValueId(value_id)) {
-                template.setValue(value_id, getValueChecked());
-                set_values.add(value_id);
-            }
-
-            value_id = name + SUFFIX_CHECKED;
-            if (template.hasValueId(value_id)) {
-                if (StringUtils.convertToBoolean(value)) {
-                    template.setValue(value_id, getValueChecked());
-                    set_values.add(value_id);
+                var match = captured_groups[1];
+                if (match.length() > name.length() + 2 &&
+                    match.startsWith(name) &&
+                    match.charAt(name.length()) == ':' &&
+                    values_set.contains(match.substring(name.length() + 1))) {
+                    template.setValue(tag, getValueChecked());
+                    set_values.add(tag);
+                } else if (match.equals(name)) {
+                    for (var value : values) {
+                        if (StringUtils.convertToBoolean(value)) {
+                            template.setValue(tag, getValueChecked());
+                            set_values.add(tag);
+                            break;
+                        }
+                    }
                 }
             }
         }

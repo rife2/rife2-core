@@ -219,6 +219,9 @@ public interface FormBuilder extends Cloneable {
     String SUFFIX_SELECTED = ":selected";
     String SUFFIX_CHECKED = ":checked";
 
+    String TAG_SELECTED = "^(.+):([^:]+)" + SUFFIX_SELECTED + "$";
+    String TAG_CHECKED = "^(.+)" + SUFFIX_CHECKED + "$";
+
     /**
      * Generates all the form fields for a bean class.
      * <p>If content has already been filled in for any of the template values

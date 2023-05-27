@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.Format;
 import java.text.ParseException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static rife.tools.BeanUtils.Accessors.*;
 
@@ -53,6 +54,8 @@ public final class BeanUtils {
         // no-op
     }
 
+    private static final ConcurrentHashMap<Class<?>, BeanInfo> BEAN_INFO_CACHE = new ConcurrentHashMap<>();
+
     /**
      * Gets the BeanInfo for the specified beanClass.
      *
@@ -61,12 +64,18 @@ public final class BeanUtils {
      * @throws BeanUtilsException If an error occurs while introspecting the bean.
      * @since 1.0
      */
-    public static BeanInfo getBeanInfo(Class beanClass)
+    public static BeanInfo getBeanInfo(Class<?> beanClass)
     throws BeanUtilsException {
         try {
-            return Introspector.getBeanInfo(beanClass);
-        } catch (IntrospectionException e) {
-            throw new BeanUtilsException("Couldn't introspect the bean.", beanClass, e);
+            return BEAN_INFO_CACHE.computeIfAbsent(beanClass, k -> {
+                try {
+                    return Introspector.getBeanInfo(beanClass);
+                } catch (IntrospectionException e) {
+                    throw new InnerClassException(e);
+                }
+            });
+        } catch (InnerClassException e) {
+            throw new BeanUtilsException("Couldn't introspect the bean.", beanClass, e.getCause());
         }
     }
 
@@ -650,16 +659,10 @@ public final class BeanUtils {
         if (null == beanClass) throw new IllegalArgumentException("beanClass can't be null.");
 
         var bean_properties = new HashMap<String, PropertyDescriptor>();
-        BeanInfo bean_info = null;
-        PropertyDescriptor[] bean_properties_array = null;
 
-        try {
-            bean_info = Introspector.getBeanInfo(beanClass);
-        } catch (IntrospectionException e) {
-            throw new BeanUtilsException("Couldn't introspect the bean with class '" + beanClass.getName() + "'.", beanClass, e);
-        }
-        bean_properties_array = bean_info.getPropertyDescriptors();
-        String bean_property_name = null;
+        var bean_info = getBeanInfo(beanClass);
+        var bean_properties_array = bean_info.getPropertyDescriptors();
+        String bean_property_name;
         for (var bean_property : bean_properties_array) {
             bean_property_name = bean_property.getName().toUpperCase();
             if (bean_properties.containsKey(bean_property_name)) {

@@ -6,6 +6,7 @@ package rife.template;
 
 import rife.config.RifeConfig;
 import rife.datastructures.EnumClass;
+import rife.forms.FormBuilder;
 import rife.resources.ResourceFinder;
 import rife.resources.ResourceFinderClasspath;
 import rife.template.exceptions.InvalidBlockFilterException;
@@ -53,7 +54,9 @@ public class TemplateFactory extends EnumClass<String> {
                 TemplateFactoryFilters.TAG_RENDER,
                 TemplateFactoryFilters.TAG_ROUTE,
                 TemplateFactoryFilters.TAG_ROUTE_ACTION,
-                TemplateFactoryFilters.TAG_ROUTE_INPUTS
+                TemplateFactoryFilters.TAG_ROUTE_INPUTS,
+                FormBuilder.TAG_SELECTED,
+                FormBuilder.TAG_CHECKED
             },
         BeanHandlerHtml.instance(),
         EncoderHtmlSingleton.INSTANCE,
@@ -79,7 +82,9 @@ public class TemplateFactory extends EnumClass<String> {
                 TemplateFactoryFilters.TAG_PARAM,
                 TemplateFactoryFilters.TAG_PROPERTY,
                 TemplateFactoryFilters.TAG_RENDER,
-                TemplateFactoryFilters.TAG_ROUTE
+                TemplateFactoryFilters.TAG_ROUTE,
+                FormBuilder.TAG_SELECTED,
+                FormBuilder.TAG_CHECKED
             },
         BeanHandlerXml.instance(),
         EncoderXmlSingleton.INSTANCE,
@@ -105,7 +110,9 @@ public class TemplateFactory extends EnumClass<String> {
                 TemplateFactoryFilters.TAG_PARAM,
                 TemplateFactoryFilters.TAG_PROPERTY,
                 TemplateFactoryFilters.TAG_RENDER,
-                TemplateFactoryFilters.TAG_ROUTE
+                TemplateFactoryFilters.TAG_ROUTE,
+                FormBuilder.TAG_SELECTED,
+                FormBuilder.TAG_CHECKED
             },
         BeanHandlerXml.instance(),
         EncoderXmlSingleton.INSTANCE,
@@ -150,7 +157,7 @@ public class TemplateFactory extends EnumClass<String> {
                 TemplateFactoryFilters.TAG_RENDER
             },
         BeanHandlerPlain.instance(),
-        EncoderHtmlSingleton.INSTANCE,
+        EncoderSqlSingleton.INSTANCE,
         null);
 
     public static TemplateFactory JSON = new TemplateFactory(TemplateConfig.TXT,

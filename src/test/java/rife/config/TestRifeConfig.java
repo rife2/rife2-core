@@ -72,14 +72,22 @@ public class TestRifeConfig {
 
             var formatted = sf.format(makeZonedDateTime(2004, Calendar.AUGUST, 31, 15, 53));
 
-            assertEquals(formatted, "Aug 31, 2004, 3:53:00 PM");
+            if (Runtime.version().feature() >= 20 ) {
+                assertEquals(formatted, "Aug 31, 2004, 3:53:00 PM");
+            } else {
+                assertEquals(formatted, "Aug 31, 2004, 3:53:00 PM");
+            }
 
             switchLocale("BE", "NL");
 
             sf = RifeConfig.tools().getDefaultLongDateTimeFormatter();
             formatted = sf.format(makeZonedDateTime(2004, Calendar.AUGUST, 31, 15, 53));
 
-            assertEquals(formatted, "31 aug. 2004 15:53:00");
+            if (Runtime.version().feature() >= 20 ) {
+                assertEquals(formatted, "31 aug 2004 15:53:00");
+            } else {
+                assertEquals(formatted, "31 aug. 2004 15:53:00");
+            }
 
             switchLocale("ES", "ES");
 
@@ -173,14 +181,22 @@ public class TestRifeConfig {
 
             var formatted = sf.format(makeDate(2004, Calendar.AUGUST, 31, 15, 53));
 
-            assertEquals(formatted, "Aug 31, 2004, 3:53 PM");
+            if (Runtime.version().feature() >= 20 ) {
+                assertEquals(formatted, "Aug 31, 2004, 3:53 PM");
+            } else {
+                assertEquals(formatted, "Aug 31, 2004, 3:53 PM");
+            }
 
             switchLocale("BE", "NL");
 
             sf = RifeConfig.tools().getDefaultLongDateFormat();
             formatted = sf.format(makeDate(2004, Calendar.AUGUST, 31, 15, 53));
 
-            assertEquals(formatted, "31 aug. 2004 15:53");
+            if (Runtime.version().feature() >= 20 ) {
+                assertEquals(formatted, "31 aug 2004 15:53");
+            } else {
+                assertEquals(formatted, "31 aug. 2004 15:53");
+            }
 
             switchLocale("ES", "ES");
 

@@ -101,7 +101,7 @@ public class AbstractRife2Build extends Project {
         }
     };
 
-    @BuildCommand(summary = "Generates the grammar Java sources")
+    @BuildCommand(value = "generate-grammar", summary = "Generates the grammar Java sources")
     public void generateGrammar()
     throws Exception {
         antlr4Operation.executeOnce();

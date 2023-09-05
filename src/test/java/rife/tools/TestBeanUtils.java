@@ -4,6 +4,8 @@
  */
 package rife.tools;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rife.config.RifeConfig;
 import rife.tools.exceptions.BeanUtilsException;
@@ -19,6 +21,16 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestBeanUtils {
+    @BeforeEach
+    public void setup() {
+        RifeConfig.tools().setDefaultTimeZone(TimeZone.getTimeZone("EST"));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        RifeConfig.tools().setDefaultTimeZone(null);
+    }
+
     private BeanImpl getPopulatedBean() {
         BeanImpl bean = new BeanImpl();
         var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);

@@ -1076,7 +1076,7 @@ public class RifeConfig {
         private String defaultResourceBundle_ = DEFAULT_RESOURCE_BUNDLE;
         private String defaultLanguage_ = DEFAULT_DEFAULT_LANGUAGE;
         private String defaultCountry_ = DEFAULT_DEFAULT_COUNTRY;
-        private TimeZone defaultTimeZone_ = DEFAULT_DEFAULT_TIMEZONE;
+        private TimeZone defaultTimeZone_ = null;
         private String defaultShortDateFormat_;
         private String defaultInputDateFormat_ = DEFAULT_INPUT_DATE_FORMAT;
         private String defaultInputTimeFormat_ = DEFAULT_INPUT_TIME_FORMAT;
@@ -1087,7 +1087,6 @@ public class RifeConfig {
         public static final String DEFAULT_RESOURCE_BUNDLE = null;
         public static final String DEFAULT_DEFAULT_LANGUAGE = "en";
         public static final String DEFAULT_DEFAULT_COUNTRY = null;
-        public static final TimeZone DEFAULT_DEFAULT_TIMEZONE = TimeZone.getTimeZone("EST");
         public static final String DEFAULT_INPUT_DATE_FORMAT = "yyyy-MM-dd HH:mm";
         public static final String DEFAULT_INPUT_TIME_FORMAT = "HH:mm";
         public static final int DEFAULT_MAX_VISUAL_URL_LENGTH = 70;

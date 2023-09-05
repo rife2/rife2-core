@@ -4,7 +4,10 @@
  */
 package rife.template;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import rife.config.RifeConfig;
 import rife.template.exceptions.BlockUnknownException;
 import rife.template.exceptions.TemplateException;
 import rife.template.exceptions.ValueUnknownException;
@@ -18,6 +21,16 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestTemplate {
+    @BeforeEach
+    public void setup() {
+        RifeConfig.tools().setDefaultTimeZone(TimeZone.getTimeZone("EST"));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        RifeConfig.tools().setDefaultTimeZone(null);
+    }
+
     @Test
     void testInstantiation() {
         var template = TemplateFactory.HTML.get("empty");

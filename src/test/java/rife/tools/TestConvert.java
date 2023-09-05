@@ -4,6 +4,8 @@
  */
 package rife.tools;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rife.config.RifeConfig;
 import rife.tools.exceptions.ConversionException;
@@ -17,6 +19,16 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestConvert {
+    @BeforeEach
+    public void setup() {
+        RifeConfig.tools().setDefaultTimeZone(TimeZone.getTimeZone("EST"));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        RifeConfig.tools().setDefaultTimeZone(null);
+    }
+
     @Test
     void testToType()
     throws ConversionException {

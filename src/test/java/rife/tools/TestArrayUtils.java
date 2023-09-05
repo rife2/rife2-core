@@ -4,6 +4,8 @@
  */
 package rife.tools;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rife.config.RifeConfig;
 import rife.validation.ConstrainedProperty;
@@ -13,10 +15,21 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestArrayUtils {
+    @BeforeEach
+    public void setup() {
+        RifeConfig.tools().setDefaultTimeZone(TimeZone.getTimeZone("EST"));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        RifeConfig.tools().setDefaultTimeZone(null);
+    }
+
     @Test
     void testGetArrayType() {
         assertEquals(ArrayUtils.ArrayType.NO_ARRAY, ArrayUtils.getArrayType(new Object()));

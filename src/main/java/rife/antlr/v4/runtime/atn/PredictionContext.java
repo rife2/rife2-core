@@ -484,12 +484,7 @@ public abstract class PredictionContext {
 		buf.append("rankdir=LR;\n");
 
 		List<PredictionContext> nodes = getAllContextNodes(context);
-		Collections.sort(nodes, new Comparator<>() {
-            @Override
-            public int compare(PredictionContext o1, PredictionContext o2) {
-                return o1.id - o2.id;
-            }
-        });
+		Collections.sort(nodes, (o1, o2) -> o1.id - o2.id);
 
 		for (PredictionContext current : nodes) {
 			if ( current instanceof SingletonPredictionContext ) {

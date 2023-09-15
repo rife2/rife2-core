@@ -59,15 +59,13 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
 
     protected void addCreateTableManyToOneColumns(final CreateTable query) {
         final var columns = query.getColumnMapping();
-        GenericQueryManagerRelationalUtils.processManyToOneJoinColumns(this, new ManyToOneJoinColumnProcessor() {
-            public boolean processJoinColumn(String columnName, String propertyName, ManyToOneDeclaration declaration) {
-                if (!columns.containsKey(columnName)) {
-                    query
-                        .column(columnName, int.class, CreateTable.NULL)
-                        .foreignKey(declaration.getAssociationTable(), columnName, declaration.getAssociationColumn());
-                }
-                return true;
+        GenericQueryManagerRelationalUtils.processManyToOneJoinColumns(this, (columnName, propertyName, declaration) -> {
+            if (!columns.containsKey(columnName)) {
+                query
+                    .column(columnName, int.class, CreateTable.NULL)
+                    .foreignKey(declaration.getAssociationTable(), columnName, declaration.getAssociationColumn());
             }
+            return true;
         });
     }
 
@@ -165,14 +163,12 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
 
     protected void addSaveUpdateManyToOneFields(final Update query) {
         final var columns = query.getFields().keySet();
-        GenericQueryManagerRelationalUtils.processManyToOneJoinColumns(this, new ManyToOneJoinColumnProcessor() {
-            public boolean processJoinColumn(String columnName, String propertyName, ManyToOneDeclaration declaration) {
-                if (!columns.contains(columnName)) {
-                    query.fieldParameter(columnName);
-                }
-
-                return true;
+        GenericQueryManagerRelationalUtils.processManyToOneJoinColumns(this, (columnName, propertyName, declaration) -> {
+            if (!columns.contains(columnName)) {
+                query.fieldParameter(columnName);
             }
+
+            return true;
         });
     }
 
@@ -205,14 +201,12 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
 
     protected void addSaveManyToOneFields(final Insert query) {
         final var columns = query.getFields().keySet();
-        GenericQueryManagerRelationalUtils.processManyToOneJoinColumns(this, new ManyToOneJoinColumnProcessor() {
-            public boolean processJoinColumn(String columnName, String propertyName, ManyToOneDeclaration declaration) {
-                if (!columns.contains(columnName)) {
-                    query.fieldParameter(columnName);
-                }
-
-                return true;
+        GenericQueryManagerRelationalUtils.processManyToOneJoinColumns(this, (columnName, propertyName, declaration) -> {
+            if (!columns.contains(columnName)) {
+                query.fieldParameter(columnName);
             }
+
+            return true;
         });
     }
 

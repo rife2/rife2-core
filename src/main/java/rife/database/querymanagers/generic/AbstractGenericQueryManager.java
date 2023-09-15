@@ -148,26 +148,24 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
             }
 
             // validate the many-to-one entities
-            processManyToOneJoinColumns(this, new ManyToOneJoinColumnProcessor() {
-                public boolean processJoinColumn(String columnName, String propertyName, ManyToOneDeclaration declaration) {
-                    Object property_value = null;
-                    try {
-                        property_value = BeanUtils.getPropertyValue(constrained, propertyName);
-                    } catch (BeanUtilsException e) {
-                        throw new DatabaseException(e);
-                    }
+            processManyToOneJoinColumns(this, (columnName, propertyName, declaration) -> {
+                Object property_value = null;
+                try {
+                    property_value = BeanUtils.getPropertyValue(constrained, propertyName);
+                } catch (BeanUtilsException e) {
+                    throw new DatabaseException(e);
+                }
 
-                    if (property_value != null) {
-                        var identifier_value = getIdentifierValue(property_value, declaration.getAssociationColumn());
-                        if (identifier_value >= 0) {
-                            if (!executeHasResultRows(declaration.getAssociationManager().getRestoreQuery(identifier_value))) {
-                                validated.addValidationError(new ValidationError.INVALID(propertyName));
-                            }
+                if (property_value != null) {
+                    var identifier_value1 = getIdentifierValue(property_value, declaration.getAssociationColumn());
+                    if (identifier_value1 >= 0) {
+                        if (!executeHasResultRows(declaration.getAssociationManager().getRestoreQuery(identifier_value1))) {
+                            validated.addValidationError(new ValidationError.INVALID(propertyName));
                         }
                     }
-
-                    return true;
                 }
+
+                return true;
             });
 
             Map<String, ManyToOneAssociationDeclaration> manytoone_association_declarations = null;

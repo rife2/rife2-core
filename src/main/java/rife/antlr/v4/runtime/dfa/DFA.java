@@ -160,12 +160,7 @@ public class DFA {
 
 	public List<DFAState> getStates() {
 		List<DFAState> result = new ArrayList<>(states.keySet());
-		Collections.sort(result, new Comparator<>() {
-            @Override
-            public int compare(DFAState o1, DFAState o2) {
-                return o1.stateNumber - o2.stateNumber;
-            }
-        });
+		Collections.sort(result, (o1, o2) -> o1.stateNumber - o2.stateNumber);
 
 		return result;
 	}

@@ -40,7 +40,7 @@ import java.nio.file.Paths;
  *  a primary concern. See the extreme debugging and spelunking
  *  needed to identify this issue in our timing rig:
  *
- *      https://github.com/antlr/antlr4/pull/1781
+ *      <a href="https://github.com/antlr/antlr4/pull/1781">https://github.com/antlr/antlr4/pull/1781</a>
  *
  *  The ANTLR character streams still buffer all the input when you create
  *  the stream, as they have done for ~20 years. If you need unbuffered

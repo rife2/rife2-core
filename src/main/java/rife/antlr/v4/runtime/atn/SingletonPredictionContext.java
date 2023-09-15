@@ -69,6 +69,6 @@ public class SingletonPredictionContext extends PredictionContext {
 			}
 			return String.valueOf(returnState);
 		}
-		return String.valueOf(returnState)+" "+up;
+		return returnState +" "+up;
 	}
 }

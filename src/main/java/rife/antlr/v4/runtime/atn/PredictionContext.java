@@ -519,7 +519,7 @@ public abstract class PredictionContext {
 				buf.append("->");
 				buf.append("s");
 				buf.append(current.getParent(i).id);
-				if ( current.size()>1 ) buf.append(" [label=\"parent["+i+"]\"];\n");
+				if ( current.size()>1 ) buf.append(" [label=\"parent[").append(i).append("]\"];\n");
 				else buf.append(";\n");
 			}
 		}

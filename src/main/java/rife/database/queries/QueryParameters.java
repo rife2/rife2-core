@@ -414,8 +414,7 @@ public class QueryParameters implements Cloneable {
                     if (entry.getKey().isSingular()) {
                         new_instance.parameters_.put(entry.getKey(), entry.getValue());
                     } else {
-                        List<String> values = new ArrayList<>();
-                        values.addAll((List<String>) entry.getValue());
+                        List<String> values = new ArrayList<>((List<String>) entry.getValue());
                         new_instance.parameters_.put(entry.getKey(), values);
                     }
                 }

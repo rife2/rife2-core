@@ -1253,8 +1253,7 @@ public class TestParser {
             parser_.parse("error_value_begin_tag_not_ended", null);
             fail();
         } catch (SyntaxErrorException e) {
-            assertEquals("" +
-                "\t</body>", e.getErrorLocation().lineContent());
+            assertEquals("\t</body>", e.getErrorLocation().lineContent());
             assertEquals(9, e.getErrorLocation().line());
             assertEquals(4, e.getErrorLocation().column());
             assertEquals(3, e.getErrorLocation().marking());

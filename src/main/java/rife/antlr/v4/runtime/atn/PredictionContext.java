@@ -484,7 +484,7 @@ public abstract class PredictionContext {
 		buf.append("rankdir=LR;\n");
 
 		List<PredictionContext> nodes = getAllContextNodes(context);
-		Collections.sort(nodes, (o1, o2) -> o1.id - o2.id);
+		nodes.sort((o1, o2) -> o1.id - o2.id);
 
 		for (PredictionContext current : nodes) {
 			if ( current instanceof SingletonPredictionContext ) {

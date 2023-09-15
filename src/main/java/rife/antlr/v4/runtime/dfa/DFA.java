@@ -160,7 +160,7 @@ public class DFA {
 
 	public List<DFAState> getStates() {
 		List<DFAState> result = new ArrayList<>(states.keySet());
-		Collections.sort(result, (o1, o2) -> o1.stateNumber - o2.stateNumber);
+		result.sort((o1, o2) -> o1.stateNumber - o2.stateNumber);
 
 		return result;
 	}

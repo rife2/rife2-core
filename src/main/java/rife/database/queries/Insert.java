@@ -15,10 +15,7 @@ import rife.template.TemplateFactory;
 import rife.tools.StringUtils;
 import rife.validation.ConstrainedUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Object representation of a SQL "INSERT" query.
@@ -175,11 +172,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
         if (!fields_.containsKey(field)) {
             fields_.put(field, new ArrayList<>());
         }
-        if (null == value) {
-            fields_.get(field).add(SqlNull.NULL);
-        } else {
-            fields_.get(field).add(value);
-        }
+        fields_.get(field).add(Objects.requireNonNullElse(value, SqlNull.NULL));
 
         return this;
     }

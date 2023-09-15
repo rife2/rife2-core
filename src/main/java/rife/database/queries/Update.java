@@ -18,6 +18,7 @@ import rife.validation.ConstrainedUtils;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Object representation of a SQL "UPDATE" query.
@@ -144,11 +145,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
         assert !field.isEmpty();
 
         clearGenerated();
-        if (null == value) {
-            fields_.put(field, SqlNull.NULL);
-        } else {
-            fields_.put(field, value);
-        }
+        fields_.put(field, Objects.requireNonNullElse(value, SqlNull.NULL));
 
         return this;
     }

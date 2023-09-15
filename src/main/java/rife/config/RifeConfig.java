@@ -593,10 +593,7 @@ public class RifeConfig {
         }
 
         public String getFileUploadPath() {
-            if (null == fileUploadPath_) {
-                return RifeConfig.this.global.getTempPath() + File.separator + DEFAULT_FILE_UPLOAD_RIFE_FOLDER;
-            }
-            return fileUploadPath_;
+            return Objects.requireNonNullElseGet(fileUploadPath_, () -> RifeConfig.this.global.getTempPath() + File.separator + DEFAULT_FILE_UPLOAD_RIFE_FOLDER);
         }
 
         public EngineConfig setFileUploadPath(String path) {
@@ -1119,11 +1116,7 @@ public class RifeConfig {
             if (abbreviation != null &&
                 abbreviation.isEmpty()) throw new IllegalArgumentException("abbreviation can't be empty.");
 
-            if (null == abbreviation) {
-                defaultLanguage_ = DEFAULT_DEFAULT_LANGUAGE;
-            } else {
-                defaultLanguage_ = abbreviation;
-            }
+            defaultLanguage_ = Objects.requireNonNullElse(abbreviation, DEFAULT_DEFAULT_LANGUAGE);
             return this;
         }
 

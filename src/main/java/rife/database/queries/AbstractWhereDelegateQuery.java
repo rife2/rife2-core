@@ -26,15 +26,15 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public WhereGroup<QueryType> startWhere() {
-        return new WhereGroup<QueryType>(getDatasource(), this);
+        return new WhereGroup<>(getDatasource(), this);
     }
 
     public WhereGroupAnd<QueryType> startWhereAnd() {
-        return new WhereGroupAnd<QueryType>(getDatasource(), this);
+        return new WhereGroupAnd<>(getDatasource(), this);
     }
 
     public WhereGroupOr<QueryType> startWhereOr() {
-        return new WhereGroupOr<QueryType>(getDatasource(), this);
+        return new WhereGroupOr<>(getDatasource(), this);
     }
 
     public QueryType where(String where) {

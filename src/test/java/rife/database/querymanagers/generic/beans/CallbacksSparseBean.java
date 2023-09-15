@@ -58,7 +58,7 @@ public class CallbacksSparseBean extends Validation implements Callbacks<Callbac
     }
 
     public void clearExecuteCallbacks() {
-        executedCallbacks_ = new ArrayList<String>();
+        executedCallbacks_ = new ArrayList<>();
     }
 
     public void setBeforeValidateReturn(boolean beforeValidateReturn) {

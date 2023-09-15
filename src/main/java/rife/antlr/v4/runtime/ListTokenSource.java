@@ -131,7 +131,7 @@ public class ListTokenSource implements TokenSource {
 				}
 
 				int stop = Math.max(-1, start - 1);
-				eofToken = _factory.create(new Pair<TokenSource, CharStream>(this, getInputStream()), Token.EOF, "EOF", Token.DEFAULT_CHANNEL, start, stop, getLine(), getCharPositionInLine());
+				eofToken = _factory.create(new Pair<>(this, getInputStream()), Token.EOF, "EOF", Token.DEFAULT_CHANNEL, start, stop, getLine(), getCharPositionInLine());
 			}
 
 			return eofToken;

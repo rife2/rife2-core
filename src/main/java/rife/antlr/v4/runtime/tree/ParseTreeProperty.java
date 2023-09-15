@@ -26,7 +26,7 @@ import java.util.Map;
  * in your event methods.
  */
 public class ParseTreeProperty<V> {
-	protected Map<ParseTree, V> annotations = new IdentityHashMap<ParseTree, V>();
+	protected Map<ParseTree, V> annotations = new IdentityHashMap<>();
 
 	public V get(ParseTree node) { return annotations.get(node); }
 	public void put(ParseTree node, V value) { annotations.put(node, value); }

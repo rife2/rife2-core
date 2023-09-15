@@ -257,7 +257,7 @@ public class ParserRuleContext extends RuleContext {
 				Token symbol = tnode.getSymbol();
 				if ( symbol.getType()==ttype ) {
 					if ( tokens==null ) {
-						tokens = new ArrayList<TerminalNode>();
+						tokens = new ArrayList<>();
 					}
 					tokens.add(tnode);
 				}
@@ -284,7 +284,7 @@ public class ParserRuleContext extends RuleContext {
 		for (ParseTree o : children) {
 			if ( ctxType.isInstance(o) ) {
 				if ( contexts==null ) {
-					contexts = new ArrayList<T>();
+					contexts = new ArrayList<>();
 				}
 
 				contexts.add(ctxType.cast(o));

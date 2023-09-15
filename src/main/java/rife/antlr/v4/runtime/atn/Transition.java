@@ -56,18 +56,18 @@ public abstract class Transition {
 		));
 
 	public static final Map<Class<? extends Transition>, Integer> serializationTypes =
-		Collections.unmodifiableMap(new HashMap<Class<? extends Transition>, Integer>() {{
-			put(EpsilonTransition.class, EPSILON);
-			put(RangeTransition.class, RANGE);
-			put(RuleTransition.class, RULE);
-			put(PredicateTransition.class, PREDICATE);
-			put(AtomTransition.class, ATOM);
-			put(ActionTransition.class, ACTION);
-			put(SetTransition.class, SET);
-			put(NotSetTransition.class, NOT_SET);
-			put(WildcardTransition.class, WILDCARD);
-			put(PrecedencePredicateTransition.class, PRECEDENCE);
-		}});
+		Collections.unmodifiableMap(new HashMap<>() {{
+            put(EpsilonTransition.class, EPSILON);
+            put(RangeTransition.class, RANGE);
+            put(RuleTransition.class, RULE);
+            put(PredicateTransition.class, PREDICATE);
+            put(AtomTransition.class, ATOM);
+            put(ActionTransition.class, ACTION);
+            put(SetTransition.class, SET);
+            put(NotSetTransition.class, NOT_SET);
+            put(WildcardTransition.class, WILDCARD);
+            put(PrecedencePredicateTransition.class, PRECEDENCE);
+        }});
 
 	/** The target of this transition. */
 

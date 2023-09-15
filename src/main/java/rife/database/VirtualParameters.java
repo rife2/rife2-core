@@ -90,7 +90,7 @@ public class VirtualParameters {
 
     void putValue(int index, Object value) {
         if (null == values_) {
-            values_ = new HashMap<Integer, Object>();
+            values_ = new HashMap<>();
         }
 
         values_.put(index, value);

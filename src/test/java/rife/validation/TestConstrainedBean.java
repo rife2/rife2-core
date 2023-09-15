@@ -86,7 +86,7 @@ public class TestConstrainedBean {
         assertFalse(bean.hasUniques());
         assertNull(bean.getUniques());
 
-        assertSame(bean, bean.uniques(new ArrayList<String[]>() {{
+        assertSame(bean, bean.uniques(new ArrayList<>() {{
             add(first_unique);
             add(second_unique);
             add(third_unique);
@@ -100,7 +100,7 @@ public class TestConstrainedBean {
 
     @Test
     void testTextualIdentifier() {
-        TextualIdentifierGenerator<InitializedBeanImpl> identifier = new TextualIdentifierGenerator<InitializedBeanImpl>() {
+        TextualIdentifierGenerator<InitializedBeanImpl> identifier = new TextualIdentifierGenerator<>() {
             public void setBean(InitializedBeanImpl bean) {
             }
 
@@ -137,7 +137,7 @@ public class TestConstrainedBean {
         assertFalse(bean.hasDefaultOrdering());
         assertNull(bean.getDefaultOrdering());
 
-        List<ConstrainedBean.Order> ordering = new ArrayList<ConstrainedBean.Order>();
+        List<ConstrainedBean.Order> ordering = new ArrayList<>();
         ordering.add(new ConstrainedBean.Order("col3", ConstrainedBean.DESC));
         ordering.add(new ConstrainedBean.Order("col4", ConstrainedBean.ASC));
         ordering.add(new ConstrainedBean.Order("col5", ConstrainedBean.DESC));

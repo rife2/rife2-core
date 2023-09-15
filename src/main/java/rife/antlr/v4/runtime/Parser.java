@@ -349,7 +349,7 @@ public abstract class Parser extends Recognizer<Token, ParserATNSimulator> {
 		}
 
 		if (_parseListeners == null) {
-			_parseListeners = new ArrayList<ParseTreeListener>();
+			_parseListeners = new ArrayList<>();
 		}
 
 		this._parseListeners.add(listener);
@@ -848,7 +848,7 @@ public abstract class Parser extends Recognizer<Token, ParserATNSimulator> {
 
 	public List<String> getRuleInvocationStack(RuleContext p) {
 		String[] ruleNames = getRuleNames();
-		List<String> stack = new ArrayList<String>();
+		List<String> stack = new ArrayList<>();
 		while ( p!=null ) {
 			// compute what follows who invoked us
 			int ruleIndex = p.getRuleIndex();
@@ -862,7 +862,7 @@ public abstract class Parser extends Recognizer<Token, ParserATNSimulator> {
 	/** For debugging and other purposes. */
 	public List<String> getDFAStrings() {
 		synchronized (_interp.decisionToDFA) {
-			List<String> s = new ArrayList<String>();
+			List<String> s = new ArrayList<>();
 			for (int d = 0; d < _interp.decisionToDFA.length; d++) {
 				DFA dfa = _interp.decisionToDFA[d];
 				s.add( dfa.toString(getVocabulary()) );

@@ -770,7 +770,7 @@ public class ParserATNSimulator extends ATNSimulator {
 			System.out.println("in computeReachSet, starting closure: " + closure);
 
 		if (mergeCache == null) {
-			mergeCache = new DoubleKeyMap<PredictionContext, PredictionContext, PredictionContext>();
+			mergeCache = new DoubleKeyMap<>();
 		}
 
 		ATNConfigSet intermediate = new ATNConfigSet(fullCtx);
@@ -795,7 +795,7 @@ public class ParserATNSimulator extends ATNSimulator {
 				assert c.context.isEmpty();
 				if (fullCtx || t == IntStream.EOF) {
 					if (skippedStopStates == null) {
-						skippedStopStates = new ArrayList<ATNConfig>();
+						skippedStopStates = new ArrayList<>();
 					}
 
 					skippedStopStates.add(c);
@@ -847,7 +847,7 @@ public class ParserATNSimulator extends ATNSimulator {
 		 */
 		if (reach == null) {
 			reach = new ATNConfigSet(fullCtx);
-			Set<ATNConfig> closureBusy = new HashSet<ATNConfig>();
+			Set<ATNConfig> closureBusy = new HashSet<>();
 			boolean treatEofAsEpsilon = t == Token.EOF;
 			for (ATNConfig c : intermediate) {
 				closure(c, reach, closureBusy, false, fullCtx, treatEofAsEpsilon);
@@ -950,7 +950,7 @@ public class ParserATNSimulator extends ATNSimulator {
 		for (int i=0; i<p.getNumberOfTransitions(); i++) {
 			ATNState target = p.transition(i).target;
 			ATNConfig c = new ATNConfig(target, i+1, initialContext);
-			Set<ATNConfig> closureBusy = new HashSet<ATNConfig>();
+			Set<ATNConfig> closureBusy = new HashSet<>();
 			closure(c, configs, closureBusy, true, fullCtx, false);
 		}
 
@@ -1121,7 +1121,7 @@ public class ParserATNSimulator extends ATNSimulator {
 	 * calling {@link Parser#getPrecedence}).
 	 */
 	protected ATNConfigSet applyPrecedenceFilter(ATNConfigSet configs) {
-		Map<Integer, PredictionContext> statesFromAlt1 = new HashMap<Integer, PredictionContext>();
+		Map<Integer, PredictionContext> statesFromAlt1 = new HashMap<>();
 		ATNConfigSet configSet = new ATNConfigSet(configs.fullCtx);
 		for (ATNConfig config : configs) {
 			// handle alt 1 first
@@ -1223,7 +1223,7 @@ public class ParserATNSimulator extends ATNSimulator {
 	protected DFAState.PredPrediction[] getPredicatePredictions(BitSet ambigAlts,
 															 SemanticContext[] altToPred)
 	{
-		List<DFAState.PredPrediction> pairs = new ArrayList<DFAState.PredPrediction>();
+		List<DFAState.PredPrediction> pairs = new ArrayList<>();
 		boolean containsPredicate = false;
 		for (int i = 1; i < altToPred.length; i++) {
 			SemanticContext pred = altToPred[i];
@@ -1352,7 +1352,7 @@ public class ParserATNSimulator extends ATNSimulator {
 				succeeded.add(c);
 			}
 		}
-		return new Pair<ATNConfigSet, ATNConfigSet>(succeeded,failed);
+		return new Pair<>(succeeded, failed);
 	}
 
 	/** Look through a list of predicate/alt pairs, returning alts for the

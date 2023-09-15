@@ -108,7 +108,7 @@ public class XPath {
 
 		List<Token> tokens = tokenStream.getTokens();
 //		System.out.println("path="+path+"=>"+tokens);
-		List<XPathElement> elements = new ArrayList<XPathElement>();
+		List<XPathElement> elements = new ArrayList<>();
 		int n = tokens.size();
 		int i=0;
 loop:
@@ -209,7 +209,7 @@ loop:
 
 		int i = 0;
 		while ( i < elements.length ) {
-			Collection<ParseTree> next = new LinkedHashSet<ParseTree>();
+			Collection<ParseTree> next = new LinkedHashSet<>();
 			for (ParseTree node : work) {
 				if ( node.getChildCount()>0 ) {
 					// only try to match next element if it has children

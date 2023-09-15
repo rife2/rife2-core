@@ -625,7 +625,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
         var new_instance = (CreateTable) super.clone();
         if (new_instance != null) {
             if (columnMapping_ != null) {
-                new_instance.columnMapping_ = new LinkedHashMap<String, Column>();
+                new_instance.columnMapping_ = new LinkedHashMap<>();
 
                 Column column = null;
                 for (var name : columnMapping_.keySet()) {
@@ -635,7 +635,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             }
 
             if (primaryKeys_ != null) {
-                new_instance.primaryKeys_ = new ArrayList<PrimaryKey>();
+                new_instance.primaryKeys_ = new ArrayList<>();
 
                 for (var primary_key : primaryKeys_) {
                     new_instance.primaryKeys_.add(primary_key.clone());
@@ -643,7 +643,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             }
 
             if (foreignKeys_ != null) {
-                new_instance.foreignKeys_ = new ArrayList<ForeignKey>();
+                new_instance.foreignKeys_ = new ArrayList<>();
 
                 for (var foreign_key : foreignKeys_) {
                     new_instance.foreignKeys_.add(foreign_key.clone());
@@ -651,7 +651,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             }
 
             if (uniqueConstraints_ != null) {
-                new_instance.uniqueConstraints_ = new ArrayList<UniqueConstraint>();
+                new_instance.uniqueConstraints_ = new ArrayList<>();
 
                 for (var unique_constraint : uniqueConstraints_) {
                     new_instance.uniqueConstraints_.add(unique_constraint.clone());
@@ -659,7 +659,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             }
 
             if (checkConstraints_ != null) {
-                new_instance.checkConstraints_ = new ArrayList<CheckConstraint>();
+                new_instance.checkConstraints_ = new ArrayList<>();
 
                 for (var check_constraint : checkConstraints_) {
                     new_instance.checkConstraints_.add(check_constraint.clone());
@@ -951,7 +951,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
         private Nullable nullable_ = null;
         private String default_ = null;
         private String customType_ = null;
-        private ArrayList<String> customAttributes_ = new ArrayList<String>();
+        private ArrayList<String> customAttributes_ = new ArrayList<>();
 
         Column(String name, Class type) {
             setName(name);
@@ -1123,7 +1123,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
                 new_instance = (Column) super.clone();
 
                 if (customAttributes_ != null) {
-                    new_instance.customAttributes_ = new ArrayList<String>();
+                    new_instance.customAttributes_ = new ArrayList<>();
                     new_instance.customAttributes_.addAll(customAttributes_);
                 }
             } catch (CloneNotSupportedException e) {

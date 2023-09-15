@@ -816,12 +816,12 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         var new_instance = super.clone();
         if (new_instance != null) {
             if (fields_ != null) {
-                new_instance.fields_ = new ArrayList<String>();
+                new_instance.fields_ = new ArrayList<>();
                 new_instance.fields_.addAll(fields_);
             }
 
             if (joins_ != null) {
-                new_instance.joins_ = new ArrayList<Join>();
+                new_instance.joins_ = new ArrayList<>();
 
                 for (var join : joins_) {
                     new_instance.joins_.add(join.clone());
@@ -829,29 +829,29 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
             }
 
             if (unions_ != null) {
-                new_instance.unions_ = new ArrayList<Union>();
+                new_instance.unions_ = new ArrayList<>();
                 for (var union : unions_) {
                     new_instance.unions_.add(union.clone());
                 }
             }
 
             if (groupBy_ != null) {
-                new_instance.groupBy_ = new ArrayList<String>();
+                new_instance.groupBy_ = new ArrayList<>();
                 new_instance.groupBy_.addAll(groupBy_);
             }
 
             if (having_ != null) {
-                new_instance.having_ = new ArrayList<String>();
+                new_instance.having_ = new ArrayList<>();
                 new_instance.having_.addAll(having_);
             }
 
             if (distinctOn_ != null) {
-                new_instance.distinctOn_ = new ArrayList<String>();
+                new_instance.distinctOn_ = new ArrayList<>();
                 new_instance.distinctOn_.addAll(distinctOn_);
             }
 
             if (orderBy_ != null) {
-                new_instance.orderBy_ = new ArrayList<OrderBy>();
+                new_instance.orderBy_ = new ArrayList<>();
                 for (var order_by : orderBy_) {
                     new_instance.orderBy_.add(order_by.clone());
                 }

@@ -123,7 +123,7 @@ public class DbConnection implements AutoCloseable {
                             while (!statements_.isEmpty()) {
                                 statements_.get(0).close();
                             }
-                            statements_ = new ArrayList<DbStatement>();
+                            statements_ = new ArrayList<>();
                         } finally {
                             try {
                                 connection_.close();
@@ -199,7 +199,7 @@ public class DbConnection implements AutoCloseable {
                         // don't do anything since some DBs don't correct support statement cancelling
                     }
                 }
-                statements_ = new ArrayList<DbStatement>();
+                statements_ = new ArrayList<>();
             }
 
             // reset the connection state

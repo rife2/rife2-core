@@ -77,7 +77,7 @@ public abstract class ATNSimulator {
 
 		synchronized (sharedContextCache) {
 			IdentityHashMap<PredictionContext, PredictionContext> visited =
-				new IdentityHashMap<PredictionContext, PredictionContext>();
+                    new IdentityHashMap<>();
 			return PredictionContext.getCachedContext(context,
 													  sharedContextCache,
 													  visited);

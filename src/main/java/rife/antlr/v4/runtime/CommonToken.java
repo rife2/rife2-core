@@ -16,7 +16,7 @@ public class CommonToken implements WritableToken, Serializable {
 	 * {@link #source} for tokens that do not have a source.
 	 */
 	protected static final Pair<TokenSource, CharStream> EMPTY_SOURCE =
-		new Pair<TokenSource, CharStream>(null, null);
+            new Pair<>(null, null);
 
 	/**
 	 * This is the backing field for {@link #getType} and {@link #setType}.
@@ -143,7 +143,7 @@ public class CommonToken implements WritableToken, Serializable {
 		}
 		else {
 			text = oldToken.getText();
-			source = new Pair<TokenSource, CharStream>(oldToken.getTokenSource(), oldToken.getInputStream());
+			source = new Pair<>(oldToken.getTokenSource(), oldToken.getInputStream());
 		}
 	}
 

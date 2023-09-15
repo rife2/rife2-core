@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class AggregatingCallbacksBeanListener implements GenericQueryManagerListener<CallbacksBean> {
-    private Map<String, Object> mHistory = new LinkedHashMap<String, Object>();
+    private Map<String, Object> mHistory = new LinkedHashMap<>();
 
     public void clearHistory() {
         mHistory.clear();

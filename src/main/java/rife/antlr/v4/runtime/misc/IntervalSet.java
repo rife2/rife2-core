@@ -56,10 +56,10 @@ public class IntervalSet implements IntSet {
 
 	public IntervalSet(int... els) {
 		if ( els==null ) {
-			intervals = new ArrayList<Interval>(2); // most sets are 1 or 2 elements
+			intervals = new ArrayList<>(2); // most sets are 1 or 2 elements
 		}
 		else {
-			intervals = new ArrayList<Interval>(els.length);
+			intervals = new ArrayList<>(els.length);
 			for (int e : els) add(e);
 		}
 	}
@@ -592,7 +592,7 @@ public class IntervalSet implements IntSet {
 
     @Override
     public List<Integer> toList() {
-		List<Integer> values = new ArrayList<Integer>();
+		List<Integer> values = new ArrayList<>();
 		int n = intervals.size();
         for (Interval I : intervals) {
             int a = I.a;
@@ -605,7 +605,7 @@ public class IntervalSet implements IntSet {
 	}
 
 	public Set<Integer> toSet() {
-		Set<Integer> s = new HashSet<Integer>();
+		Set<Integer> s = new HashSet<>();
 		for (Interval I : intervals) {
 			int a = I.a;
 			int b = I.b;

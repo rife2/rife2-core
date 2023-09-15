@@ -52,12 +52,12 @@ public class InterpreterDataReader {
 	 */
 	public static InterpreterData parseFile(String fileName) {
 		InterpreterData result = new InterpreterData();
-		result.ruleNames = new ArrayList<String>();
+		result.ruleNames = new ArrayList<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 		    String line;
-		  	List<String> literalNames = new ArrayList<String>();
-		  	List<String> symbolicNames = new ArrayList<String>();
+		  	List<String> literalNames = new ArrayList<>();
+		  	List<String> symbolicNames = new ArrayList<>();
 
 			line = br.readLine();
 			if ( !line.equals("token literal names:") )
@@ -90,7 +90,7 @@ public class InterpreterDataReader {
 
 			line = br.readLine();
 			if ( line.equals("channel names:") ) { // Additional lexer data.
-				result.channels = new ArrayList<String>();
+				result.channels = new ArrayList<>();
 			    while ((line = br.readLine()) != null) {
 			       if ( line.isEmpty() )
 						break;
@@ -100,7 +100,7 @@ public class InterpreterDataReader {
 				line = br.readLine();
 				if ( !line.equals("mode names:") )
 					throw new RuntimeException("Unexpected data entry");
-				result.modes = new ArrayList<String>();
+				result.modes = new ArrayList<>();
 			    while ((line = br.readLine()) != null) {
 			       if ( line.isEmpty() )
 						break;

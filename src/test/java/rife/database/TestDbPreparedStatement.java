@@ -958,7 +958,7 @@ public class TestDbPreparedStatement {
             query_select
                 .from("parametersbean")
                 .fields(BeanImpl.class);
-            var fetcher = new DbBeanFetcher<BeanImpl>(getDatasource(), BeanImpl.class);
+            var fetcher = new DbBeanFetcher<>(getDatasource(), BeanImpl.class);
 
             var statement = executeQuery(query_select);
             fetch(statement.getResultSet(), fetcher);

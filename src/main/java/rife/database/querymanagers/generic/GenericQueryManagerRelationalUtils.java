@@ -218,7 +218,7 @@ public abstract class GenericQueryManagerRelationalUtils {
             declarations = new HashMap<>();
 
             // collect all properties that have a many-to-many relationship
-            final List<String> unresolved_name_list = new ArrayList<String>();
+            final List<String> unresolved_name_list = new ArrayList<>();
             for (var property : constrained.getConstrainedProperties()) {
                 if (property.hasManyToMany()) {
                     declarations.put(property.getPropertyName(), new ManyToManyDeclaration()

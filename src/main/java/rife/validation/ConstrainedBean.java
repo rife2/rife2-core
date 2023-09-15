@@ -85,7 +85,7 @@ public class ConstrainedBean {
         if (unique != null) {
             List<String[]> unique_list = (List<String[]>) constraints_.get(UNIQUE);
             if (null == unique_list) {
-                unique_list = new ArrayList<String[]>();
+                unique_list = new ArrayList<>();
                 constraints_.put(UNIQUE, unique_list);
             }
 
@@ -151,7 +151,7 @@ public class ConstrainedBean {
         if (order != null) {
             List<Order> ordering_list = (List<Order>) constraints_.get(DEFAULT_ORDERING);
             if (null == ordering_list) {
-                ordering_list = new ArrayList<Order>();
+                ordering_list = new ArrayList<>();
                 constraints_.put(DEFAULT_ORDERING, ordering_list);
             }
 

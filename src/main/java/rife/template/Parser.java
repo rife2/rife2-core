@@ -729,7 +729,7 @@ public class Parser implements Cloneable {
                     // add the returned groups to the filtered tag mapping
                     while (filter_matcher.find()) {
                         if (null == captured_groups) {
-                            captured_groups = new ArrayList<String>();
+                            captured_groups = new ArrayList<>();
                             captured_groups.add(tag);
                         }
 

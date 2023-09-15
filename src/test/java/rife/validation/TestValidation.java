@@ -109,7 +109,7 @@ public class TestValidation {
     void testReplaceValidationError() {
         Bean bean = new Bean(null);
 
-        Set<ValidationError> errors = new LinkedHashSet<ValidationError>();
+        Set<ValidationError> errors = new LinkedHashSet<>();
         bean.replaceValidationErrors(errors);
         assertSame(errors, bean.getValidationErrors());
     }

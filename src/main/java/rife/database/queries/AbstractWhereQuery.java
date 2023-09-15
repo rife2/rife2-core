@@ -54,7 +54,7 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
     }
 
     public WhereGroup<QueryType> startWhere() {
-        return new WhereGroup<QueryType>(getDatasource(), this);
+        return new WhereGroup<>(getDatasource(), this);
     }
 
     public QueryType whereAnd(String where) {
@@ -72,7 +72,7 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
     }
 
     public WhereGroupAnd<QueryType> startWhereAnd() {
-        return new WhereGroupAnd<QueryType>(getDatasource(), this);
+        return new WhereGroupAnd<>(getDatasource(), this);
     }
 
     public QueryType whereOr(String where) {
@@ -90,7 +90,7 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
     }
 
     public WhereGroupOr<QueryType> startWhereOr() {
-        return new WhereGroupOr<QueryType>(getDatasource(), this);
+        return new WhereGroupOr<>(getDatasource(), this);
     }
 
     public QueryType where(String field, String operator, boolean value) {
@@ -306,7 +306,7 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
 
         Constrained constrained = ConstrainedUtils.makeConstrainedInstance(bean);
 
-        ArrayList<String> where_parts = new ArrayList<String>();
+        ArrayList<String> where_parts = new ArrayList<>();
         Map<String, String> property_values = QueryHelper.getBeanPropertyValues(bean, includedFields, excludedFields, getDatasource());
 
         for (String property_name : property_values.keySet()) {

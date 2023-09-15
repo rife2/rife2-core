@@ -122,7 +122,7 @@ public abstract class ATNState {
 
 	/** Track the transitions emanating from this ATN state. */
 	protected final List<Transition> transitions =
-		new ArrayList<Transition>(INITIAL_NUM_TRANSITIONS);
+            new ArrayList<>(INITIAL_NUM_TRANSITIONS);
 
 	/** Used to cache lookahead during parsing, not used during construction */
     public IntervalSet nextTokenWithinRule;

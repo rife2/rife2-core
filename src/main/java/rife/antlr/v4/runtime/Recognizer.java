@@ -22,15 +22,15 @@ public abstract class Recognizer<Symbol, ATNInterpreter extends ATNSimulator> {
 	public static final int EOF=-1;
 
 	private static final Map<Vocabulary, Map<String, Integer>> tokenTypeMapCache =
-		new WeakHashMap<Vocabulary, Map<String, Integer>>();
+            new WeakHashMap<>();
 	private static final Map<String[], Map<String, Integer>> ruleIndexMapCache =
-		new WeakHashMap<String[], Map<String, Integer>>();
+            new WeakHashMap<>();
 
 
 	private List<ANTLRErrorListener> _listeners =
-		new CopyOnWriteArrayList<ANTLRErrorListener>() {{
-			add(ConsoleErrorListener.INSTANCE);
-		}};
+            new CopyOnWriteArrayList<>() {{
+                add(ConsoleErrorListener.INSTANCE);
+            }};
 
 	protected ATNInterpreter _interp;
 
@@ -68,7 +68,7 @@ public abstract class Recognizer<Symbol, ATNInterpreter extends ATNSimulator> {
 		synchronized (tokenTypeMapCache) {
 			Map<String, Integer> result = tokenTypeMapCache.get(vocabulary);
 			if (result == null) {
-				result = new HashMap<String, Integer>();
+				result = new HashMap<>();
 				for (int i = 0; i <= getATN().maxTokenType; i++) {
 					String literalName = vocabulary.getLiteralName(i);
 					if (literalName != null) {

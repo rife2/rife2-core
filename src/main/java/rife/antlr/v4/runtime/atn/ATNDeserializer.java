@@ -63,8 +63,8 @@ public class ATNDeserializer {
 		//
 		// STATES
 		//
-		List<Pair<LoopEndState, Integer>> loopBackStateNumbers = new ArrayList<Pair<LoopEndState, Integer>>();
-		List<Pair<BlockStartState, Integer>> endStateNumbers = new ArrayList<Pair<BlockStartState, Integer>>();
+		List<Pair<LoopEndState, Integer>> loopBackStateNumbers = new ArrayList<>();
+		List<Pair<BlockStartState, Integer>> endStateNumbers = new ArrayList<>();
 		int nstates = data[p++];
 		for (int i=0; i<nstates; i++) {
 			int stype = data[p++];
@@ -78,11 +78,11 @@ public class ATNDeserializer {
 			ATNState s = stateFactory(stype, ruleIndex);
 			if ( stype == ATNState.LOOP_END ) { // special case
 				int loopBackStateNumber = data[p++];
-				loopBackStateNumbers.add(new Pair<LoopEndState, Integer>((LoopEndState)s, loopBackStateNumber));
+				loopBackStateNumbers.add(new Pair<>((LoopEndState) s, loopBackStateNumber));
 			}
 			else if (s instanceof BlockStartState) {
 				int endStateNumber = data[p++];
-				endStateNumbers.add(new Pair<BlockStartState, Integer>((BlockStartState)s, endStateNumber));
+				endStateNumbers.add(new Pair<>((BlockStartState) s, endStateNumber));
 			}
 			atn.addState(s);
 		}
@@ -149,7 +149,7 @@ public class ATNDeserializer {
 		//
 		// SETS
 		//
-		List<IntervalSet> sets = new ArrayList<IntervalSet>();
+		List<IntervalSet> sets = new ArrayList<>();
 		p = deserializeSets(data, p, sets);
 
 		//

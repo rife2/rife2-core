@@ -464,7 +464,7 @@ public abstract class PredictionContext {
 	 */
 	protected static void combineCommonParents(PredictionContext[] parents) {
 		Map<PredictionContext, PredictionContext> uniqueParents =
-			new HashMap<PredictionContext, PredictionContext>();
+                new HashMap<>();
 
         for (PredictionContext parent : parents) {
             if (!uniqueParents.containsKey(parent)) { // don't replace
@@ -484,12 +484,12 @@ public abstract class PredictionContext {
 		buf.append("rankdir=LR;\n");
 
 		List<PredictionContext> nodes = getAllContextNodes(context);
-		Collections.sort(nodes, new Comparator<PredictionContext>() {
-			@Override
-			public int compare(PredictionContext o1, PredictionContext o2) {
-				return o1.id - o2.id;
-			}
-		});
+		Collections.sort(nodes, new Comparator<>() {
+            @Override
+            public int compare(PredictionContext o1, PredictionContext o2) {
+                return o1.id - o2.id;
+            }
+        });
 
 		for (PredictionContext current : nodes) {
 			if ( current instanceof SingletonPredictionContext ) {
@@ -621,9 +621,9 @@ public abstract class PredictionContext {
 
 	// ter's recursive version of Sam's getAllNodes()
 	public static List<PredictionContext> getAllContextNodes(PredictionContext context) {
-		List<PredictionContext> nodes = new ArrayList<PredictionContext>();
+		List<PredictionContext> nodes = new ArrayList<>();
 		Map<PredictionContext, PredictionContext> visited =
-			new IdentityHashMap<PredictionContext, PredictionContext>();
+                new IdentityHashMap<>();
 		getAllContextNodes_(context, nodes, visited);
 		return nodes;
 	}
@@ -651,7 +651,7 @@ public abstract class PredictionContext {
 
 	// FROM SAM
 	public String[] toStrings(Recognizer<?, ?> recognizer, PredictionContext stop, int currentState) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 
 		outer:
 		for (int perm = 0; ; perm++) {

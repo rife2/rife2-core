@@ -113,7 +113,7 @@ public class DFAState {
 	 *  DFA state.
 	 */
 	public Set<Integer> getAltSet() {
-		Set<Integer> alts = new HashSet<Integer>();
+		Set<Integer> alts = new HashSet<>();
 		if ( configs!=null ) {
 			for (ATNConfig c : configs) {
 				alts.add(c.alt);

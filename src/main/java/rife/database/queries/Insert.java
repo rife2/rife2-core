@@ -50,7 +50,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
 
         hint_ = null;
         into_ = null;
-        fields_ = new LinkedHashMap<String, List<Object>>();
+        fields_ = new LinkedHashMap<>();
 
         assert fields_.isEmpty();
     }
@@ -105,7 +105,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
                 var column_names = fields_.keySet().toArray();
                 String column_name = null;
                 for (var current_value_row = 0; current_value_row < maximum_number_of_value_rows; current_value_row++) {
-                    value_row = new ArrayList<String>();
+                    value_row = new ArrayList<>();
                     for (Object columnName : column_names) {
                         column_name = (String) columnName;
                         if (current_value_row <= fields_.get(column_name).size() - 1) {
@@ -173,7 +173,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
 
         clearGenerated();
         if (!fields_.containsKey(field)) {
-            fields_.put(field, new ArrayList<Object>());
+            fields_.put(field, new ArrayList<>());
         }
         if (null == value) {
             fields_.get(field).add(SqlNull.NULL);
@@ -341,7 +341,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
                 for (var field : fields_.keySet()) {
                     values = fields_.get(field);
                     if (values != null) {
-                        values = new ArrayList<Object>(values);
+                        values = new ArrayList<>(values);
                     }
                     new_instance.fields_.put(field, values);
                 }

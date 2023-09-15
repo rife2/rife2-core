@@ -52,14 +52,14 @@ public class CallbacksProviderBean implements CallbacksProvider<CallbacksProvide
     }
 
     public static class TheCallbacks implements Callbacks<CallbacksProviderBean> {
-        private List<String> mExecutedCallbacks = new ArrayList<String>();
+        private List<String> mExecutedCallbacks = new ArrayList<>();
 
         public List<String> getExecutedCallbacks() {
             return mExecutedCallbacks;
         }
 
         public void clearExecuteCallbacks() {
-            mExecutedCallbacks = new ArrayList<String>();
+            mExecutedCallbacks = new ArrayList<>();
         }
 
         public boolean beforeValidate(CallbacksProviderBean object) {

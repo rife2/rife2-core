@@ -45,7 +45,7 @@ public class DropTable extends AbstractQuery implements Cloneable {
     public void clear() {
         super.clear();
 
-        tables_ = new ArrayList<String>();
+        tables_ = new ArrayList<>();
 
         assert tables_.isEmpty();
     }
@@ -106,7 +106,7 @@ public class DropTable extends AbstractQuery implements Cloneable {
         var new_instance = (DropTable) super.clone();
         if (new_instance != null) {
             if (tables_ != null) {
-                new_instance.tables_ = new ArrayList<String>();
+                new_instance.tables_ = new ArrayList<>();
                 new_instance.tables_.addAll(tables_);
             }
         }

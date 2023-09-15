@@ -36,7 +36,7 @@ public class BufferedTokenStream implements TokenStream {
 	 * considered a complete view of the input once {@link #fetchedEOF} is set
 	 * to {@code true}.
 	 */
-    protected List<Token> tokens = new ArrayList<Token>(100);
+    protected List<Token> tokens = new ArrayList<>(100);
 
 	/**
 	 * The index into {@link #tokens} of the current token (next token to
@@ -192,7 +192,7 @@ public class BufferedTokenStream implements TokenStream {
 	public List<Token> get(int start, int stop) {
 		if ( start<0 || stop<0 ) return null;
 		lazyInit();
-		List<Token> subset = new ArrayList<Token>();
+		List<Token> subset = new ArrayList<>();
 		if ( stop>=tokens.size() ) stop = tokens.size()-1;
 		for (int i = start; i <= stop; i++) {
 			Token t = tokens.get(i);
@@ -284,7 +284,7 @@ public class BufferedTokenStream implements TokenStream {
         if ( start>stop ) return null;
 
         // list = tokens[start:stop]:{T t, t.getType() in types}
-        List<Token> filteredTokens = new ArrayList<Token>();
+        List<Token> filteredTokens = new ArrayList<>();
         for (int i=start; i<=stop; i++) {
             Token t = tokens.get(i);
             if ( types==null || types.contains(t.getType()) ) {
@@ -298,7 +298,7 @@ public class BufferedTokenStream implements TokenStream {
     }
 
     public List<Token> getTokens(int start, int stop, int ttype) {
-		HashSet<Integer> s = new HashSet<Integer>(ttype);
+		HashSet<Integer> s = new HashSet<>(ttype);
 		s.add(ttype);
 		return getTokens(start,stop, s);
     }
@@ -420,7 +420,7 @@ public class BufferedTokenStream implements TokenStream {
 	}
 
 	protected List<Token> filterForChannel(int from, int to, int channel) {
-		List<Token> hidden = new ArrayList<Token>();
+		List<Token> hidden = new ArrayList<>();
 		for (int i=from; i<=to; i++) {
 			Token t = tokens.get(i);
 			if ( channel==-1 ) {

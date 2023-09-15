@@ -26,7 +26,7 @@ public class DFA {
 	 *  ({@link Set} only allows you to see if it's there).
      */
 
-	public final Map<DFAState, DFAState> states = new HashMap<DFAState, DFAState>();
+	public final Map<DFAState, DFAState> states = new HashMap<>();
 
 	public volatile DFAState s0;
 
@@ -159,13 +159,13 @@ public class DFA {
 	 */
 
 	public List<DFAState> getStates() {
-		List<DFAState> result = new ArrayList<DFAState>(states.keySet());
-		Collections.sort(result, new Comparator<DFAState>() {
-			@Override
-			public int compare(DFAState o1, DFAState o2) {
-				return o1.stateNumber - o2.stateNumber;
-			}
-		});
+		List<DFAState> result = new ArrayList<>(states.keySet());
+		Collections.sort(result, new Comparator<>() {
+            @Override
+            public int compare(DFAState o1, DFAState o2) {
+                return o1.stateNumber - o2.stateNumber;
+            }
+        });
 
 		return result;
 	}

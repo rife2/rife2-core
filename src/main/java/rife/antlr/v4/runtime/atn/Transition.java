@@ -41,33 +41,29 @@ public abstract class Transition {
 
 
 	public static final List<String> serializationNames =
-		Collections.unmodifiableList(Arrays.asList(
-			"INVALID",
-			"EPSILON",
-			"RANGE",
-			"RULE",
-			"PREDICATE",
-			"ATOM",
-			"ACTION",
-			"SET",
-			"NOT_SET",
-			"WILDCARD",
-			"PRECEDENCE"
-		));
+            List.of("INVALID",
+					"EPSILON",
+					"RANGE",
+					"RULE",
+					"PREDICATE",
+					"ATOM",
+					"ACTION",
+					"SET",
+					"NOT_SET",
+					"WILDCARD",
+					"PRECEDENCE");
 
 	public static final Map<Class<? extends Transition>, Integer> serializationTypes =
-		Collections.unmodifiableMap(new HashMap<>() {{
-            put(EpsilonTransition.class, EPSILON);
-            put(RangeTransition.class, RANGE);
-            put(RuleTransition.class, RULE);
-            put(PredicateTransition.class, PREDICATE);
-            put(AtomTransition.class, ATOM);
-            put(ActionTransition.class, ACTION);
-            put(SetTransition.class, SET);
-            put(NotSetTransition.class, NOT_SET);
-            put(WildcardTransition.class, WILDCARD);
-            put(PrecedencePredicateTransition.class, PRECEDENCE);
-        }});
+			Map.of(EpsilonTransition.class, EPSILON,
+					RangeTransition.class, RANGE,
+					RuleTransition.class, RULE,
+					PredicateTransition.class,PREDICATE,
+					AtomTransition.class, ATOM,
+					ActionTransition.class, ACTION,
+					SetTransition.class, SET,
+					NotSetTransition.class, NOT_SET,
+					WildcardTransition.class, WILDCARD,
+					PrecedencePredicateTransition.class, PRECEDENCE);
 
 	/** The target of this transition. */
 

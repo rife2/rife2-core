@@ -230,7 +230,7 @@ public class Parser implements Cloneable {
 
         var class_name = template_name;
         var subpackage = "";
-        var package_separator = template_name.lastIndexOf(".");
+        var package_separator = template_name.lastIndexOf('.');
         if (package_separator != -1) {
             subpackage = "." + template_name.substring(0, package_separator);
             class_name = template_name.substring(package_separator + 1);

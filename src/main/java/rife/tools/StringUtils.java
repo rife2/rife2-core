@@ -2570,7 +2570,7 @@ public final class StringUtils {
                     sb.append(visual_url);
                 } else {
                     var ellipsis = "...";
-                    var query_index = visual_url.indexOf("?");
+                    var query_index = visual_url.indexOf('?');
 
                     // remove query string but keep '?'
                     if (query_index != -1) {
@@ -2578,8 +2578,8 @@ public final class StringUtils {
                     }
 
                     if (visual_url.length() >= max_length) {
-                        var last_slash = visual_url.lastIndexOf("/");
-                        var start_slash = visual_url.indexOf("/", visual_url.indexOf("://") + 3);
+                        var last_slash = visual_url.lastIndexOf('/');
+                        var start_slash = visual_url.indexOf('/', visual_url.indexOf("://") + 3);
 
                         if (last_slash != start_slash) {
                             visual_url = visual_url.substring(0, start_slash + 1) + ellipsis + visual_url.substring(last_slash);

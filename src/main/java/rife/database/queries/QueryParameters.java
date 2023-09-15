@@ -346,7 +346,7 @@ public class QueryParameters implements Cloneable {
 
             // remove the table-field separator dot
             if (value.contains(".")) {
-                value = value.substring(value.lastIndexOf(".") + 1);
+                value = value.substring(value.lastIndexOf('.') + 1);
             }
         }
 

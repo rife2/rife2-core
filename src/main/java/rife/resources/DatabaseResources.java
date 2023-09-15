@@ -5,8 +5,6 @@
 package rife.resources;
 
 import rife.database.Datasource;
-import rife.database.DbPreparedStatement;
-import rife.database.DbPreparedStatementHandler;
 import rife.database.DbQueryManager;
 import rife.database.exceptions.DatabaseException;
 import rife.database.queries.*;

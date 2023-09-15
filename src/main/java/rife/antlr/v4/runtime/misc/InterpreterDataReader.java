@@ -10,9 +10,7 @@ import rife.antlr.v4.runtime.Vocabulary;
 import rife.antlr.v4.runtime.VocabularyImpl;
 import rife.antlr.v4.runtime.atn.ATN;
 import rife.antlr.v4.runtime.atn.ATNDeserializer;
-import rife.antlr.v4.runtime.dfa.DFA;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.BufferedReader;

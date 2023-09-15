@@ -7,9 +7,6 @@ package rife.database.queries;
 import rife.database.*;
 import rife.database.exceptions.DatabaseException;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public abstract class TestSelect extends TestQuery {
     public DbQueryManager setupQuery(Datasource datasource) {
         var manager = new DbQueryManager(datasource);

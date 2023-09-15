@@ -8,8 +8,6 @@ import rife.tools.BeanUtils;
 import rife.tools.ClassUtils;
 import rife.tools.exceptions.BeanUtilsException;
 
-import java.util.Iterator;
-
 public class ConstrainedUtils {
     public static Constrained getConstrainedInstance(Class beanClass) {
         if (null == beanClass) {

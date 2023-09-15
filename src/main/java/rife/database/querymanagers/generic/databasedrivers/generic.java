@@ -12,8 +12,6 @@ import rife.database.querymanagers.generic.*;
 import rife.database.exceptions.DatabaseException;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> implements GenericQueryManager<BeanType> {
     private CreateTable createTable_ = null;

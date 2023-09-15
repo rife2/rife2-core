@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import rife.config.RifeConfig;
 import rife.tools.ExceptionUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;

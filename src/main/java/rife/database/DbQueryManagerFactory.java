@@ -7,7 +7,6 @@ package rife.database;
 import rife.database.exceptions.UnsupportedJdbcDriverException;
 import rife.tools.StringUtils;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**

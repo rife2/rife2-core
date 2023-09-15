@@ -7,8 +7,6 @@ package rife.validation;
 import org.junit.jupiter.api.Test;
 import rife.config.RifeConfig;
 
-import java.text.SimpleDateFormat;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestValidationRuleFormat {

@@ -8,7 +8,6 @@ import rife.database.exceptions.*;
 import rife.selector.NameSelector;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

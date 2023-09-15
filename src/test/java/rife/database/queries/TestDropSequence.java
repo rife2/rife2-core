@@ -5,7 +5,6 @@
 package rife.database.queries;
 
 import rife.database.Datasource;
-import rife.database.DbConnection;
 import rife.database.exceptions.DatabaseException;
 
 public abstract class TestDropSequence extends TestQuery {

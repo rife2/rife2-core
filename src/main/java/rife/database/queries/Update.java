@@ -11,16 +11,13 @@ import rife.database.exceptions.FieldsRequiredException;
 import rife.database.exceptions.TableNameRequiredException;
 import rife.database.exceptions.UnsupportedSqlFeatureException;
 import rife.database.types.SqlNull;
-import rife.template.Template;
 import rife.template.TemplateFactory;
 import rife.tools.StringUtils;
-import rife.validation.Constrained;
 import rife.validation.ConstrainedUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Object representation of a SQL "UPDATE" query.

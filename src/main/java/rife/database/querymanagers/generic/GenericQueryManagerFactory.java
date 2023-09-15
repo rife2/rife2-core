@@ -14,9 +14,7 @@ import rife.tools.ClassUtils;
 import rife.tools.StringUtils;
 import rife.validation.*;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 
 public class GenericQueryManagerFactory {
     private final static String GENERIC_DRIVER = "generic";

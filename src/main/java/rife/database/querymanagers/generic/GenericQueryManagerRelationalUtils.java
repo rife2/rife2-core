@@ -10,17 +10,13 @@ import rife.database.querymanagers.generic.exceptions.*;
 import java.util.*;
 
 import rife.database.exceptions.DatabaseException;
-import rife.tools.BeanPropertyProcessor;
 import rife.tools.BeanUtils;
 import rife.tools.ClassUtils;
-import rife.tools.JavaSpecificationUtils;
 import rife.tools.exceptions.BeanUtilsException;
 import rife.validation.Constrained;
 import rife.validation.ConstrainedProperty;
 import rife.validation.ConstrainedUtils;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**

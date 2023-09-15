@@ -13,7 +13,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import rife.config.RifeConfig;
 import rife.resources.ResourceFinder;
 import rife.resources.ResourceFinderClasspath;
-import rife.tools.ExceptionUtils;
 import rife.xml.exceptions.*;
 
 import javax.xml.parsers.*;

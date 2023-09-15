@@ -9,7 +9,6 @@ import rife.database.capabilities.Capabilities;
 import rife.database.exceptions.DbQueryException;
 import rife.database.exceptions.SequenceNameRequiredException;
 import rife.database.exceptions.UnsupportedSqlFeatureException;
-import rife.template.Template;
 import rife.template.TemplateFactory;
 import rife.tools.StringUtils;
 

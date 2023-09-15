@@ -469,9 +469,7 @@ class Whirlpool {
             // reset bit i:
             data[i / 8] = 0;
         }
-        for (int i = 0; i < digest.length; i++) {
-            digest[i] = 0;
-        }
+        Arrays.fill(digest, (byte) 0);
         for (int i = 0; i < LONG_ITERATION; i++) {
             w.NESSIEinit();
             w.NESSIEadd(digest, 512);

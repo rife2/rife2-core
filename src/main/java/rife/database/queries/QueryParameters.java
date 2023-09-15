@@ -88,10 +88,9 @@ public class QueryParameters implements Cloneable {
             if (parameters_ != null &&
                     !parameters_.isEmpty()) {
                 if (parameters_.containsKey(QueryParameterType.FIELD)) {
-                    combined_parameters = new ArrayList<>();
 
                     // add the parameter to the combined list
-                    combined_parameters.addAll((List<String>) parameters_.get(QueryParameterType.FIELD));
+                    combined_parameters = new ArrayList<>((List<String>) parameters_.get(QueryParameterType.FIELD));
                 }
 
                 if (parameters_.containsKey(QueryParameterType.TABLE)) {

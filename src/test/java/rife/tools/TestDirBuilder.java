@@ -344,9 +344,7 @@ public class TestDirBuilder {
         var b = new DirBuilder(tmp, d -> {
             d.dir("subdir1", s1 -> {
                 s1.file("file1.txt", f -> f.write("Hello World!"));
-                s1.dir("subdir2", s2 -> s2.file("file2.txt", f -> {
-                    f.write("Foo");
-                }));
+                s1.dir("subdir2", s2 -> s2.file("file2.txt", f -> f.write("Foo")));
             });
             d.dir("subdir3", s3 -> {
                 s3.file("file3.txt", f -> f.move(path(tmp, "subdir1", "subdir2", "file2.txt")));

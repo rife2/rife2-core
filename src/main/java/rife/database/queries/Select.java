@@ -676,9 +676,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
         clearGenerated();
 
-        for (var property_name : property_names) {
-            groupBy_.add(property_name);
-        }
+        groupBy_.addAll(property_names);
 
         return this;
     }

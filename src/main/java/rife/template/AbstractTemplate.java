@@ -1030,9 +1030,7 @@ public abstract class AbstractTemplate implements Template {
         new_template.defaultContentType_ = defaultContentType_;
 
         new_template.generatedValues_ = new HashSet<>();
-        for (var value_id : generatedValues_) {
-            new_template.generatedValues_.add(value_id);
-        }
+        new_template.generatedValues_.addAll(generatedValues_);
 
         new_template.fixedValues_ = new HashMap<>();
         for (var value_id : fixedValues_.keySet()) {

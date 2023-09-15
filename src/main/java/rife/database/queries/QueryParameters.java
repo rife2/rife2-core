@@ -90,10 +90,8 @@ public class QueryParameters implements Cloneable {
                 if (parameters_.containsKey(QueryParameterType.FIELD)) {
                     combined_parameters = new ArrayList<>();
 
-                    for (var parameter : (List<String>) parameters_.get(QueryParameterType.FIELD)) {
-                        // add the parameter to the combined list
-                        combined_parameters.add(parameter);
-                    }
+                    // add the parameter to the combined list
+                    combined_parameters.addAll((List<String>) parameters_.get(QueryParameterType.FIELD));
                 }
 
                 if (parameters_.containsKey(QueryParameterType.TABLE)) {
@@ -101,10 +99,8 @@ public class QueryParameters implements Cloneable {
                         combined_parameters = new ArrayList<>();
                     }
 
-                    for (var parameter : (List<String>) parameters_.get(QueryParameterType.TABLE)) {
-                        // add the parameter to the combined list
-                        combined_parameters.add(parameter);
-                    }
+                    // add the parameter to the combined list
+                    combined_parameters.addAll((List<String>) parameters_.get(QueryParameterType.TABLE));
                 }
 
                 if (parameters_.containsKey(QueryParameterType.WHERE)) {
@@ -112,10 +108,8 @@ public class QueryParameters implements Cloneable {
                         combined_parameters = new ArrayList<>();
                     }
 
-                    for (var parameter : (List<String>) parameters_.get(QueryParameterType.WHERE)) {
-                        // add the parameter to the combined list
-                        combined_parameters.add(parameter);
-                    }
+                    // add the parameter to the combined list
+                    combined_parameters.addAll((List<String>) parameters_.get(QueryParameterType.WHERE));
                 }
 
                 if (parameters_.containsKey(QueryParameterType.UNION)) {
@@ -123,10 +117,8 @@ public class QueryParameters implements Cloneable {
                         combined_parameters = new ArrayList<>();
                     }
 
-                    for (var parameter : (List<String>) parameters_.get(QueryParameterType.UNION)) {
-                        // add the parameter to the combined list
-                        combined_parameters.add(parameter);
-                    }
+                    // add the parameter to the combined list
+                    combined_parameters.addAll((List<String>) parameters_.get(QueryParameterType.UNION));
                 }
 
                 if (parameters_.containsKey(QueryParameterType.LIMIT) ||

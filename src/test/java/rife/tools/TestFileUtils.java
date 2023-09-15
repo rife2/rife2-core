@@ -875,25 +875,25 @@ public class TestFileUtils {
     @Test
     void testPermissionsFromMode() {
         assertTrue(permissionsFromMode(0000).isEmpty());
-        assertTrue(permissionsFromMode(0001).containsAll(Set.of(OTHERS_EXECUTE)));
-        assertTrue(permissionsFromMode(0002).containsAll(Set.of(OTHERS_WRITE)));
-        assertTrue(permissionsFromMode(0004).containsAll(Set.of(OTHERS_READ)));
+        assertTrue(permissionsFromMode(0001).contains(OTHERS_EXECUTE));
+        assertTrue(permissionsFromMode(0002).contains(OTHERS_WRITE));
+        assertTrue(permissionsFromMode(0004).contains(OTHERS_READ));
         assertTrue(permissionsFromMode(0003).containsAll(Set.of(OTHERS_EXECUTE, OTHERS_WRITE)));
         assertTrue(permissionsFromMode(0005).containsAll(Set.of(OTHERS_EXECUTE, OTHERS_READ)));
         assertTrue(permissionsFromMode(0006).containsAll(Set.of(OTHERS_WRITE, OTHERS_READ)));
         assertTrue(permissionsFromMode(0007).containsAll(Set.of(OTHERS_EXECUTE, OTHERS_WRITE, OTHERS_READ)));
 
-        assertTrue(permissionsFromMode(0010).containsAll(Set.of(GROUP_EXECUTE)));
-        assertTrue(permissionsFromMode(0020).containsAll(Set.of(GROUP_WRITE)));
-        assertTrue(permissionsFromMode(0040).containsAll(Set.of(GROUP_READ)));
+        assertTrue(permissionsFromMode(0010).contains(GROUP_EXECUTE));
+        assertTrue(permissionsFromMode(0020).contains(GROUP_WRITE));
+        assertTrue(permissionsFromMode(0040).contains(GROUP_READ));
         assertTrue(permissionsFromMode(0030).containsAll(Set.of(GROUP_EXECUTE, GROUP_WRITE)));
         assertTrue(permissionsFromMode(0050).containsAll(Set.of(GROUP_EXECUTE, GROUP_READ)));
         assertTrue(permissionsFromMode(0060).containsAll(Set.of(GROUP_WRITE, GROUP_READ)));
         assertTrue(permissionsFromMode(0070).containsAll(Set.of(GROUP_EXECUTE, GROUP_WRITE, GROUP_READ)));
 
-        assertTrue(permissionsFromMode(0100).containsAll(Set.of(OWNER_EXECUTE)));
-        assertTrue(permissionsFromMode(0200).containsAll(Set.of(OWNER_WRITE)));
-        assertTrue(permissionsFromMode(0400).containsAll(Set.of(OWNER_READ)));
+        assertTrue(permissionsFromMode(0100).contains(OWNER_EXECUTE));
+        assertTrue(permissionsFromMode(0200).contains(OWNER_WRITE));
+        assertTrue(permissionsFromMode(0400).contains(OWNER_READ));
         assertTrue(permissionsFromMode(0300).containsAll(Set.of(OWNER_EXECUTE, OWNER_WRITE)));
         assertTrue(permissionsFromMode(0500).containsAll(Set.of(OWNER_EXECUTE, OWNER_READ)));
         assertTrue(permissionsFromMode(0600).containsAll(Set.of(OWNER_WRITE, OWNER_READ)));

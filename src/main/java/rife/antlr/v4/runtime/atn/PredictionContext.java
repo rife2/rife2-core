@@ -12,12 +12,7 @@ import rife.antlr.v4.runtime.RuleContext;
 import rife.antlr.v4.runtime.misc.DoubleKeyMap;
 import rife.antlr.v4.runtime.misc.MurmurHash;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class PredictionContext {
@@ -482,7 +477,7 @@ public abstract class PredictionContext {
 		buf.append("rankdir=LR;\n");
 
 		List<PredictionContext> nodes = getAllContextNodes(context);
-		nodes.sort((o1, o2) -> o1.id - o2.id);
+		nodes.sort(Comparator.comparingInt(o -> o.id));
 
 		for (PredictionContext current : nodes) {
 			if ( current instanceof SingletonPredictionContext ) {

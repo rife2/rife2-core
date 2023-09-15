@@ -668,7 +668,7 @@ public class TestDbPreparedStatement {
                 assertEquals((retrieved_bean.getPropertyCalendar().getTime().getTime() / 1000) * 1000, (new_bean.getPropertyCalendar().getTime().getTime() / 1000) * 1000);
                 assertEquals((retrieved_bean.getPropertyTimestamp().getTime() / 1000) * 1000, (new_bean.getPropertyTimestamp().getTime() / 1000) * 1000);
                 assertEquals(retrieved_bean.getPropertyInstant().with(NANO_OF_SECOND, 0), new_bean.getPropertyInstant().with(NANO_OF_SECOND, 0));
-                assertEquals(retrieved_bean.getPropertyLocalDateTime().with(NANO_OF_SECOND, 0), new_bean.getPropertyLocalDateTime().with(NANO_OF_SECOND, 0));
+                assertEquals(retrieved_bean.getPropertyLocalDateTime().withNano(0), new_bean.getPropertyLocalDateTime().withNano(0));
                 assertEquals(retrieved_bean.getPropertyLocalTime().withNano(0), new_bean.getPropertyLocalTime().withNano(0));
 
                 assertEquals(retrieved_bean.getPropertyLocalDate(), new_bean.getPropertyLocalDate());

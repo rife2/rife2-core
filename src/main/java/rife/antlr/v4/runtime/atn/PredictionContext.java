@@ -466,12 +466,11 @@ public abstract class PredictionContext {
 		Map<PredictionContext, PredictionContext> uniqueParents =
 			new HashMap<PredictionContext, PredictionContext>();
 
-		for (int p = 0; p < parents.length; p++) {
-			PredictionContext parent = parents[p];
-			if ( !uniqueParents.containsKey(parent) ) { // don't replace
-				uniqueParents.put(parent, parent);
-			}
-		}
+        for (PredictionContext parent : parents) {
+            if (!uniqueParents.containsKey(parent)) { // don't replace
+                uniqueParents.put(parent, parent);
+            }
+        }
 
 		for (int p = 0; p < parents.length; p++) {
 			parents[p] = uniqueParents.get(parents[p]);

@@ -559,25 +559,19 @@ public class TestFileUtils {
     @Test
     void testUnzipFileNullSource() {
         // test null source file argument
-        assertThrows(IllegalArgumentException.class, () -> {
-            FileUtils.unzipFile(null, new File("destination"));
-        });
+        assertThrows(IllegalArgumentException.class, () -> FileUtils.unzipFile(null, new File("destination")));
     }
 
     @Test
     void testUnzipFileNullDestination() {
         // test null destination argument
-        assertThrows(IllegalArgumentException.class, () -> {
-            FileUtils.unzipFile(new File("source"), null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> FileUtils.unzipFile(new File("source"), null));
     }
 
     @Test
     void testUnzipFileBadZipFile() {
         // test invalid zip file argument
-        assertThrows(FileUtilsErrorException.class, () -> {
-            FileUtils.unzipFile(new File("bad_zip_file"), new File("destination"));
-        });
+        assertThrows(FileUtilsErrorException.class, () -> FileUtils.unzipFile(new File("bad_zip_file"), new File("destination")));
     }
 
     @Test
@@ -593,9 +587,7 @@ public class TestFileUtils {
         destination.setWritable(false);
 
         // test unzipping to invalid output path
-        assertThrows(FileUtilsErrorException.class, () -> {
-            FileUtils.unzipFile(source, destination);
-        });
+        assertThrows(FileUtilsErrorException.class, () -> FileUtils.unzipFile(source, destination));
 
         // clean up test files/directories
         destination.setWritable(true);
@@ -634,16 +626,12 @@ public class TestFileUtils {
 
     @Test
     void testGetBaseNameWithNullFile() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            FileUtils.getBaseName((File) null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> FileUtils.getBaseName((File) null));
     }
 
     @Test
     void testGetBaseNameWithNullFileName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            FileUtils.getBaseName((String) null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> FileUtils.getBaseName((String) null));
     }
 
     @Test
@@ -775,17 +763,13 @@ public class TestFileUtils {
 
     @Test
     public void testGenerateDirectoryListingWithNullDirectory() {
-        assertThrows(NullPointerException.class, () -> {
-            FileUtils.generateDirectoryListing(null);
-        });
+        assertThrows(NullPointerException.class, () -> FileUtils.generateDirectoryListing(null));
     }
 
     @Test
     public void testGenerateDirectoryListingWithNonexistentDirectory() {
         var directory = new File("nonexistent");
-        assertThrows(IOException.class, () -> {
-            FileUtils.generateDirectoryListing(directory);
-        });
+        assertThrows(IOException.class, () -> FileUtils.generateDirectoryListing(directory));
     }
 
     @Test

@@ -9,8 +9,6 @@ package rife.antlr.v4.runtime.atn;
 import rife.antlr.v4.runtime.misc.IntervalSet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 

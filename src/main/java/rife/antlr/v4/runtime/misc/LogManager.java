@@ -58,12 +58,8 @@ public class LogManager {
 
     public void save(String filename) throws IOException {
         FileWriter fw = new FileWriter(filename);
-        BufferedWriter bw = new BufferedWriter(fw);
-        try {
+        try (BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write(toString());
-        }
-        finally {
-            bw.close();
         }
     }
 

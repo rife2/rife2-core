@@ -90,29 +90,26 @@ public class ANTLRInputStream implements CharStream {
 			readChunkSize = READ_BUFFER_SIZE;
    		}
    		// System.out.println("load "+size+" in chunks of "+readChunkSize);
-   		try {
-   			// alloc initial buffer size.
-   			data = new char[size];
-   			// read all the data in chunks of readChunkSize
-   			int numRead=0;
-   			int p = 0;
-   			do {
-   				if ( p+readChunkSize > data.length ) { // overflow?
-   					// System.out.println("### overflow p="+p+", data.length="+data.length);
-   					data = Arrays.copyOf(data, data.length * 2);
-   				}
-   				numRead = r.read(data, p, readChunkSize);
-   				// System.out.println("read "+numRead+" chars; p was "+p+" is now "+(p+numRead));
-   				p += numRead;
-   			} while (numRead!=-1); // while not EOF
-   			// set the actual size of the data available;
-   			// EOF subtracted one above in p+=numRead; add one back
-   			n = p+1;
-   			//System.out.println("n="+n);
-   		}
-   		finally {
-   			r.close();
-   		}
+        try (r) {
+            // alloc initial buffer size.
+            data = new char[size];
+            // read all the data in chunks of readChunkSize
+            int numRead = 0;
+            int p = 0;
+            do {
+                if (p + readChunkSize > data.length) { // overflow?
+                    // System.out.println("### overflow p="+p+", data.length="+data.length);
+                    data = Arrays.copyOf(data, data.length * 2);
+                }
+                numRead = r.read(data, p, readChunkSize);
+                // System.out.println("read "+numRead+" chars; p was "+p+" is now "+(p+numRead));
+                p += numRead;
+            } while (numRead != -1); // while not EOF
+            // set the actual size of the data available;
+            // EOF subtracted one above in p+=numRead; add one back
+            n = p + 1;
+            //System.out.println("n="+n);
+        }
    	}
 
 	/** Reset the stream so that it's in the same state it was

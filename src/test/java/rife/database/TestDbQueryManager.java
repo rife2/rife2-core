@@ -29,16 +29,12 @@ public class TestDbQueryManager {
             var connection = datasource.getConnection();
 
             // drop the test table
-            var statement = connection.createStatement();
-            try {
+            try (var statement = connection.createStatement()) {
                 try {
                     statement.executeUpdate(new DropTable(datasource).table("tbltest"));
                 } catch (DatabaseException e) { /* don't do anything */ }
-            } finally {
-                try {
-                    statement.close();
-                } catch (DatabaseException e) { /* don't do anything */ }
             }
+            /* don't do anything */
 
             connection.close();
         } catch (DatabaseException e) {

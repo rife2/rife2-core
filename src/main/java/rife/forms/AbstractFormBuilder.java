@@ -164,7 +164,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                 // property contains an erroneous value, in that case this value will
                 // be used instead, since it contains the exact cause of the error.
                 if (previous_errors != null &&
-                    previous_errors.size() > 0) {
+                        !previous_errors.isEmpty()) {
                     for (var error : previous_errors) {
                         if (error.getErroneousValue() != null &&
                             error.getSubject().equals(name)) {
@@ -302,7 +302,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
 
         if (null == template ||
             null == name ||
-            0 == name.length()) {
+                name.isEmpty()) {
             return setValues;
         }
 
@@ -1018,7 +1018,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
     public void removeField(Template template, String name, String prefix) {
         if (null == template ||
             null == name ||
-            0 == name.length()) {
+                name.isEmpty()) {
             return;
         }
 
@@ -1032,7 +1032,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
     public void removeField(Template template, String templateFieldName) {
         if (null == template ||
             null == templateFieldName ||
-            0 == templateFieldName.length()) {
+                templateFieldName.isEmpty()) {
             return;
         }
 
@@ -1048,7 +1048,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
     public Collection<String> selectParameter(Template template, String name, String[] values) {
         if (null == template ||
             null == name ||
-            0 == name.length() ||
+                name.isEmpty() ||
             null == values ||
             0 == values.length) {
             return Collections.emptyList();
@@ -1108,7 +1108,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
     public void unselectParameter(Template template, String name, String[] values) {
         if (null == template ||
             null == name ||
-            0 == name.length()) {
+                name.isEmpty()) {
             return;
         }
 

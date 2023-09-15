@@ -352,7 +352,7 @@ public class Parser implements Cloneable {
         var listener = new AntlrParserListener(parsed);
         walker.walk(listener, parser.document());
 
-        assert parsed.getBlocks().size() >= 1;
+        assert !parsed.getBlocks().isEmpty();
     }
 
     class AntlrIncludeListener extends TemplatePreParserBaseListener {

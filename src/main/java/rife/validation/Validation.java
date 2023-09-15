@@ -369,7 +369,7 @@ public class Validation implements Validated, Cloneable, Constrained, Constraine
         ensureActivatedValidation();
 
         if (null == propertyName ||
-            0 == propertyName.length() ||
+                propertyName.isEmpty() ||
             null == constrainedProperties_) {
             return null;
         }
@@ -391,7 +391,7 @@ public class Validation implements Validated, Cloneable, Constrained, Constraine
         ensureActivatedValidation();
 
         if (null == name ||
-            0 == name.length() ||
+                name.isEmpty() ||
             null == validationGroups_) {
             return null;
         }
@@ -409,7 +409,7 @@ public class Validation implements Validated, Cloneable, Constrained, Constraine
         ensureActivatedValidation();
 
         if (validationRules_ != null &&
-            validationRules_.size() > 0) {
+                !validationRules_.isEmpty()) {
             for (var rule : validationRules_) {
                 if (subjects != null &&
                     !subjects.contains(rule.getSubject())) {
@@ -618,7 +618,7 @@ public class Validation implements Validated, Cloneable, Constrained, Constraine
             if (rule instanceof PropertyValidationRule property_rule) {
                 if (propertyName.equals(property_rule.getPropertyName()) &&
                     property_rule.getLoadingErrors() != null &&
-                    property_rule.getLoadingErrors().size() > 0) {
+                        !property_rule.getLoadingErrors().isEmpty()) {
                     return property_rule.getLoadingErrors();
                 }
             }

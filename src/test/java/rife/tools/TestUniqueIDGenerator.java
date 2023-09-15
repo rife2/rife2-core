@@ -16,7 +16,7 @@ public class TestUniqueIDGenerator {
         var uid = UniqueIDGenerator.generate();
         assertNotNull(uid);
         assertNotNull(uid.toString());
-        assertTrue(uid.toString().length() > 0);
+        assertTrue(!uid.toString().isEmpty());
     }
 
     @Test

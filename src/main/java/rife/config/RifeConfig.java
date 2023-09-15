@@ -1054,7 +1054,7 @@ public class RifeConfig {
 
         public String getDefaultResourceBundle(TemplateFactory factory) {
             var result = getDefaultResourceBundles(factory);
-            if (null == result || 0 == result.size()) {
+            if (null == result || result.isEmpty()) {
                 return null;
             }
             return result.iterator().next();

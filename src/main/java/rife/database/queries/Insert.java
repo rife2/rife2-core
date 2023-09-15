@@ -55,7 +55,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
         into_ = null;
         fields_ = new LinkedHashMap<String, List<Object>>();
 
-        assert 0 == fields_.size();
+        assert fields_.isEmpty();
     }
 
     public String getHint() {
@@ -79,7 +79,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
         if (null == sql_) {
             if (null == into_) {
                 throw new TableNameRequiredException("Insert");
-            } else if (0 == fields_.size()) {
+            } else if (fields_.isEmpty()) {
                 throw new FieldsRequiredException("Insert");
             } else {
                 var template = TemplateFactory.SQL.get("sql." + StringUtils.encodeClassname(datasource_.getAliasedDriver()) + ".insert");
@@ -131,7 +131,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
                     }
 
                     var block = template.getBlock("VALUE_ROWS");
-                    if (0 == block.length()) {
+                    if (block.isEmpty()) {
                         throw new UnsupportedSqlFeatureException("MULTIPLE INSERT ROWS", datasource_.getAliasedDriver());
                     }
                     template.setValue("DATA", block);
@@ -140,7 +140,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
                 sql_ = template.getBlock("QUERY");
 
                 assert sql_ != null;
-                assert sql_.length() > 0;
+                assert !sql_.isEmpty();
             }
         }
 
@@ -156,7 +156,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
 
     public Insert into(String into) {
         if (null == into) throw new IllegalArgumentException("into can't be null.");
-        if (0 == into.length()) throw new IllegalArgumentException("into can't be empty.");
+        if (into.isEmpty()) throw new IllegalArgumentException("into can't be empty.");
 
         clearGenerated();
         into_ = into;
@@ -172,7 +172,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
 
     protected Insert _field(String field, Object value) {
         assert field != null;
-        assert field.length() > 0;
+        assert !field.isEmpty();
 
         clearGenerated();
         if (!fields_.containsKey(field)) {
@@ -193,9 +193,9 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
 
     public Insert fieldParameter(String field, String alias) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
         if (null == alias) throw new IllegalArgumentException("alias can't be null.");
-        if (0 == alias.length()) throw new IllegalArgumentException("alias can't be empty.");
+        if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
 
         clearGenerated();
 
@@ -210,7 +210,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
 
     public Insert fieldParameterCustom(String field, String alias, String expression) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
 
         clearGenerated();
 
@@ -243,7 +243,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
 
     public Insert field(String field, Object value) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
 
         if (null == value) {
             return _field(field, null);
@@ -254,7 +254,7 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
 
     public Insert fieldCustom(String field, String expression) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
 
         if (null == expression) {
             return _field(field, null);

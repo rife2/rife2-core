@@ -40,7 +40,7 @@ public class PropertyValueObject implements PropertyValue {
             return true;
         }
 
-        return 0 == String.valueOf(value_).trim().length();
+        return String.valueOf(value_).trim().isEmpty();
     }
 
     public boolean isStatic() {

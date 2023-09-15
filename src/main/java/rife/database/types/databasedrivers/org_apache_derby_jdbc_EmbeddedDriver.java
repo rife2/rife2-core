@@ -25,7 +25,7 @@ public class org_apache_derby_jdbc_EmbeddedDriver extends Common implements SqlC
         }
         // make sure that strings are escaped correctly
         else if (value instanceof CharSequence) {
-            if (0 == ((CharSequence) value).length()) {
+            if (((CharSequence) value).isEmpty()) {
                 return "''";
             } else {
                 return "'" + StringUtils.encodeSql(value.toString()) + "'";

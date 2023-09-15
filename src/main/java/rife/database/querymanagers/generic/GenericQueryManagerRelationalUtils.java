@@ -183,7 +183,7 @@ public abstract class GenericQueryManagerRelationalUtils {
             }
 
             // obtain the actual bean properties for the many-to-one relationships
-            if (property_names.size() > 0) {
+            if (!property_names.isEmpty()) {
                 var unresolved_name_array = new String[property_names.size()];
                 property_names.toArray(unresolved_name_array);
                 try {
@@ -237,7 +237,7 @@ public abstract class GenericQueryManagerRelationalUtils {
             }
 
             // obtain the actual bean properties for the many-to-many relationships
-            if (unresolved_name_list.size() > 0) {
+            if (!unresolved_name_list.isEmpty()) {
                 var unresolved_name_array = new String[unresolved_name_list.size()];
                 unresolved_name_list.toArray(unresolved_name_array);
                 try {
@@ -302,7 +302,7 @@ public abstract class GenericQueryManagerRelationalUtils {
             }
 
             // obtain the actual bean properties for the many-to-one association relationships
-            if (unresolved_name_list.size() > 0) {
+            if (!unresolved_name_list.isEmpty()) {
                 var unresolved_name_array = new String[unresolved_name_list.size()];
                 unresolved_name_list.toArray(unresolved_name_array);
                 try {
@@ -340,7 +340,7 @@ public abstract class GenericQueryManagerRelationalUtils {
                         var main_manager = manager.createNewManager(declaration.getMainType());
                         var main_declarations = obtainManyToOneDeclarations(main_manager, main_constrained, declaration.getMainProperty(), manager.getBaseClass());
                         if (null == main_declarations ||
-                            0 == main_declarations.size()) {
+                                main_declarations.isEmpty()) {
                             throw new MissingManyToOneMainPropertyException(manager.getBaseClass(), name, declaration.getMainType());
                         } else {
                             var main_entry = main_declarations.entrySet().iterator().next();

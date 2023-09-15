@@ -783,7 +783,7 @@ public class TestTemplate {
         }
 
         public void output() {
-            if (0 == children_.size()) {
+            if (children_.isEmpty()) {
                 template_.setValue("level", "");
             } else {
                 InternalValue nodes = template_.createInternalValue();

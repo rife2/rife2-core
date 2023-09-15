@@ -14,7 +14,7 @@ class ParsedBlockText extends ParsedBlockPart {
 
     ParsedBlockText(String text) {
         assert text != null;
-        assert text.length() > 0;
+        assert !text.isEmpty();
 
         text_ = text;
     }

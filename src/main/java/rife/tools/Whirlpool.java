@@ -411,7 +411,7 @@ class Whirlpool {
      * This method maintains the invariant: bufferBits < 512
      */
     public void NESSIEadd(String source) {
-        if (source.length() > 0) {
+        if (!source.isEmpty()) {
             byte[] data = new byte[source.length()];
             for (int i = 0; i < source.length(); i++) {
                 data[i] = (byte) source.charAt(i);

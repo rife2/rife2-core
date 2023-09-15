@@ -63,7 +63,7 @@ public abstract class DbQueryManagerFactory {
      */
     protected static DbQueryManager instance(String managerPackageName, DbQueryManagerCache cache, Datasource datasource, String identifier) {
         if (null == managerPackageName) throw new IllegalArgumentException("managerPackageName can't be null.");
-        if (0 == managerPackageName.length()) throw new IllegalArgumentException("managerPackageName can't be empty.");
+        if (managerPackageName.isEmpty()) throw new IllegalArgumentException("managerPackageName can't be empty.");
         if (null == cache) throw new IllegalArgumentException("cache can't be null.");
         if (null == datasource) throw new IllegalArgumentException("datasource can't be null.");
         if (null == identifier) throw new IllegalArgumentException("identifier can't be null.");

@@ -92,7 +92,7 @@ public class Datasources implements AutoCloseable {
      */
     public void setDatasource(String name, Datasource datasource) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (null == datasource) throw new IllegalArgumentException("datasource can't be null.");
 
         map_.put(name, datasource);

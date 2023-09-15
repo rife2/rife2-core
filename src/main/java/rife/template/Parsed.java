@@ -353,7 +353,7 @@ method.visitLabel              (after_empty_check);
 method.visitInsn               (ACONST_NULL);
 method.visitVarInsn            (ASTORE, 2);
 
-            if (blockvalues_.size() > 0) {
+            if (!blockvalues_.isEmpty()) {
                 var blockvalue_doesnt_exist_label = new Label();
 method.visitFieldInsn          (GETSTATIC, full_classname, "sBlockvalues", "Ljava/util/ArrayList;");
 method.visitVarInsn            (ALOAD, 1);
@@ -373,7 +373,7 @@ method.visitMethodInsn         (INVOKEVIRTUAL, "rife/template/ExternalValue", "t
 method.visitVarInsn            (ASTORE, 2);
 method.visitLabel              (blockvalue_doesnt_exist_label);
             }
-            if (defaultValues_.size() > 0) {
+            if (!defaultValues_.isEmpty()) {
                 var defaultvalues_already_exists_label = new Label();
 method.visitInsn               (ACONST_NULL);
 method.visitVarInsn            (ALOAD, 2);
@@ -397,7 +397,7 @@ method = class_writer.visitMethod(ACC_PROTECTED, "appendDefaultValueExternalForm
         {
 method.visitInsn               (ICONST_0);
 method.visitVarInsn            (ISTORE, 3);
-            if (blockvalues_.size() > 0) {
+            if (!blockvalues_.isEmpty()) {
                 var blockvalue_doesnt_exist_label = new Label();
 method.visitFieldInsn          (GETSTATIC, full_classname, "sBlockvalues", "Ljava/util/ArrayList;");
 method.visitVarInsn            (ALOAD, 1);
@@ -412,7 +412,7 @@ method.visitInsn               (ICONST_1);
 method.visitVarInsn            (ISTORE, 3);
 method.visitLabel              (blockvalue_doesnt_exist_label);
             }
-            if (defaultValues_.size() > 0) {
+            if (!defaultValues_.isEmpty()) {
                 var already_found_defaultvalue_label = new Label();
 method.visitVarInsn            (ILOAD, 3);
 method.visitJumpInsn           (IFNE, already_found_defaultvalue_label);
@@ -439,7 +439,7 @@ method.visitMaxs               (0, 0);
         // for internal usage
 method = class_writer.visitMethod(ACC_PROTECTED, "appendDefaultValueInternalForm", "(Ljava/lang/String;Lrife/template/InternalValue;)Z", null, null);
         {
-            if (blockvalues_.size() > 0) {
+            if (!blockvalues_.isEmpty()) {
                 var blockvalue_doesnt_exist_label = new Label();
 method.visitFieldInsn          (GETSTATIC, full_classname, "sBlockvalues", "Ljava/util/ArrayList;");
 method.visitVarInsn            (ALOAD, 1);
@@ -473,7 +473,7 @@ method.visitMaxs               (0, 0);
 
         // generate the method that checks if a value is present in a template
 method = class_writer.visitMethod(ACC_PUBLIC, "hasValueId", "(Ljava/lang/String;)Z", null, null);
-            if (valueIds_.size() > 0) {
+            if (!valueIds_.isEmpty()) {
 method.visitFieldInsn          (GETSTATIC, full_classname, "sValueIds", "Ljava/util/HashSet;");
 method.visitVarInsn            (ALOAD, 1);
 method.visitMethodInsn         (INVOKEVIRTUAL, "java/util/HashSet", "contains", "(Ljava/lang/Object;)Z", false);
@@ -485,7 +485,7 @@ method.visitMaxs               (0, 0);
 
         // generate the method that returns all values that are available
 method = class_writer.visitMethod(ACC_PUBLIC, "getAvailableValueIds", "()[Ljava/lang/String;", null, null);
-            if (valueIds_.size() > 0) {
+            if (!valueIds_.isEmpty()) {
 method.visitFieldInsn          (GETSTATIC, full_classname, "sValueIdsArray", "[Ljava/lang/String;");
             } else {
 method.visitInsn               (ICONST_0);
@@ -500,7 +500,7 @@ method.visitTypeInsn           (NEW, "java/util/ArrayList");
 method.visitInsn               (DUP);
 method.visitMethodInsn         (INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
 method.visitVarInsn            (ASTORE, 1);
-            if (valueIds_.size() > 0) {
+            if (!valueIds_.isEmpty()) {
                 var while_start_label = new Label();
                 var while_end_label = new Label();
 method.visitFieldInsn          (GETSTATIC, full_classname, "sValueIds", "Ljava/util/HashSet;");
@@ -793,13 +793,13 @@ class_writer.visitField(ACC_PRIVATE|ACC_STATIC, "sDependencies", "Ljava/util/Has
             for (var entry : blockparts_order.entrySet()) {
 entry.getValue().visitByteCodeStaticDeclaration(class_writer, entry.getKey());
             }
-            if (defaultValues_.size() > 0) {
+            if (!defaultValues_.isEmpty()) {
 class_writer.visitField(ACC_PRIVATE|ACC_STATIC, "sDefaultValues", "Ljava/util/HashMap;", null, null);
             }
-            if (blockvalues_.size() > 0) {
+            if (!blockvalues_.isEmpty()) {
 class_writer.visitField(ACC_PRIVATE|ACC_STATIC, "sBlockvalues", "Ljava/util/ArrayList;", null, null);
             }
-            if (valueIds_.size() > 0) {
+            if (!valueIds_.isEmpty()) {
 class_writer.visitField(ACC_PRIVATE|ACC_STATIC, "sValueIds", "Ljava/util/HashSet;", null, null);
 class_writer.visitField(ACC_PRIVATE|ACC_STATIC, "sValueIdsArray", "[Ljava/lang/String;", null, null);
             }
@@ -841,7 +841,7 @@ method.visitTypeInsn           (NEW, "java/util/HashMap");
 method.visitInsn               (DUP);
 method.visitMethodInsn         (INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false);
 method.visitFieldInsn          (PUTSTATIC, full_classname, "sDependencies", "Ljava/util/HashMap;");
-            if (dependencies_.size() > 0) {
+            if (!dependencies_.isEmpty()) {
                 for (var url : dependencies_.keySet()) {
                     var url_start_label = new Label();
                     var url_end_label = new Label();
@@ -877,7 +877,7 @@ entry.getValue().visitByteCodeStaticDefinition(method, full_classname, entry.get
             }
 
             // set the default values if they're present
-            if (defaultValues_.size() > 0) {
+            if (!defaultValues_.isEmpty()) {
 method.visitTypeInsn           (NEW, "java/util/HashMap");
 method.visitInsn               (DUP);
 method.visitMethodInsn         (INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false);
@@ -892,7 +892,7 @@ method.visitInsn               (POP);
             }
 
             // set the blockvalues if they're present
-            if (blockvalues_.size() > 0) {
+            if (!blockvalues_.isEmpty()) {
 method.visitTypeInsn           (NEW, "java/util/ArrayList");
 method.visitInsn               (DUP);
 method.visitMethodInsn         (INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
@@ -906,7 +906,7 @@ method.visitInsn               (POP);
             }
 
             // set the values ids if they're present
-            if (valueIds_.size() > 0) {
+            if (!valueIds_.isEmpty()) {
 method.visitTypeInsn           (NEW, "java/util/HashSet");
 method.visitInsn               (DUP);
 method.visitMethodInsn         (INVOKESPECIAL, "java/util/HashSet", "<init>", "()V", false);
@@ -1098,7 +1098,7 @@ class_writer.visitEnd();
 
     void addValue(String id) {
         assert id != null;
-        assert id.length() > 0;
+        assert !id.isEmpty();
 
         valueIds_.add(id);
     }
@@ -1109,7 +1109,7 @@ class_writer.visitEnd();
 
     void setDefaultValue(String id, String value) {
         assert id != null;
-        assert id.length() > 0;
+        assert !id.isEmpty();
         assert value != null;
 
         defaultValues_.put(id, value);
@@ -1117,35 +1117,35 @@ class_writer.visitEnd();
 
     void setBlockvalue(String id) {
         assert id != null;
-        assert id.length() > 0;
+        assert !id.isEmpty();
 
         blockvalues_.add(id);
     }
 
     void removeBlockvalue(String id) {
         assert id != null;
-        assert id.length() > 0;
+        assert !id.isEmpty();
 
         blockvalues_.remove(id);
     }
 
     String getDefaultValue(String id) {
         assert id != null;
-        assert id.length() > 0;
+        assert !id.isEmpty();
 
         return defaultValues_.get(id);
     }
 
     boolean hasDefaultValue(String id) {
         assert id != null;
-        assert id.length() > 0;
+        assert !id.isEmpty();
 
         return defaultValues_.containsKey(id);
     }
 
     boolean hasBlockvalue(String id) {
         assert id != null;
-        assert id.length() > 0;
+        assert !id.isEmpty();
 
         return blockvalues_.contains(id);
     }

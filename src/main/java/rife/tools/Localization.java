@@ -228,21 +228,21 @@ public class Localization {
             candidates.add(basename);
 
             var default_locale = Locale.getDefault();
-            if (default_locale.getLanguage().length() > 0) {
+            if (!default_locale.getLanguage().isEmpty()) {
                 resource_bundle_id_buffer.append("_");
                 resource_bundle_id_buffer.append(default_locale.getLanguage());
 
                 candidates.add(resource_bundle_id_buffer.toString());
             }
 
-            if (default_locale.getCountry().length() > 0) {
+            if (!default_locale.getCountry().isEmpty()) {
                 resource_bundle_id_buffer.append("_");
                 resource_bundle_id_buffer.append(default_locale.getCountry());
 
                 candidates.add(resource_bundle_id_buffer.toString());
             }
 
-            if (default_locale.getVariant().length() > 0) {
+            if (!default_locale.getVariant().isEmpty()) {
                 resource_bundle_id_buffer.append("_");
                 resource_bundle_id_buffer.append(default_locale.getVariant());
 
@@ -250,7 +250,7 @@ public class Localization {
             }
 
             resource_bundle_id_buffer = new StringBuilder(basename);
-            if (locale.getLanguage().length() > 0) {
+            if (!locale.getLanguage().isEmpty()) {
                 resource_bundle_id_buffer.append("_");
                 resource_bundle_id_buffer.append(locale.getLanguage());
 
@@ -260,7 +260,7 @@ public class Localization {
                 }
             }
 
-            if (locale.getCountry().length() > 0) {
+            if (!locale.getCountry().isEmpty()) {
                 resource_bundle_id_buffer.append("_");
                 resource_bundle_id_buffer.append(locale.getCountry());
 
@@ -270,7 +270,7 @@ public class Localization {
                 }
             }
 
-            if (locale.getVariant().length() > 0) {
+            if (!locale.getVariant().isEmpty()) {
                 resource_bundle_id_buffer.append("_");
                 resource_bundle_id_buffer.append(locale.getVariant());
 
@@ -280,7 +280,7 @@ public class Localization {
                 }
             }
 
-            while (candidates.size() > 0) {
+            while (!candidates.isEmpty()) {
                 var resource_bundle_id = candidates.remove(candidates.size() - 1);
                 try {
                     // try to load the resource bundle as a class

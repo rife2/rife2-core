@@ -38,7 +38,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String where) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(where);
         } else {
             delegate_.where(where);
@@ -48,7 +48,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String field, String operator, boolean value) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, value);
         } else {
             delegate_.where(field, operator, value);
@@ -58,7 +58,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String field, String operator, byte value) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, value);
         } else {
             delegate_.where(field, operator, value);
@@ -68,7 +68,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String field, String operator, char value) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, value);
         } else {
             delegate_.where(field, operator, value);
@@ -78,7 +78,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String field, String operator, double value) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, value);
         } else {
             delegate_.where(field, operator, value);
@@ -88,7 +88,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String field, String operator, float value) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, value);
         } else {
             delegate_.where(field, operator, value);
@@ -98,7 +98,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String field, String operator, int value) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, value);
         } else {
             delegate_.where(field, operator, value);
@@ -108,7 +108,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String field, String operator, long value) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, value);
         } else {
             delegate_.where(field, operator, value);
@@ -118,7 +118,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String field, String operator, Select query) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, query);
         } else {
             delegate_.where(field, operator, query);
@@ -129,7 +129,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
 
 
     public QueryType where(String field, String operator, Object value) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, value);
         } else {
             delegate_.where(field, operator, value);
@@ -139,7 +139,7 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
     }
 
     public QueryType where(String field, String operator, short value) {
-        if (delegate_.getWhere().length() > 0) {
+        if (!delegate_.getWhere().isEmpty()) {
             delegate_.whereAnd(field, operator, value);
         } else {
             delegate_.where(field, operator, value);

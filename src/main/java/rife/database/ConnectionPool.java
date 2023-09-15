@@ -39,7 +39,7 @@ public class ConnectionPool implements AutoCloseable {
      */
     void setPoolSize(int poolSize) {
         synchronized (this) {
-            if (connectionPool_.size() > 0) {
+            if (!connectionPool_.isEmpty()) {
                 cleanup();
             }
 
@@ -64,7 +64,7 @@ public class ConnectionPool implements AutoCloseable {
      * @since 1.0
      */
     boolean isInitialized() {
-        return connectionPool_.size() > 0;
+        return !connectionPool_.isEmpty();
     }
 
     /**
@@ -103,7 +103,7 @@ public class ConnectionPool implements AutoCloseable {
     public void cleanup()
     throws DatabaseException {
         synchronized (this) {
-            if (0 == connectionPool_.size()) {
+            if (connectionPool_.isEmpty()) {
                 return;
             }
 

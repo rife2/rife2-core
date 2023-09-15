@@ -244,7 +244,7 @@ public class TemplateDeployer {
             }
         }
 
-        if (0 == directory_paths.size()) {
+        if (directory_paths.isEmpty()) {
             valid_arguments = false;
         }
 

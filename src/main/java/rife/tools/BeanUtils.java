@@ -355,7 +355,7 @@ public final class BeanUtils {
         if (bean instanceof Class)
             throw new IllegalArgumentException("bean should be a bean instance, not a bean class.");
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
 
         // obtain the BeanInfo class
         Class bean_class = bean.getClass();
@@ -411,7 +411,7 @@ public final class BeanUtils {
         if (bean instanceof Class)
             throw new IllegalArgumentException("bean should be a bean instance, not a bean class.");
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
 
         // obtain the BeanInfo class
         Class bean_class = bean.getClass();
@@ -462,7 +462,7 @@ public final class BeanUtils {
     throws BeanUtilsException {
         if (null == beanClass) throw new IllegalArgumentException("beanClass can't be null.");
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
 
         // obtain the BeanInfo class
         var bean_info = getBeanInfo(beanClass);
@@ -791,7 +791,7 @@ public final class BeanUtils {
                     (null == propertyValues ||
                         0 == propertyValues.length ||
                         null == propertyValues[0] ||
-                        0 == propertyValues[0].length())) {
+                            propertyValues[0].isEmpty())) {
                     var read_method = property.getReadMethod();
                     var empty_value = read_method.invoke(emptyBean, (Object[]) null);
                     write_method.invoke(beanInstance, empty_value);
@@ -806,7 +806,7 @@ public final class BeanUtils {
                         } else if (component_type == int.class) {
                             var parameter_values_typed = new int[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toInt(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -818,7 +818,7 @@ public final class BeanUtils {
                         } else if (component_type == Integer.class) {
                             var parameter_values_typed = new Integer[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toInt(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -830,7 +830,7 @@ public final class BeanUtils {
                         } else if (component_type == char.class) {
                             var parameter_values_typed = new char[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     parameter_values_typed[i] = propertyValues[i].charAt(0);
                                 }
                             }
@@ -838,7 +838,7 @@ public final class BeanUtils {
                         } else if (component_type == Character.class) {
                             var parameter_values_typed = new Character[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     parameter_values_typed[i] = propertyValues[i].charAt(0);
                                 }
                             }
@@ -846,7 +846,7 @@ public final class BeanUtils {
                         } else if (component_type == boolean.class) {
                             var parameter_values_typed = new boolean[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     parameter_values_typed[i] = StringUtils.convertToBoolean(propertyValues[i]);
                                 }
                             }
@@ -854,7 +854,7 @@ public final class BeanUtils {
                         } else if (component_type == Boolean.class) {
                             var parameter_values_typed = new Boolean[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     parameter_values_typed[i] = StringUtils.convertToBoolean(propertyValues[i]);
                                 }
                             }
@@ -862,7 +862,7 @@ public final class BeanUtils {
                         } else if (component_type == byte.class) {
                             var parameter_values_typed = new byte[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toByte(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -874,7 +874,7 @@ public final class BeanUtils {
                         } else if (component_type == Byte.class) {
                             var parameter_values_typed = new Byte[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toByte(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -886,7 +886,7 @@ public final class BeanUtils {
                         } else if (component_type == double.class) {
                             var parameter_values_typed = new double[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toDouble(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -898,7 +898,7 @@ public final class BeanUtils {
                         } else if (component_type == Double.class) {
                             var parameter_values_typed = new Double[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toDouble(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -910,7 +910,7 @@ public final class BeanUtils {
                         } else if (component_type == float.class) {
                             var parameter_values_typed = new float[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toFloat(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -922,7 +922,7 @@ public final class BeanUtils {
                         } else if (component_type == Float.class) {
                             var parameter_values_typed = new Float[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toFloat(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -934,7 +934,7 @@ public final class BeanUtils {
                         } else if (component_type == long.class) {
                             var parameter_values_typed = new long[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toLong(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -946,7 +946,7 @@ public final class BeanUtils {
                         } else if (component_type == Long.class) {
                             var parameter_values_typed = new Long[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toLong(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -958,7 +958,7 @@ public final class BeanUtils {
                         } else if (component_type == short.class) {
                             var parameter_values_typed = new short[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toShort(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -970,7 +970,7 @@ public final class BeanUtils {
                         } else if (component_type == Short.class) {
                             var parameter_values_typed = new Short[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = Convert.toShort(constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } else {
@@ -982,7 +982,7 @@ public final class BeanUtils {
                         } else if (component_type == BigDecimal.class) {
                             var parameter_values_typed = new BigDecimal[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     if (constrained_property != null && constrained_property.isFormatted()) {
                                         parameter_values_typed[i] = new BigDecimal(Convert.toString(constrained_property.getFormat().parseObject(propertyValues[i])));
                                     } else {
@@ -994,7 +994,7 @@ public final class BeanUtils {
                         } else if (component_type == StringBuffer.class) {
                             var parameter_values_typed = new StringBuffer[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     parameter_values_typed[i] = new StringBuffer(propertyValues[i]);
                                 }
                             }
@@ -1002,7 +1002,7 @@ public final class BeanUtils {
                         } else if (component_type == StringBuilder.class) {
                             var parameter_values_typed = new StringBuilder[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     parameter_values_typed[i] = new StringBuilder(propertyValues[i]);
                                 }
                             }
@@ -1022,7 +1022,7 @@ public final class BeanUtils {
                             try {
                                 var parameter_values_typed = Array.newInstance(component_type, propertyValues.length);
                                 for (var i = 0; i < propertyValues.length; i++) {
-                                    if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                    if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                         Format used_format = null;
 
                                         Object parameter_value_typed = null;
@@ -1081,7 +1081,7 @@ public final class BeanUtils {
                         } else if (component_type.isEnum()) {
                             var parameter_values_typed = Array.newInstance(component_type, propertyValues.length);
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     try {
                                         Array.set(parameter_values_typed, i, Enum.valueOf(component_type, propertyValues[i]));
                                     } catch (IllegalArgumentException e) {
@@ -1098,7 +1098,7 @@ public final class BeanUtils {
                         } else if (constrained_property != null && constrained_property.isFormatted()) {
                             var parameter_values_typed = Array.newInstance(component_type, propertyValues.length);
                             for (var i = 0; i < propertyValues.length; i++) {
-                                if (propertyValues[i] != null && propertyValues[i].length() > 0) {
+                                if (propertyValues[i] != null && !propertyValues[i].isEmpty()) {
                                     try {
                                         Array.set(parameter_values_typed, i, constrained_property.getFormat().parseObject(propertyValues[i]));
                                     } catch (ParseException e) {
@@ -1112,7 +1112,7 @@ public final class BeanUtils {
                         }
                     }
                     // process an object or a primitive type
-                    else if (propertyValues[0] != null && propertyValues[0].length() > 0) {
+                    else if (propertyValues[0] != null && !propertyValues[0].isEmpty()) {
                         Object parameter_value_typed = null;
                         if (property_type == String.class) {
                             parameter_value_typed = propertyValues[0];

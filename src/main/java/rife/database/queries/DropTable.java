@@ -48,7 +48,7 @@ public class DropTable extends AbstractQuery implements Cloneable {
 
         tables_ = new ArrayList<String>();
 
-        assert 0 == tables_.size();
+        assert tables_.isEmpty();
     }
 
     public Capabilities getCapabilities() {
@@ -58,7 +58,7 @@ public class DropTable extends AbstractQuery implements Cloneable {
     public String getSql()
     throws DbQueryException {
         if (null == sql_) {
-            if (0 == tables_.size()) {
+            if (tables_.isEmpty()) {
                 throw new TableNameRequiredException("DropTable");
             } else {
                 var template = TemplateFactory.SQL.get("sql." + StringUtils.encodeClassname(datasource_.getAliasedDriver()) + ".drop_table");
@@ -71,7 +71,7 @@ public class DropTable extends AbstractQuery implements Cloneable {
                     }
 
                     var block = template.getBlock("TABLES");
-                    if (0 == block.length()) {
+                    if (block.isEmpty()) {
                         throw new UnsupportedSqlFeatureException("MULTIPLE TABLE DROP", datasource_.getAliasedDriver());
                     }
 
@@ -86,7 +86,7 @@ public class DropTable extends AbstractQuery implements Cloneable {
                 template.removeValue("EXPRESSION");
 
                 assert sql_ != null;
-                assert sql_.length() > 0;
+                assert !sql_.isEmpty();
             }
         }
 
@@ -95,7 +95,7 @@ public class DropTable extends AbstractQuery implements Cloneable {
 
     public DropTable table(String table) {
         if (null == table) throw new IllegalArgumentException("table can't be null.");
-        if (0 == table.length()) throw new IllegalArgumentException("table can't be empty.");
+        if (table.isEmpty()) throw new IllegalArgumentException("table can't be empty.");
 
         tables_.add(table);
         clearGenerated();

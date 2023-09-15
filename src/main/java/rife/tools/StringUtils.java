@@ -725,7 +725,7 @@ public final class StringUtils {
      */
     public static String decodeHtml(String source) {
         if (null == source ||
-            0 == source.length()) {
+                source.isEmpty()) {
             return source;
         }
 
@@ -1831,7 +1831,7 @@ public final class StringUtils {
             separator = "";
         }
 
-        if (0 == collection.size()) {
+        if (collection.isEmpty()) {
             return "";
         } else {
             var result = new StringBuilder();
@@ -2296,9 +2296,9 @@ public final class StringUtils {
      */
     public static Matcher getMatchingRegexp(String value, Collection<Pattern> regexps) {
         if (value != null &&
-            value.length() > 0 &&
+                !value.isEmpty() &&
             regexps != null &&
-            regexps.size() > 0) {
+                !regexps.isEmpty()) {
             Matcher matcher = null;
             for (var regexp : regexps) {
                 matcher = regexp.matcher(value);
@@ -2325,7 +2325,7 @@ public final class StringUtils {
      */
     public static Matcher getRegexpMatch(Collection<String> values, Pattern regexp) {
         if (values != null &&
-            values.size() > 0 &&
+                !values.isEmpty() &&
             regexp != null) {
             Matcher matcher = null;
             for (var value : values) {
@@ -2491,7 +2491,7 @@ public final class StringUtils {
      * @since 1.0
      */
     public static String capitalize(String source) {
-        if (source == null || source.length() == 0) {
+        if (source == null || source.isEmpty()) {
             return source;
         }
 
@@ -2510,7 +2510,7 @@ public final class StringUtils {
      * @since 1.0
      */
     public static String uncapitalize(String source) {
-        if (source == null || source.length() == 0) {
+        if (source == null || source.isEmpty()) {
             return source;
         }
 
@@ -2868,7 +2868,7 @@ public final class StringUtils {
      * @since 1.0
      */
     public static String trim(String source) {
-        if (source == null || source.length() == 0) {
+        if (source == null || source.isEmpty()) {
             return source;
         }
 

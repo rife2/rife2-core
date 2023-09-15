@@ -32,7 +32,7 @@ class LazyLoadMethodAdapter extends MethodVisitor implements Opcodes {
     }
 
     private static String uncapitalize(String source) {
-        if (source == null || source.length() == 0) {
+        if (source == null || source.isEmpty()) {
             return source;
         }
 

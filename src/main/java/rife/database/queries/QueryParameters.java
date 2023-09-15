@@ -65,7 +65,7 @@ public class QueryParameters implements Cloneable {
 
     public Set<String> getDistinctNames() {
         if (null == parameters_ ||
-            0 == parameters_.size()) {
+                parameters_.isEmpty()) {
             return null;
         }
 
@@ -86,7 +86,7 @@ public class QueryParameters implements Cloneable {
             ArrayList<String> combined_parameters = null;
 
             if (parameters_ != null &&
-                parameters_.size() > 0) {
+                    !parameters_.isEmpty()) {
                 if (parameters_.containsKey(QueryParameterType.FIELD)) {
                     combined_parameters = new ArrayList<>();
 
@@ -201,7 +201,7 @@ public class QueryParameters implements Cloneable {
         Map<Integer, Integer> map = null;
 
         if (parameters_ != null &&
-            parameters_.size() > 0 &&
+                !parameters_.isEmpty() &&
             virtualParameters != null &&
             virtualParameters.getNumberOfTypes() > 0) {
             map = new HashMap<>();
@@ -264,7 +264,7 @@ public class QueryParameters implements Cloneable {
 
     public String[] getOrderedNamesArray() {
         if (null == parameters_ ||
-            0 == parameters_.size()) {
+                parameters_.isEmpty()) {
             return null;
         }
 
@@ -314,7 +314,7 @@ public class QueryParameters implements Cloneable {
 
         // don't add empty parameters
         if (null == parameters ||
-            0 == parameters.size()) {
+                parameters.isEmpty()) {
             return;
         }
 

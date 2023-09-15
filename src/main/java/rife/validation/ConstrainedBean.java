@@ -114,7 +114,7 @@ public class ConstrainedBean {
     }
 
     public boolean hasUniques() {
-        return constraints_.containsKey(UNIQUE) && ((List<String[]>) constraints_.get(UNIQUE)).size() > 0;
+        return constraints_.containsKey(UNIQUE) && !((List<String[]>) constraints_.get(UNIQUE)).isEmpty();
     }
 
     public ConstrainedBean textualIdentifier(TextualIdentifierGenerator identifier) {
@@ -180,7 +180,7 @@ public class ConstrainedBean {
     }
 
     public boolean hasDefaultOrdering() {
-        return constraints_.containsKey(DEFAULT_ORDERING) && ((List<Order>) constraints_.get(DEFAULT_ORDERING)).size() > 0;
+        return constraints_.containsKey(DEFAULT_ORDERING) && !((List<Order>) constraints_.get(DEFAULT_ORDERING)).isEmpty();
     }
 
     HashMap<String, Object> getConstraints() {
@@ -202,7 +202,7 @@ public class ConstrainedBean {
 
         void setPropertyName(String propertyName) {
             if (null == propertyName) throw new IllegalArgumentException("propertyName can't be null.");
-            if (0 == propertyName.length()) throw new IllegalArgumentException("propertyName can't be empty.");
+            if (propertyName.isEmpty()) throw new IllegalArgumentException("propertyName can't be empty.");
 
             mPropertyName = propertyName;
         }

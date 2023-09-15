@@ -88,7 +88,7 @@ public abstract class Xml2Data extends DefaultHandler {
     public synchronized boolean processXml(String data, ResourceFinder resourceFinder)
     throws XmlErrorException {
         if (null == data) throw new IllegalArgumentException("data can't be null.");
-        if (data.length() == 0) throw new IllegalArgumentException("data can't be empty.");
+        if (data.isEmpty()) throw new IllegalArgumentException("data can't be empty.");
         if (null == resourceFinder) throw new IllegalArgumentException("resourceFinder can't be null.");
 
         resourceFinder_ = resourceFinder;
@@ -176,14 +176,14 @@ public abstract class Xml2Data extends DefaultHandler {
         }
 
         if (e.getPublicId() != null) {
-            if (formatted.length() > 0) {
+            if (!formatted.isEmpty()) {
                 formatted.append(", ");
             }
             formatted.append(e.getPublicId());
         }
 
         if (e.getLineNumber() >= 0) {
-            if (formatted.length() > 0) {
+            if (!formatted.isEmpty()) {
                 formatted.append(", ");
             }
             formatted.append("line ");
@@ -191,14 +191,14 @@ public abstract class Xml2Data extends DefaultHandler {
         }
 
         if (e.getColumnNumber() >= 0) {
-            if (formatted.length() > 0) {
+            if (!formatted.isEmpty()) {
                 formatted.append(", ");
             }
             formatted.append("col ");
             formatted.append(e.getColumnNumber());
         }
 
-        if (formatted.length() > 0) {
+        if (!formatted.isEmpty()) {
             formatted.append(" : ");
         }
         formatted.append(e.getMessage());

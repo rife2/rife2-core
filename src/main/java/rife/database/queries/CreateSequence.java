@@ -63,12 +63,12 @@ public class CreateSequence extends AbstractQuery implements Cloneable {
                 }
 
                 sql_ = template.getBlock("QUERY");
-                if (0 == sql_.length()) {
+                if (sql_.isEmpty()) {
                     throw new UnsupportedSqlFeatureException("CREATE SEQUENCE", datasource_.getAliasedDriver());
                 }
 
                 assert sql_ != null;
-                assert sql_.length() > 0;
+                assert !sql_.isEmpty();
             }
         }
 
@@ -77,7 +77,7 @@ public class CreateSequence extends AbstractQuery implements Cloneable {
 
     public CreateSequence name(String name) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
 
         clearGenerated();
         name_ = name;

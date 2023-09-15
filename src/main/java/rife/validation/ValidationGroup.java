@@ -39,7 +39,7 @@ public class ValidationGroup implements Cloneable {
     throws ValidationException {
         if (null == bean ||
             null == propertyNames_ ||
-            0 == propertyNames_.size()) {
+                propertyNames_.isEmpty()) {
             return;
         }
 

@@ -188,9 +188,7 @@ public class Utils {
 
 	/** @since 4.6 */
 	public static String sequence(int n, String s) {
-		StringBuilder buf = new StringBuilder();
-        buf.append(String.valueOf(s).repeat(Math.max(0, n)));
-		return buf.toString();
+        return String.valueOf(s).repeat(Math.max(0, n));
 	}
 
 	/** @since 4.6 */

@@ -475,9 +475,7 @@ public final class Type {
       case DOUBLE:
         return "double";
       case ARRAY:
-        StringBuilder stringBuilder = new StringBuilder(getElementType().getClassName());
-          stringBuilder.append("[]".repeat(Math.max(0, getDimensions())));
-        return stringBuilder.toString();
+          return getElementType().getClassName() + "[]".repeat(Math.max(0, getDimensions()));
       case OBJECT:
       case INTERNAL:
         return valueBuffer.substring(valueBegin, valueEnd).replace('/', '.');

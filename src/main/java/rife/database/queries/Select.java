@@ -415,14 +415,12 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        var buffer = new StringBuilder();
+        String buffer = "(" +
+                query.toString() +
+                ") AS " +
+                alias;
 
-        buffer.append("(");
-        buffer.append(query.toString());
-        buffer.append(") AS ");
-        buffer.append(alias);
-
-        field(buffer.toString());
+        field(buffer);
 
         fieldSubselect(query);
 
@@ -522,13 +520,11 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
     public Select from(Select query) {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        var buffer = new StringBuilder();
+        String buffer = "(" +
+                query.toString() +
+                ")";
 
-        buffer.append("(");
-        buffer.append(query.toString());
-        buffer.append(")");
-
-        from(buffer.toString());
+        from(buffer);
 
         _tableSubselect(query);
 
@@ -540,14 +536,12 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        var buffer = new StringBuilder();
+        String buffer = "(" +
+                query.toString() +
+                ") " +
+                alias;
 
-        buffer.append("(");
-        buffer.append(query.toString());
-        buffer.append(") ");
-        buffer.append(alias);
-
-        from(buffer.toString());
+        from(buffer);
 
         _tableSubselect(query);
 
@@ -569,13 +563,12 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        var buffer = new StringBuilder();
-        buffer.append("(");
-        buffer.append(query.toString());
-        buffer.append(") ");
-        buffer.append(alias);
+        String buffer = "(" +
+                query.toString() +
+                ") " +
+                alias;
 
-        join(buffer.toString());
+        join(buffer);
 
         tableSubselect(query);
 

@@ -87,10 +87,8 @@ public class GenericQueryManagerFactory {
                 // could not find a specialized class, try to get a generic driver
                 try {
                     // construct the generic driver class name
-                    var generic_name = new StringBuilder(packageName_);
-                    generic_name.append(GENERIC_DRIVER);
 
-                    var generic_class = (Class<AbstractGenericQueryManager<BeanType>>) Class.forName(generic_name.toString());
+                    var generic_class = (Class<AbstractGenericQueryManager<BeanType>>) Class.forName(packageName_ + GENERIC_DRIVER);
                     var generic_constructor = generic_class.getConstructor(new Class[]{Datasource.class, String.class, String.class, Class.class, boolean.class});
 
                     query_manager = generic_constructor.newInstance(datasource, tableName, primary_key, beanClass, has_identifier);

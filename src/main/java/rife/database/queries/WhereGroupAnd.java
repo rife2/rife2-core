@@ -17,13 +17,12 @@ public class WhereGroupAnd<ParentType extends WhereQuery> extends AbstractWhereG
     }
 
     public ParentType end() {
-        var where = new StringBuilder();
 
-        where.append("(");
-        where.append(getSql());
-        where.append(")");
+        String where = "(" +
+                getSql() +
+                ")";
 
-        parent_.whereAnd(where.toString());
+        parent_.whereAnd(where);
 
         parent_.addWhereParameters(getWhereParameters());
 

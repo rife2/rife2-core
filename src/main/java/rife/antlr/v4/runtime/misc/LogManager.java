@@ -28,17 +28,16 @@ public class LogManager {
 
 		@Override
 		public String toString() {
-            StringBuilder buf = new StringBuilder();
-            buf.append(RifeConfig.tools().getSimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date(timestamp)));
-            buf.append(" ");
-            buf.append(component);
-            buf.append(" ");
-            buf.append(location.getFileName());
-            buf.append(":");
-            buf.append(location.getLineNumber());
-            buf.append(" ");
-            buf.append(msg);
-            return buf.toString();
+            String buf = RifeConfig.tools().getSimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date(timestamp)) +
+                    " " +
+                    component +
+                    " " +
+                    location.getFileName() +
+                    ":" +
+                    location.getLineNumber() +
+                    " " +
+                    msg;
+            return buf;
 		}
 	}
 

@@ -174,13 +174,11 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
     public Update field(String field, Select query) {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        var buffer = new StringBuilder();
+        String buffer = "(" +
+                query.toString() +
+                ")";
 
-        buffer.append("(");
-        buffer.append(query.toString());
-        buffer.append(")");
-
-        fieldCustom(field, buffer.toString());
+        fieldCustom(field, buffer);
 
         _fieldSubselect(query);
 

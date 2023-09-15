@@ -220,12 +220,11 @@ public class Insert extends AbstractParametrizedQuery implements Cloneable {
     public Insert field(String field, Select query) {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        var buffer = new StringBuilder();
-        buffer.append("(");
-        buffer.append(query.toString());
-        buffer.append(")");
+        String buffer = "(" +
+                query.toString() +
+                ")";
 
-        fieldCustom(field, buffer.toString());
+        fieldCustom(field, buffer);
         _fieldSubselect(query);
 
         return this;

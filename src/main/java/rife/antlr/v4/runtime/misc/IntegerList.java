@@ -189,11 +189,10 @@ public class IntegerList {
 			return true;
 		}
 
-		if (!(o instanceof IntegerList)) {
+		if (!(o instanceof IntegerList other)) {
 			return false;
 		}
 
-		IntegerList other = (IntegerList)o;
 		if (_size != other._size) {
 			return false;
 		}

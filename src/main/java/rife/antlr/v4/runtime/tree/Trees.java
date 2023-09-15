@@ -155,12 +155,10 @@ public class Trees {
 									 List<? super ParseTree> nodes)
 	{
 		// check this node (the root) first
-		if ( findTokens && t instanceof TerminalNode ) {
-			TerminalNode tnode = (TerminalNode)t;
+		if ( findTokens && t instanceof TerminalNode tnode) {
 			if ( tnode.getSymbol().getType()==index ) nodes.add(t);
 		}
-		else if ( !findTokens && t instanceof ParserRuleContext ) {
-			ParserRuleContext ctx = (ParserRuleContext)t;
+		else if ( !findTokens && t instanceof ParserRuleContext ctx) {
 			if ( ctx.getRuleIndex() == index ) nodes.add(t);
 		}
 		// check children

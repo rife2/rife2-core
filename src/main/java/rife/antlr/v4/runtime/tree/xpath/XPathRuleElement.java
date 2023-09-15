@@ -27,8 +27,7 @@ public class XPathRuleElement extends XPathElement {
 				// return all children of t that match nodeName
 		List<ParseTree> nodes = new ArrayList<ParseTree>();
 		for (Tree c : Trees.getChildren(t)) {
-			if ( c instanceof ParserRuleContext ) {
-				ParserRuleContext ctx = (ParserRuleContext)c;
+			if (c instanceof ParserRuleContext ctx) {
 				if ( (ctx.getRuleIndex() == ruleIndex && !invert) ||
 					 (ctx.getRuleIndex() != ruleIndex && invert) )
 				{

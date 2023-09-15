@@ -470,8 +470,7 @@ public abstract class Parser extends Recognizer<Token, ParserATNSimulator> {
 	public ParseTreePattern compileParseTreePattern(String pattern, int patternRuleIndex) {
 		if ( getTokenStream()!=null ) {
 			TokenSource tokenSource = getTokenStream().getTokenSource();
-			if ( tokenSource instanceof Lexer ) {
-				Lexer lexer = (Lexer)tokenSource;
+			if (tokenSource instanceof Lexer lexer) {
 				return compileParseTreePattern(pattern, patternRuleIndex, lexer);
 			}
 		}

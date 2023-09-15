@@ -1296,11 +1296,10 @@ class SerializableClass implements Serializable {
             return false;
         }
 
-        if (!(other instanceof SerializableClass)) {
+        if (!(other instanceof SerializableClass other_datalink)) {
             return false;
         }
 
-        var other_datalink = (SerializableClass) other;
         if (!other_datalink.getString().equals(getString())) {
             return false;
         }

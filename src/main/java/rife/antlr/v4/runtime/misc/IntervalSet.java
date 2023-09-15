@@ -164,8 +164,7 @@ public class IntervalSet implements IntSet {
 			return this;
 		}
 
-		if (set instanceof IntervalSet) {
-			IntervalSet other = (IntervalSet)set;
+		if (set instanceof IntervalSet other) {
 			// walk set and add each interval
 			int n = other.intervals.size();
 			for (int i = 0; i < n; i++) {
@@ -462,10 +461,9 @@ public class IntervalSet implements IntSet {
      */
     @Override
     public boolean equals(Object obj) {
-        if ( obj==null || !(obj instanceof IntervalSet) ) {
+        if ( obj==null || !(obj instanceof IntervalSet other) ) {
             return false;
         }
-        IntervalSet other = (IntervalSet)obj;
 		return this.intervals.equals(other.intervals);
 	}
 

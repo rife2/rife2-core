@@ -113,9 +113,8 @@ public abstract class SemanticContext {
 
 		@Override
 		public boolean equals(Object obj) {
-			if ( !(obj instanceof Predicate) ) return false;
+			if ( !(obj instanceof Predicate p) ) return false;
 			if ( this == obj ) return true;
-			Predicate p = (Predicate)obj;
 			return this.ruleIndex == p.ruleIndex &&
 				   this.predIndex == p.predIndex &&
 				   this.isCtxDependent == p.isCtxDependent;
@@ -167,7 +166,7 @@ public abstract class SemanticContext {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof PrecedencePredicate)) {
+			if (!(obj instanceof PrecedencePredicate other)) {
 				return false;
 			}
 
@@ -175,7 +174,6 @@ public abstract class SemanticContext {
 				return true;
 			}
 
-			PrecedencePredicate other = (PrecedencePredicate)obj;
 			return this.precedence == other.precedence;
 		}
 
@@ -237,8 +235,7 @@ public abstract class SemanticContext {
 		@Override
 		public boolean equals(Object obj) {
 			if ( this==obj ) return true;
-			if ( !(obj instanceof AND) ) return false;
-			AND other = (AND)obj;
+			if ( !(obj instanceof AND other) ) return false;
 			return Arrays.equals(this.opnds, other.opnds);
 		}
 
@@ -334,8 +331,7 @@ public abstract class SemanticContext {
 		@Override
 		public boolean equals(Object obj) {
 			if ( this==obj ) return true;
-			if ( !(obj instanceof OR) ) return false;
-			OR other = (OR)obj;
+			if ( !(obj instanceof OR other) ) return false;
 			return Arrays.equals(this.opnds, other.opnds);
 		}
 

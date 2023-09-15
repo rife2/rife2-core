@@ -404,8 +404,7 @@ public class ParserInterpreter extends Parser {
 		getErrorHandler().recover(this, e);
 		if ( _input.index()==i ) {
 			// no input consumed, better add an error node
-			if ( e instanceof InputMismatchException ) {
-				InputMismatchException ime = (InputMismatchException)e;
+			if (e instanceof InputMismatchException ime) {
 				Token tok = e.getOffendingToken();
 				int expectedTokenType = Token.INVALID_TYPE;
 				if ( !ime.getExpectedTokens().isNil() ) {

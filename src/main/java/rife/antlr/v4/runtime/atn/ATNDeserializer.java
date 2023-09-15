@@ -129,11 +129,10 @@ public class ATNDeserializer {
 
 		atn.ruleToStopState = new RuleStopState[nrules];
 		for (ATNState state : atn.states) {
-			if (!(state instanceof RuleStopState)) {
+			if (!(state instanceof RuleStopState stopState)) {
 				continue;
 			}
 
-			RuleStopState stopState = (RuleStopState)state;
 			atn.ruleToStopState[state.ruleIndex] = stopState;
 			atn.ruleToStartState[state.ruleIndex].stopState = stopState;
 		}
@@ -178,11 +177,10 @@ public class ATNDeserializer {
 		for (ATNState state : atn.states) {
 			for (int i = 0; i < state.getNumberOfTransitions(); i++) {
 				Transition t = state.transition(i);
-				if (!(t instanceof RuleTransition)) {
+				if (!(t instanceof RuleTransition ruleTransition)) {
 					continue;
 				}
 
-				RuleTransition ruleTransition = (RuleTransition)t;
 				int outermostPrecedenceReturn = -1;
 				if (atn.ruleToStartState[ruleTransition.target.ruleIndex].isLeftRecursiveRule) {
 					if (ruleTransition.precedence == 0) {
@@ -419,8 +417,7 @@ public class ATNDeserializer {
 				checkCondition(((PlusBlockStartState)state).loopBackState != null);
 			}
 
-			if (state instanceof StarLoopEntryState) {
-				StarLoopEntryState starLoopEntryState = (StarLoopEntryState)state;
+			if (state instanceof StarLoopEntryState starLoopEntryState) {
 				checkCondition(starLoopEntryState.loopBackState != null);
 				checkCondition(starLoopEntryState.getNumberOfTransitions() == 2);
 
@@ -458,8 +455,7 @@ public class ATNDeserializer {
 				checkCondition(((BlockEndState)state).startState != null);
 			}
 
-			if (state instanceof DecisionState) {
-				DecisionState decisionState = (DecisionState)state;
+			if (state instanceof DecisionState decisionState) {
 				checkCondition(decisionState.getNumberOfTransitions() <= 1 || decisionState.decision >= 0);
 			}
 			else {

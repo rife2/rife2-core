@@ -842,10 +842,9 @@ public final class Type {
     if (this == object) {
       return true;
     }
-    if (!(object instanceof Type)) {
+    if (!(object instanceof Type other)) {
       return false;
     }
-    Type other = (Type) object;
     if ((sort == INTERNAL ? OBJECT : sort) != (other.sort == INTERNAL ? OBJECT : other.sort)) {
       return false;
     }

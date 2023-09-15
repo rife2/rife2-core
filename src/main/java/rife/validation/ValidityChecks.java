@@ -358,11 +358,10 @@ public abstract class ValidityChecks {
 
     public static boolean checkLimitedDate(Object value, Date min, Date max) {
         if (null == value ||
-            !(value instanceof Date)) {
+            !(value instanceof Date date)) {
             return true;
         }
 
-        Date date = (Date) value;
         if (min != null &&
             date.before(min)) {
             return false;
@@ -490,12 +489,11 @@ public abstract class ValidityChecks {
             return true;
         }
 
-        if (!(value instanceof String)) {
+        if (!(value instanceof String string)) {
             return true;
         }
 
 
-        String string = (String) value;
         try {
             Object parsed = format.parseObject(string);
             if (null == parsed) {

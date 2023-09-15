@@ -1999,12 +1999,10 @@ public class ParserATNSimulator extends ATNSimulator {
 			String trans = "no edges";
 			if ( c.state.getNumberOfTransitions()>0 ) {
 				Transition t = c.state.transition(0);
-				if ( t instanceof AtomTransition) {
-					AtomTransition at = (AtomTransition)t;
+				if (t instanceof AtomTransition at) {
 					trans = "Atom "+getTokenName(at.label);
 				}
-				else if ( t instanceof SetTransition ) {
-					SetTransition st = (SetTransition)t;
+				else if (t instanceof SetTransition st) {
 					boolean not = st instanceof NotSetTransition;
 					trans = (not?"~":"")+"Set "+st.set.toString();
 				}

@@ -149,11 +149,10 @@ public class DFAState {
 		// compare set of ATN configurations in this set with other
 		if ( this==o ) return true;
 
-		if (!(o instanceof DFAState)) {
+		if (!(o instanceof DFAState other)) {
 			return false;
 		}
 
-		DFAState other = (DFAState)o;
 		// TODO (sam): what to do when configs==null?
 		boolean sameSet = this.configs.equals(other.configs);
 //		System.out.println("DFAState.equals: "+configs+(sameSet?"==":"!=")+other.configs);

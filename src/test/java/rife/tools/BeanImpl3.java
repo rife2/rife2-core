@@ -454,11 +454,10 @@ public class BeanImpl3 extends MetaData {
                 return false;
             }
 
-            if (!(other instanceof SerializableType)) {
+            if (!(other instanceof SerializableType other_datalink)) {
                 return false;
             }
 
-            var other_datalink = (SerializableType) other;
             if (!other_datalink.getString().equals(getString())) {
                 return false;
             }

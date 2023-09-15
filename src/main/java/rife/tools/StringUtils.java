@@ -918,9 +918,7 @@ public final class StringUtils {
             hexstring = Integer.toHexString(source.charAt(i)).toUpperCase();
             encoded.append("\\u");
             // fill with zeros
-            for (var j = hexstring.length(); j < 4; j++) {
-                encoded.append("0");
-            }
+            encoded.append("0".repeat(Math.max(0, 4 - hexstring.length())));
             encoded.append(hexstring);
         }
 

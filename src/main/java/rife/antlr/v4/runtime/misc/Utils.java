@@ -189,7 +189,7 @@ public class Utils {
 	/** @since 4.6 */
 	public static String sequence(int n, String s) {
 		StringBuilder buf = new StringBuilder();
-		for (int sp=1; sp<=n; sp++) buf.append(s);
+        buf.append(String.valueOf(s).repeat(Math.max(0, n)));
 		return buf.toString();
 	}
 

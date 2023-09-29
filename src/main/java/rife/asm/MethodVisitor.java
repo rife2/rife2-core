@@ -192,7 +192,7 @@ public abstract class MethodVisitor {
    *     must be less or equal than the number of parameter types in the method descriptor. It can
    *     be strictly less when a method has synthetic parameters and when these parameters are
    *     ignored when computing parameter indices for the purpose of parameter annotations (see
-   *     <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.18">jvms-4.7.18</a>).
+   *     https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.18).
    * @param visible {@literal true} to define the number of method parameters that can have
    *     annotations visible at runtime, {@literal false} to define the number of method parameters
    *     that can have annotations invisible at runtime.
@@ -211,7 +211,7 @@ public abstract class MethodVisitor {
    *     specified in {@link #visitAnnotableParameterCount}. Important note: <i>a parameter index i
    *     is not required to correspond to the i'th parameter descriptor in the method
    *     descriptor</i>, in particular in case of synthetic parameters (see
-   *     <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.18">/jvms-4.html</a>).
+   *     https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.18).
    * @param descriptor the class descriptor of the annotation class.
    * @param visible {@literal true} if the annotation is visible at runtime.
    * @return a visitor to visit the annotation values, or {@literal null} if this visitor is not

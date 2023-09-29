@@ -77,7 +77,7 @@ public class ATNConfigSet implements Set<ATNConfig> {
 	public AbstractConfigHashSet configLookup;
 
 	/** Track the elements as they are added to the set; supports get(i) */
-	public final ArrayList<ATNConfig> configs = new ArrayList<>(7);
+	public final ArrayList<ATNConfig> configs = new ArrayList<ATNConfig>(7);
 
 	// TODO: these fields make me pretty uncomfortable but nice to pack up info together, saves recomputation
 	// TODO: can we track conflicts as they are added to save scanning configs later?
@@ -172,7 +172,7 @@ public class ATNConfigSet implements Set<ATNConfig> {
     public List<ATNConfig> elements() { return configs; }
 
 	public Set<ATNState> getStates() {
-		Set<ATNState> states = new HashSet<>();
+		Set<ATNState> states = new HashSet<ATNState>();
 		for (ATNConfig c : configs) {
 			states.add(c.state);
 		}
@@ -197,7 +197,7 @@ public class ATNConfigSet implements Set<ATNConfig> {
 	}
 
 	public List<SemanticContext> getPredicates() {
-		List<SemanticContext> preds = new ArrayList<>();
+		List<SemanticContext> preds = new ArrayList<SemanticContext>();
 		for (ATNConfig c : configs) {
 			if ( c.semanticContext!=SemanticContext.Empty.Instance ) {
 				preds.add(c.semanticContext);

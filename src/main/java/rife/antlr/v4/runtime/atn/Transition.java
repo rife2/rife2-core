@@ -8,6 +8,9 @@ package rife.antlr.v4.runtime.atn;
 
 import rife.antlr.v4.runtime.misc.IntervalSet;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,29 +41,33 @@ public abstract class Transition {
 
 
 	public static final List<String> serializationNames =
-            List.of("INVALID",
-					"EPSILON",
-					"RANGE",
-					"RULE",
-					"PREDICATE",
-					"ATOM",
-					"ACTION",
-					"SET",
-					"NOT_SET",
-					"WILDCARD",
-					"PRECEDENCE");
+		Collections.unmodifiableList(Arrays.asList(
+			"INVALID",
+			"EPSILON",
+			"RANGE",
+			"RULE",
+			"PREDICATE",
+			"ATOM",
+			"ACTION",
+			"SET",
+			"NOT_SET",
+			"WILDCARD",
+			"PRECEDENCE"
+		));
 
 	public static final Map<Class<? extends Transition>, Integer> serializationTypes =
-			Map.of(EpsilonTransition.class, EPSILON,
-					RangeTransition.class, RANGE,
-					RuleTransition.class, RULE,
-					PredicateTransition.class,PREDICATE,
-					AtomTransition.class, ATOM,
-					ActionTransition.class, ACTION,
-					SetTransition.class, SET,
-					NotSetTransition.class, NOT_SET,
-					WildcardTransition.class, WILDCARD,
-					PrecedencePredicateTransition.class, PRECEDENCE);
+		Collections.unmodifiableMap(new HashMap<Class<? extends Transition>, Integer>() {{
+			put(EpsilonTransition.class, EPSILON);
+			put(RangeTransition.class, RANGE);
+			put(RuleTransition.class, RULE);
+			put(PredicateTransition.class, PREDICATE);
+			put(AtomTransition.class, ATOM);
+			put(ActionTransition.class, ACTION);
+			put(SetTransition.class, SET);
+			put(NotSetTransition.class, NOT_SET);
+			put(WildcardTransition.class, WILDCARD);
+			put(PrecedencePredicateTransition.class, PRECEDENCE);
+		}});
 
 	/** The target of this transition. */
 

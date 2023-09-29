@@ -12,7 +12,14 @@ import rife.antlr.v4.runtime.RuleContext;
 import rife.antlr.v4.runtime.misc.DoubleKeyMap;
 import rife.antlr.v4.runtime.misc.MurmurHash;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class PredictionContext {
@@ -457,13 +464,14 @@ public abstract class PredictionContext {
 	 */
 	protected static void combineCommonParents(PredictionContext[] parents) {
 		Map<PredictionContext, PredictionContext> uniqueParents =
-                new HashMap<>();
+			new HashMap<PredictionContext, PredictionContext>();
 
-        for (PredictionContext parent : parents) {
-            if (!uniqueParents.containsKey(parent)) { // don't replace
-                uniqueParents.put(parent, parent);
-            }
-        }
+		for (int p = 0; p < parents.length; p++) {
+			PredictionContext parent = parents[p];
+			if ( !uniqueParents.containsKey(parent) ) { // don't replace
+				uniqueParents.put(parent, parent);
+			}
+		}
 
 		for (int p = 0; p < parents.length; p++) {
 			parents[p] = uniqueParents.get(parents[p]);
@@ -477,7 +485,12 @@ public abstract class PredictionContext {
 		buf.append("rankdir=LR;\n");
 
 		List<PredictionContext> nodes = getAllContextNodes(context);
-		nodes.sort(Comparator.comparingInt(o -> o.id));
+		Collections.sort(nodes, new Comparator<PredictionContext>() {
+			@Override
+			public int compare(PredictionContext o1, PredictionContext o2) {
+				return o1.id - o2.id;
+			}
+		});
 
 		for (PredictionContext current : nodes) {
 			if ( current instanceof SingletonPredictionContext ) {
@@ -512,7 +525,7 @@ public abstract class PredictionContext {
 				buf.append("->");
 				buf.append("s");
 				buf.append(current.getParent(i).id);
-				if ( current.size()>1 ) buf.append(" [label=\"parent[").append(i).append("]\"];\n");
+				if ( current.size()>1 ) buf.append(" [label=\"parent["+i+"]\"];\n");
 				else buf.append(";\n");
 			}
 		}
@@ -609,9 +622,9 @@ public abstract class PredictionContext {
 
 	// ter's recursive version of Sam's getAllNodes()
 	public static List<PredictionContext> getAllContextNodes(PredictionContext context) {
-		List<PredictionContext> nodes = new ArrayList<>();
+		List<PredictionContext> nodes = new ArrayList<PredictionContext>();
 		Map<PredictionContext, PredictionContext> visited =
-                new IdentityHashMap<>();
+			new IdentityHashMap<PredictionContext, PredictionContext>();
 		getAllContextNodes_(context, nodes, visited);
 		return nodes;
 	}
@@ -639,7 +652,7 @@ public abstract class PredictionContext {
 
 	// FROM SAM
 	public String[] toStrings(Recognizer<?, ?> recognizer, PredictionContext stop, int currentState) {
-		List<String> result = new ArrayList<>();
+		List<String> result = new ArrayList<String>();
 
 		outer:
 		for (int perm = 0; ; perm++) {

@@ -12,14 +12,21 @@ import rife.antlr.v4.runtime.atn.ATNConfigSet;
 import rife.antlr.v4.runtime.atn.DecisionState;
 import rife.antlr.v4.runtime.atn.StarLoopEntryState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DFA {
 	/** A set of all DFA states. Use {@link Map} so we can get old state back
 	 *  ({@link Set} only allows you to see if it's there).
      */
 
-	public final Map<DFAState, DFAState> states = new HashMap<>();
+	public final Map<DFAState, DFAState> states = new HashMap<DFAState, DFAState>();
 
 	public volatile DFAState s0;
 
@@ -152,8 +159,13 @@ public class DFA {
 	 */
 
 	public List<DFAState> getStates() {
-		List<DFAState> result = new ArrayList<>(states.keySet());
-		result.sort(Comparator.comparingInt(o -> o.stateNumber));
+		List<DFAState> result = new ArrayList<DFAState>(states.keySet());
+		Collections.sort(result, new Comparator<DFAState>() {
+			@Override
+			public int compare(DFAState o1, DFAState o2) {
+				return o1.stateNumber - o2.stateNumber;
+			}
+		});
 
 		return result;
 	}

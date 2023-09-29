@@ -56,10 +56,10 @@ public class IntervalSet implements IntSet {
 
 	public IntervalSet(int... els) {
 		if ( els==null ) {
-			intervals = new ArrayList<>(2); // most sets are 1 or 2 elements
+			intervals = new ArrayList<Interval>(2); // most sets are 1 or 2 elements
 		}
 		else {
-			intervals = new ArrayList<>(els.length);
+			intervals = new ArrayList<Interval>(els.length);
 			for (int e : els) add(e);
 		}
 	}
@@ -164,7 +164,8 @@ public class IntervalSet implements IntSet {
 			return this;
 		}
 
-		if (set instanceof IntervalSet other) {
+		if (set instanceof IntervalSet) {
+			IntervalSet other = (IntervalSet)set;
 			// walk set and add each interval
 			int n = other.intervals.size();
 			for (int i = 0; i < n; i++) {
@@ -461,9 +462,10 @@ public class IntervalSet implements IntSet {
      */
     @Override
     public boolean equals(Object obj) {
-        if ( obj==null || !(obj instanceof IntervalSet other) ) {
+        if ( obj==null || !(obj instanceof IntervalSet) ) {
             return false;
         }
+        IntervalSet other = (IntervalSet)obj;
 		return this.intervals.equals(other.intervals);
 	}
 
@@ -571,41 +573,44 @@ public class IntervalSet implements IntSet {
 			Interval firstInterval = this.intervals.get(0);
 			return firstInterval.b-firstInterval.a+1;
 		}
-        for (Interval I : intervals) {
-            n += (I.b - I.a + 1);
-        }
+		for (int i = 0; i < numIntervals; i++) {
+			Interval I = intervals.get(i);
+			n += (I.b-I.a+1);
+		}
 		return n;
     }
 
 	public IntegerList toIntegerList() {
 		IntegerList values = new IntegerList(size());
 		int n = intervals.size();
-        for (Interval I : intervals) {
-            int a = I.a;
-            int b = I.b;
-            for (int v = a; v <= b; v++) {
-                values.add(v);
-            }
-        }
+		for (int i = 0; i < n; i++) {
+			Interval I = intervals.get(i);
+			int a = I.a;
+			int b = I.b;
+			for (int v=a; v<=b; v++) {
+				values.add(v);
+			}
+		}
 		return values;
 	}
 
     @Override
     public List<Integer> toList() {
-		List<Integer> values = new ArrayList<>();
+		List<Integer> values = new ArrayList<Integer>();
 		int n = intervals.size();
-        for (Interval I : intervals) {
-            int a = I.a;
-            int b = I.b;
-            for (int v = a; v <= b; v++) {
-                values.add(v);
-            }
-        }
+		for (int i = 0; i < n; i++) {
+			Interval I = intervals.get(i);
+			int a = I.a;
+			int b = I.b;
+			for (int v=a; v<=b; v++) {
+				values.add(v);
+			}
+		}
 		return values;
 	}
 
 	public Set<Integer> toSet() {
-		Set<Integer> s = new HashSet<>();
+		Set<Integer> s = new HashSet<Integer>();
 		for (Interval I : intervals) {
 			int a = I.a;
 			int b = I.b;
@@ -623,16 +628,17 @@ public class IntervalSet implements IntSet {
 	public int get(int i) {
 		int n = intervals.size();
 		int index = 0;
-        for (Interval I : intervals) {
-            int a = I.a;
-            int b = I.b;
-            for (int v = a; v <= b; v++) {
-                if (index == i) {
-                    return v;
-                }
-                index++;
-            }
-        }
+		for (int j = 0; j < n; j++) {
+			Interval I = intervals.get(j);
+			int a = I.a;
+			int b = I.b;
+			for (int v=a; v<=b; v++) {
+				if ( index==i ) {
+					return v;
+				}
+				index++;
+			}
+		}
 		return -1;
 	}
 

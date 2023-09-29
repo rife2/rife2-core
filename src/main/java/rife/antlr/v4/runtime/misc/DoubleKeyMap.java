@@ -16,13 +16,13 @@ import java.util.Set;
  *  map; avoids mem creation.
  */
 public class DoubleKeyMap<Key1, Key2, Value> {
-	Map<Key1, Map<Key2, Value>> data = new LinkedHashMap<>();
+	Map<Key1, Map<Key2, Value>> data = new LinkedHashMap<Key1, Map<Key2, Value>>();
 
 	public Value put(Key1 k1, Key2 k2, Value v) {
 		Map<Key2, Value> data2 = data.get(k1);
 		Value prev = null;
 		if ( data2==null ) {
-			data2 = new LinkedHashMap<>();
+			data2 = new LinkedHashMap<Key2, Value>();
 			data.put(k1, data2);
 		}
 		else {

@@ -156,7 +156,7 @@ public class ParseTreePatternMatcher {
 	 *  compiled pattern instead of a string representation of a tree pattern.
 	 */
 	public boolean matches(ParseTree tree, ParseTreePattern pattern) {
-		MultiMap<String, ParseTree> labels = new MultiMap<>();
+		MultiMap<String, ParseTree> labels = new MultiMap<String, ParseTree>();
 		ParseTree mismatchedNode = matchImpl(tree, pattern.getPatternTree(), labels);
 		return mismatchedNode == null;
 	}
@@ -179,7 +179,7 @@ public class ParseTreePatternMatcher {
 	 */
 
 	public ParseTreeMatch match(ParseTree tree, ParseTreePattern pattern) {
-		MultiMap<String, ParseTree> labels = new MultiMap<>();
+		MultiMap<String, ParseTree> labels = new MultiMap<String, ParseTree>();
 		ParseTree mismatchedNode = matchImpl(tree, pattern.getPatternTree(), labels);
 		return new ParseTreeMatch(tree, pattern, labels, mismatchedNode);
 	}
@@ -266,11 +266,14 @@ public class ParseTreePatternMatcher {
 		}
 
 		// x and <ID>, x and y, or x and x; or could be mismatched types
-		if ( tree instanceof TerminalNode t1 && patternTree instanceof TerminalNode t2) {
+		if ( tree instanceof TerminalNode && patternTree instanceof TerminalNode ) {
+			TerminalNode t1 = (TerminalNode)tree;
+			TerminalNode t2 = (TerminalNode)patternTree;
 			ParseTree mismatchedNode = null;
 			// both are tokens and they have same type
 			if ( t1.getSymbol().getType() == t2.getSymbol().getType() ) {
-				if (t2.getSymbol() instanceof TokenTagToken tokenTagToken) { // x and <ID>
+				if ( t2.getSymbol() instanceof TokenTagToken ) { // x and <ID>
+					TokenTagToken tokenTagToken = (TokenTagToken)t2.getSymbol();
 					// track label->list-of-nodes for both token name and label (if any)
 					labels.map(tokenTagToken.getTokenName(), tree);
 					if ( tokenTagToken.getLabel()!=null ) {
@@ -296,7 +299,9 @@ public class ParseTreePatternMatcher {
 			return mismatchedNode;
 		}
 
-		if ( tree instanceof ParserRuleContext r1 && patternTree instanceof ParserRuleContext r2) {
+		if ( tree instanceof ParserRuleContext && patternTree instanceof ParserRuleContext ) {
+			ParserRuleContext r1 = (ParserRuleContext)tree;
+			ParserRuleContext r2 = (ParserRuleContext)patternTree;
 			ParseTree mismatchedNode = null;
 			// (expr ...) and <expr>
 			RuleTagToken ruleTagToken = getRuleTagToken(r2);
@@ -344,8 +349,10 @@ public class ParseTreePatternMatcher {
 
 	/** Is {@code t} {@code (expr <expr>)} subtree? */
 	protected RuleTagToken getRuleTagToken(ParseTree t) {
-		if (t instanceof RuleNode r) {
-			if ( r.getChildCount()==1 && r.getChild(0) instanceof TerminalNode c) {
+		if ( t instanceof RuleNode ) {
+			RuleNode r = (RuleNode)t;
+			if ( r.getChildCount()==1 && r.getChild(0) instanceof TerminalNode ) {
+				TerminalNode c = (TerminalNode)r.getChild(0);
 				if ( c.getSymbol() instanceof RuleTagToken ) {
 //					System.out.println("rule tag subtree "+t.toStringTree(parser));
 					return (RuleTagToken)c.getSymbol();
@@ -360,9 +367,10 @@ public class ParseTreePatternMatcher {
 		List<Chunk> chunks = split(pattern);
 
 		// create token stream from text and tags
-		List<Token> tokens = new ArrayList<>();
+		List<Token> tokens = new ArrayList<Token>();
 		for (Chunk chunk : chunks) {
-			if (chunk instanceof TagChunk tagChunk) {
+			if ( chunk instanceof TagChunk ) {
+				TagChunk tagChunk = (TagChunk)chunk;
 				// add special rule token or conjure up new token from name
 				if ( Character.isUpperCase(tagChunk.getTag().charAt(0)) ) {
 					Integer ttype = parser.getTokenType(tagChunk.getTag());
@@ -404,11 +412,11 @@ public class ParseTreePatternMatcher {
 	public List<Chunk> split(String pattern) {
 		int p = 0;
 		int n = pattern.length();
-		List<Chunk> chunks = new ArrayList<>();
+		List<Chunk> chunks = new ArrayList<Chunk>();
 		StringBuilder buf = new StringBuilder();
 		// find all start and stop indexes first, then collect
-		List<Integer> starts = new ArrayList<>();
-		List<Integer> stops = new ArrayList<>();
+		List<Integer> starts = new ArrayList<Integer>();
+		List<Integer> stops = new ArrayList<Integer>();
 		while ( p<n ) {
 			if ( p == pattern.indexOf(escape+start,p) ) {
 				p += escape.length() + start.length();
@@ -485,7 +493,8 @@ public class ParseTreePatternMatcher {
 		// strip out the escape sequences from text chunks but not tags
 		for (int i = 0; i < chunks.size(); i++) {
 			Chunk c = chunks.get(i);
-			if (c instanceof TextChunk tc) {
+			if ( c instanceof TextChunk ) {
+				TextChunk tc = (TextChunk)c;
 				String unescaped = tc.getText().replace(escape, "");
 				if (unescaped.length() < tc.getText().length()) {
 					chunks.set(i, new TextChunk(unescaped));

@@ -17,7 +17,7 @@ import rife.antlr.v4.runtime.ParserRuleContext;
  *  If you want to trigger events in multiple listeners during a single
  *  tree walk, you can use the ParseTreeDispatcher object available at
  *
- * 		<a href="https://github.com/antlr/antlr4/issues/841">https://github.com/antlr/antlr4/issues/841</a>
+ * 		https://github.com/antlr/antlr4/issues/841
  */
 public interface ParseTreeListener {
 	void visitTerminal(TerminalNode node);

@@ -5,6 +5,10 @@
  */
 package rife.antlr.v4.runtime.misc;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -189,10 +193,11 @@ public class IntegerList {
 			return true;
 		}
 
-		if (!(o instanceof IntegerList other)) {
+		if (!(o instanceof IntegerList)) {
 			return false;
 		}
 
+		IntegerList other = (IntegerList)o;
 		if (_size != other._size) {
 			return false;
 		}

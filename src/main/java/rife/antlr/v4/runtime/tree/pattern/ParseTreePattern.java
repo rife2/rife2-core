@@ -98,7 +98,7 @@ public class ParseTreePattern {
 
 	public List<ParseTreeMatch> findAll(ParseTree tree, String xpath) {
 		Collection<ParseTree> subtrees = XPath.findAll(tree, xpath, matcher.getParser());
-		List<ParseTreeMatch> matches = new ArrayList<>();
+		List<ParseTreeMatch> matches = new ArrayList<ParseTreeMatch>();
 		for (ParseTree t : subtrees) {
 			ParseTreeMatch match = match(t);
 			if ( match.succeeded() ) {

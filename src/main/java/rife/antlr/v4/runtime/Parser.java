@@ -31,6 +31,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /** This is all the parsing support code essentially; most of it is error recovery stuff. */
 public abstract class Parser extends Recognizer<Token, ParserATNSimulator> {
@@ -349,7 +351,7 @@ public abstract class Parser extends Recognizer<Token, ParserATNSimulator> {
 		}
 
 		if (_parseListeners == null) {
-			_parseListeners = new ArrayList<>();
+			_parseListeners = new ArrayList<ParseTreeListener>();
 		}
 
 		this._parseListeners.add(listener);
@@ -470,7 +472,8 @@ public abstract class Parser extends Recognizer<Token, ParserATNSimulator> {
 	public ParseTreePattern compileParseTreePattern(String pattern, int patternRuleIndex) {
 		if ( getTokenStream()!=null ) {
 			TokenSource tokenSource = getTokenStream().getTokenSource();
-			if (tokenSource instanceof Lexer lexer) {
+			if ( tokenSource instanceof Lexer ) {
+				Lexer lexer = (Lexer)tokenSource;
 				return compileParseTreePattern(pattern, patternRuleIndex, lexer);
 			}
 		}
@@ -848,7 +851,7 @@ public abstract class Parser extends Recognizer<Token, ParserATNSimulator> {
 
 	public List<String> getRuleInvocationStack(RuleContext p) {
 		String[] ruleNames = getRuleNames();
-		List<String> stack = new ArrayList<>();
+		List<String> stack = new ArrayList<String>();
 		while ( p!=null ) {
 			// compute what follows who invoked us
 			int ruleIndex = p.getRuleIndex();
@@ -862,7 +865,7 @@ public abstract class Parser extends Recognizer<Token, ParserATNSimulator> {
 	/** For debugging and other purposes. */
 	public List<String> getDFAStrings() {
 		synchronized (_interp.decisionToDFA) {
-			List<String> s = new ArrayList<>();
+			List<String> s = new ArrayList<String>();
 			for (int d = 0; d < _interp.decisionToDFA.length; d++) {
 				DFA dfa = _interp.decisionToDFA[d];
 				s.add( dfa.toString(getVocabulary()) );

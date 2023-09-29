@@ -67,7 +67,7 @@ public class ParserInterpreter extends Parser {
 	 *  associated with left operand of an alt like "expr '*' expr".
 	 */
 	protected final Deque<Pair<ParserRuleContext, Integer>> _parentContextStack =
-            new ArrayDeque<>();
+		new ArrayDeque<Pair<ParserRuleContext, Integer>>();
 
 	/** We need a map from (decision,inputIndex)->forced alt for computing ambiguous
 	 *  parse trees. For now, we allow exactly one override.
@@ -207,7 +207,7 @@ public class ParserInterpreter extends Parser {
 
 	@Override
 	public void enterRecursionRule(ParserRuleContext localctx, int state, int ruleIndex, int precedence) {
-		Pair<ParserRuleContext, Integer> pair = new Pair<>(_ctx, localctx.invokingState);
+		Pair<ParserRuleContext, Integer> pair = new Pair<ParserRuleContext, Integer>(_ctx, localctx.invokingState);
 		_parentContextStack.push(pair);
 		super.enterRecursionRule(localctx, state, ruleIndex, precedence);
 	}
@@ -404,14 +404,15 @@ public class ParserInterpreter extends Parser {
 		getErrorHandler().recover(this, e);
 		if ( _input.index()==i ) {
 			// no input consumed, better add an error node
-			if (e instanceof InputMismatchException ime) {
+			if ( e instanceof InputMismatchException ) {
+				InputMismatchException ime = (InputMismatchException)e;
 				Token tok = e.getOffendingToken();
 				int expectedTokenType = Token.INVALID_TYPE;
 				if ( !ime.getExpectedTokens().isNil() ) {
 					expectedTokenType = ime.getExpectedTokens().getMinElement(); // get any element
 				}
 				Token errToken =
-					getTokenFactory().create(new Pair<>(tok.getTokenSource(), tok.getTokenSource().getInputStream()),
+					getTokenFactory().create(new Pair<TokenSource, CharStream>(tok.getTokenSource(), tok.getTokenSource().getInputStream()),
 				                             expectedTokenType, tok.getText(),
 				                             Token.DEFAULT_CHANNEL,
 				                            -1, -1, // invalid start/stop
@@ -421,7 +422,7 @@ public class ParserInterpreter extends Parser {
 			else { // NoViableAlt
 				Token tok = e.getOffendingToken();
 				Token errToken =
-					getTokenFactory().create(new Pair<>(tok.getTokenSource(), tok.getTokenSource().getInputStream()),
+					getTokenFactory().create(new Pair<TokenSource, CharStream>(tok.getTokenSource(), tok.getTokenSource().getInputStream()),
 				                             Token.INVALID_TYPE, tok.getText(),
 				                             Token.DEFAULT_CHANNEL,
 				                            -1, -1, // invalid start/stop

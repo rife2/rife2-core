@@ -95,7 +95,7 @@ public class ListTokenSource implements TokenSource {
 		else if (eofToken != null) {
 			return eofToken.getCharPositionInLine();
 		}
-		else if (!tokens.isEmpty()) {
+		else if (tokens.size() > 0) {
 			// have to calculate the result from the line/column of the previous
 			// token, along with the text of the token.
 			Token lastToken = tokens.get(tokens.size() - 1);
@@ -123,7 +123,7 @@ public class ListTokenSource implements TokenSource {
 		if (i >= tokens.size()) {
 			if (eofToken == null) {
 				int start = -1;
-				if (!tokens.isEmpty()) {
+				if (tokens.size() > 0) {
 					int previousStop = tokens.get(tokens.size() - 1).getStopIndex();
 					if (previousStop != -1) {
 						start = previousStop + 1;
@@ -131,7 +131,7 @@ public class ListTokenSource implements TokenSource {
 				}
 
 				int stop = Math.max(-1, start - 1);
-				eofToken = _factory.create(new Pair<>(this, getInputStream()), Token.EOF, "EOF", Token.DEFAULT_CHANNEL, start, stop, getLine(), getCharPositionInLine());
+				eofToken = _factory.create(new Pair<TokenSource, CharStream>(this, getInputStream()), Token.EOF, "EOF", Token.DEFAULT_CHANNEL, start, stop, getLine(), getCharPositionInLine());
 			}
 
 			return eofToken;
@@ -157,7 +157,7 @@ public class ListTokenSource implements TokenSource {
 		else if (eofToken != null) {
 			return eofToken.getLine();
 		}
-		else if (!tokens.isEmpty()) {
+		else if (tokens.size() > 0) {
 			// have to calculate the result from the line/column of the previous
 			// token, along with the text of the token.
 			Token lastToken = tokens.get(tokens.size() - 1);
@@ -192,7 +192,7 @@ public class ListTokenSource implements TokenSource {
 		else if (eofToken != null) {
 			return eofToken.getInputStream();
 		}
-		else if (!tokens.isEmpty()) {
+		else if (tokens.size() > 0) {
 			return tokens.get(tokens.size() - 1).getInputStream();
 		}
 

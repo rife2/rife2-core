@@ -113,8 +113,9 @@ public abstract class SemanticContext {
 
 		@Override
 		public boolean equals(Object obj) {
-			if ( !(obj instanceof Predicate p) ) return false;
+			if ( !(obj instanceof Predicate) ) return false;
 			if ( this == obj ) return true;
+			Predicate p = (Predicate)obj;
 			return this.ruleIndex == p.ruleIndex &&
 				   this.predIndex == p.predIndex &&
 				   this.isCtxDependent == p.isCtxDependent;
@@ -166,7 +167,7 @@ public abstract class SemanticContext {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof PrecedencePredicate other)) {
+			if (!(obj instanceof PrecedencePredicate)) {
 				return false;
 			}
 
@@ -174,6 +175,7 @@ public abstract class SemanticContext {
 				return true;
 			}
 
+			PrecedencePredicate other = (PrecedencePredicate)obj;
 			return this.precedence == other.precedence;
 		}
 
@@ -211,7 +213,7 @@ public abstract class SemanticContext {
 		public final SemanticContext[] opnds;
 
 		public AND(SemanticContext a, SemanticContext b) {
-			Set<SemanticContext> operands = new HashSet<>();
+			Set<SemanticContext> operands = new HashSet<SemanticContext>();
 			if ( a instanceof AND ) operands.addAll(Arrays.asList(((AND)a).opnds));
 			else operands.add(a);
 			if ( b instanceof AND ) operands.addAll(Arrays.asList(((AND)b).opnds));
@@ -235,7 +237,8 @@ public abstract class SemanticContext {
 		@Override
 		public boolean equals(Object obj) {
 			if ( this==obj ) return true;
-			if ( !(obj instanceof AND other) ) return false;
+			if ( !(obj instanceof AND) ) return false;
+			AND other = (AND)obj;
 			return Arrays.equals(this.opnds, other.opnds);
 		}
 
@@ -262,7 +265,7 @@ public abstract class SemanticContext {
 		@Override
 		public SemanticContext evalPrecedence(Recognizer<?, ?> parser, RuleContext parserCallStack) {
 			boolean differs = false;
-			List<SemanticContext> operands = new ArrayList<>();
+			List<SemanticContext> operands = new ArrayList<SemanticContext>();
 			for (SemanticContext context : opnds) {
 				SemanticContext evaluated = context.evalPrecedence(parser, parserCallStack);
 				differs |= (evaluated != context);
@@ -307,7 +310,7 @@ public abstract class SemanticContext {
 		public final SemanticContext[] opnds;
 
 		public OR(SemanticContext a, SemanticContext b) {
-			Set<SemanticContext> operands = new HashSet<>();
+			Set<SemanticContext> operands = new HashSet<SemanticContext>();
 			if ( a instanceof OR ) operands.addAll(Arrays.asList(((OR)a).opnds));
 			else operands.add(a);
 			if ( b instanceof OR ) operands.addAll(Arrays.asList(((OR)b).opnds));
@@ -331,7 +334,8 @@ public abstract class SemanticContext {
 		@Override
 		public boolean equals(Object obj) {
 			if ( this==obj ) return true;
-			if ( !(obj instanceof OR other) ) return false;
+			if ( !(obj instanceof OR) ) return false;
+			OR other = (OR)obj;
 			return Arrays.equals(this.opnds, other.opnds);
 		}
 
@@ -358,7 +362,7 @@ public abstract class SemanticContext {
 		@Override
 		public SemanticContext evalPrecedence(Recognizer<?, ?> parser, RuleContext parserCallStack) {
 			boolean differs = false;
-			List<SemanticContext> operands = new ArrayList<>();
+			List<SemanticContext> operands = new ArrayList<SemanticContext>();
 			for (SemanticContext context : opnds) {
 				SemanticContext evaluated = context.evalPrecedence(parser, parserCallStack);
 				differs |= (evaluated != context);
@@ -428,7 +432,7 @@ public abstract class SemanticContext {
 			SemanticContext context = iterator.next();
 			if (context instanceof PrecedencePredicate) {
 				if (result == null) {
-					result = new ArrayList<>();
+					result = new ArrayList<PrecedencePredicate>();
 				}
 
 				result.add((PrecedencePredicate)context);

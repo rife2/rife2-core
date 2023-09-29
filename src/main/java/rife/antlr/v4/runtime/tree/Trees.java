@@ -99,7 +99,7 @@ public class Trees {
 
 	/** Return ordered list of all children of this node */
 	public static List<Tree> getChildren(Tree t) {
-		List<Tree> kids = new ArrayList<>();
+		List<Tree> kids = new ArrayList<Tree>();
 		for (int i=0; i<t.getChildCount(); i++) {
 			kids.add(t.getChild(i));
 		}
@@ -113,7 +113,7 @@ public class Trees {
 	 */
 	public static List<? extends Tree> getAncestors(Tree t) {
 		if ( t.getParent()==null ) return Collections.emptyList();
-		List<Tree> ancestors = new ArrayList<>();
+		List<Tree> ancestors = new ArrayList<Tree>();
 		t = t.getParent();
 		while ( t!=null ) {
 			ancestors.add(0, t); // insert at start
@@ -146,7 +146,7 @@ public class Trees {
 	}
 
 	public static List<ParseTree> findAllNodes(ParseTree t, int index, boolean findTokens) {
-		List<ParseTree> nodes = new ArrayList<>();
+		List<ParseTree> nodes = new ArrayList<ParseTree>();
 		_findAllNodes(t, index, findTokens, nodes);
 		return nodes;
 	}
@@ -155,10 +155,12 @@ public class Trees {
 									 List<? super ParseTree> nodes)
 	{
 		// check this node (the root) first
-		if ( findTokens && t instanceof TerminalNode tnode) {
+		if ( findTokens && t instanceof TerminalNode ) {
+			TerminalNode tnode = (TerminalNode)t;
 			if ( tnode.getSymbol().getType()==index ) nodes.add(t);
 		}
-		else if ( !findTokens && t instanceof ParserRuleContext ctx) {
+		else if ( !findTokens && t instanceof ParserRuleContext ) {
+			ParserRuleContext ctx = (ParserRuleContext)t;
 			if ( ctx.getRuleIndex() == index ) nodes.add(t);
 		}
 		// check children
@@ -172,7 +174,7 @@ public class Trees {
 	 * @since 4.5.1
  	 */
 	public static List<ParseTree> getDescendants(ParseTree t) {
-		List<ParseTree> nodes = new ArrayList<>();
+		List<ParseTree> nodes = new ArrayList<ParseTree>();
 		nodes.add(t);
 
 		int n = t.getChildCount();

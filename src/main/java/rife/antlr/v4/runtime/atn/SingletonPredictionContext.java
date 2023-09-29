@@ -63,12 +63,12 @@ public class SingletonPredictionContext extends PredictionContext {
 	@Override
 	public String toString() {
 		String up = parent!=null ? parent.toString() : "";
-		if (up.isEmpty()) {
+		if ( up.length()==0 ) {
 			if ( returnState == EMPTY_RETURN_STATE ) {
 				return "$";
 			}
 			return String.valueOf(returnState);
 		}
-		return returnState +" "+up;
+		return String.valueOf(returnState)+" "+up;
 	}
 }

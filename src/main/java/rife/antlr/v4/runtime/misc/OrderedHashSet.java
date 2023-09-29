@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class OrderedHashSet<T> extends LinkedHashSet<T> {
     /** Track the elements as they are added to the set */
-    protected ArrayList<T> elements = new ArrayList<>();
+    protected ArrayList<T> elements = new ArrayList<T>();
 
     public T get(int i) {
         return elements.get(i);
@@ -97,7 +97,7 @@ public class OrderedHashSet<T> extends LinkedHashSet<T> {
     public Object clone() {
         @SuppressWarnings("unchecked") // safe (result of clone)
         OrderedHashSet<T> dup = (OrderedHashSet<T>)super.clone();
-        dup.elements = new ArrayList<>(this.elements);
+        dup.elements = new ArrayList<T>(this.elements);
         return dup;
     }
 

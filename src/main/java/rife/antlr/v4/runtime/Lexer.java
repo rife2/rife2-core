@@ -82,7 +82,7 @@ public abstract class Lexer extends Recognizer<Integer, LexerATNSimulator>
 
 	public Lexer(CharStream input) {
 		this._input = input;
-		this._tokenFactorySourcePair = new Pair<>(this, input);
+		this._tokenFactorySourcePair = new Pair<TokenSource, CharStream>(this, input);
 	}
 
 	public void reset() {
@@ -209,10 +209,10 @@ public abstract class Lexer extends Recognizer<Integer, LexerATNSimulator>
 	@Override
 	public void setInputStream(IntStream input) {
 		this._input = null;
-		this._tokenFactorySourcePair = new Pair<>(this, _input);
+		this._tokenFactorySourcePair = new Pair<TokenSource, CharStream>(this, _input);
 		reset();
 		this._input = (CharStream)input;
-		this._tokenFactorySourcePair = new Pair<>(this, _input);
+		this._tokenFactorySourcePair = new Pair<TokenSource, CharStream>(this, _input);
 	}
 
 	@Override
@@ -340,7 +340,7 @@ public abstract class Lexer extends Recognizer<Integer, LexerATNSimulator>
 	 *  Forces load of all tokens. Does not include EOF token.
 	 */
 	public List<? extends Token> getAllTokens() {
-		List<Token> tokens = new ArrayList<>();
+		List<Token> tokens = new ArrayList<Token>();
 		Token t = nextToken();
 		while ( t.getType()!=Token.EOF ) {
 			tokens.add(t);

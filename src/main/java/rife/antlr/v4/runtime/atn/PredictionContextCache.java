@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class PredictionContextCache {
 	protected final Map<PredictionContext, PredictionContext> cache =
-            new HashMap<>();
+		new HashMap<PredictionContext, PredictionContext>();
 
 	/** Add a context to the cache and return it. If the context already exists,
 	 *  return that one instead and do not add a new context to the cache.

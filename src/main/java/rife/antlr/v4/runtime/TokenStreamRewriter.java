@@ -193,10 +193,10 @@ public class TokenStreamRewriter {
 
 	public TokenStreamRewriter(TokenStream tokens) {
 		this.tokens = tokens;
-		programs = new HashMap<>();
+		programs = new HashMap<String, List<RewriteOperation>>();
 		programs.put(DEFAULT_PROGRAM_NAME,
-                new ArrayList<>(PROGRAM_INIT_SIZE));
-		lastRewriteTokenIndexes = new HashMap<>();
+					 new ArrayList<RewriteOperation>(PROGRAM_INIT_SIZE));
+		lastRewriteTokenIndexes = new HashMap<String, Integer>();
 	}
 
 	public final TokenStream getTokenStream() {
@@ -348,7 +348,7 @@ public class TokenStreamRewriter {
 	}
 
 	private List<RewriteOperation> initializeProgram(String name) {
-		List<RewriteOperation> is = new ArrayList<>(PROGRAM_INIT_SIZE);
+		List<RewriteOperation> is = new ArrayList<RewriteOperation>(PROGRAM_INIT_SIZE);
 		programs.put(name, is);
 		return is;
 	}
@@ -561,14 +561,15 @@ public class TokenStreamRewriter {
 			}
 		}
 		// System.out.println("rewrites after="+rewrites);
-		Map<Integer, RewriteOperation> m = new HashMap<>();
-        for (RewriteOperation op : rewrites) {
-            if (op == null) continue; // ignore deleted ops
-            if (m.get(op.index) != null) {
-                throw new Error("should only be one op per index");
-            }
-            m.put(op.index, op);
-        }
+		Map<Integer, RewriteOperation> m = new HashMap<Integer, RewriteOperation>();
+		for (int i = 0; i < rewrites.size(); i++) {
+			RewriteOperation op = rewrites.get(i);
+			if ( op==null ) continue; // ignore deleted ops
+			if ( m.get(op.index)!=null ) {
+				throw new Error("should only be one op per index");
+			}
+			m.put(op.index, op);
+		}
 		//System.out.println("index to op: "+m);
 		return m;
 	}
@@ -583,7 +584,7 @@ public class TokenStreamRewriter {
 
 	/** Get all operations before an index of a particular kind */
 	protected <T extends RewriteOperation> List<? extends T> getKindOfOps(List<? extends RewriteOperation> rewrites, Class<T> kind, int before) {
-		List<T> ops = new ArrayList<>();
+		List<T> ops = new ArrayList<T>();
 		for (int i=0; i<before && i<rewrites.size(); i++) {
 			RewriteOperation op = rewrites.get(i);
 			if ( op==null ) continue; // ignore deleted

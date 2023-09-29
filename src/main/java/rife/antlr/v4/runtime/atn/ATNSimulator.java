@@ -7,8 +7,10 @@
 package rife.antlr.v4.runtime.atn;
 
 import rife.antlr.v4.runtime.dfa.DFAState;
+import rife.antlr.v4.runtime.misc.IntervalSet;
 
 import java.util.IdentityHashMap;
+import java.util.List;
 
 public abstract class ATNSimulator {
 	/** Must distinguish between missing edge and edge we know leads nowhere */
@@ -77,7 +79,7 @@ public abstract class ATNSimulator {
 
 		synchronized (sharedContextCache) {
 			IdentityHashMap<PredictionContext, PredictionContext> visited =
-                    new IdentityHashMap<>();
+				new IdentityHashMap<PredictionContext, PredictionContext>();
 			return PredictionContext.getCachedContext(context,
 													  sharedContextCache,
 													  visited);

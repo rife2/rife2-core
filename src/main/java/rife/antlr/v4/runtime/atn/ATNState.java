@@ -9,6 +9,8 @@ package rife.antlr.v4.runtime.atn;
 import rife.antlr.v4.runtime.misc.IntervalSet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -91,19 +93,21 @@ public abstract class ATNState {
 	public static final int LOOP_END = 12;
 
 	public static final List<String> serializationNames =
-            List.of("INVALID",
-					"BASIC",
-					"RULE_START",
-					"BLOCK_START",
-					"PLUS_BLOCK_START",
-					"STAR_BLOCK_START",
-					"TOKEN_START",
-					"RULE_STOP",
-					"BLOCK_END",
-					"STAR_LOOP_BACK",
-					"STAR_LOOP_ENTRY",
-					"PLUS_LOOP_BACK",
-					"LOOP_END");
+		Collections.unmodifiableList(Arrays.asList(
+			"INVALID",
+			"BASIC",
+			"RULE_START",
+			"BLOCK_START",
+			"PLUS_BLOCK_START",
+			"STAR_BLOCK_START",
+			"TOKEN_START",
+			"RULE_STOP",
+			"BLOCK_END",
+			"STAR_LOOP_BACK",
+			"STAR_LOOP_ENTRY",
+			"PLUS_LOOP_BACK",
+			"LOOP_END"
+		));
 
 	public static final int INVALID_STATE_NUMBER = -1;
 
@@ -118,7 +122,7 @@ public abstract class ATNState {
 
 	/** Track the transitions emanating from this ATN state. */
 	protected final List<Transition> transitions =
-            new ArrayList<>(INITIAL_NUM_TRANSITIONS);
+		new ArrayList<Transition>(INITIAL_NUM_TRANSITIONS);
 
 	/** Used to cache lookahead during parsing, not used during construction */
     public IntervalSet nextTokenWithinRule;

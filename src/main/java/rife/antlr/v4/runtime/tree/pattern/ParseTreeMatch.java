@@ -89,7 +89,7 @@ public class ParseTreeMatch {
 
 	public ParseTree get(String label) {
 		List<ParseTree> parseTrees = labels.get(label);
-		if ( parseTrees==null || parseTrees.isEmpty()) {
+		if ( parseTrees==null || parseTrees.size()==0 ) {
 			return null;
 		}
 

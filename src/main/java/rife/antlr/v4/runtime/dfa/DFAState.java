@@ -113,7 +113,7 @@ public class DFAState {
 	 *  DFA state.
 	 */
 	public Set<Integer> getAltSet() {
-		Set<Integer> alts = new HashSet<>();
+		Set<Integer> alts = new HashSet<Integer>();
 		if ( configs!=null ) {
 			for (ATNConfig c : configs) {
 				alts.add(c.alt);
@@ -149,10 +149,11 @@ public class DFAState {
 		// compare set of ATN configurations in this set with other
 		if ( this==o ) return true;
 
-		if (!(o instanceof DFAState other)) {
+		if (!(o instanceof DFAState)) {
 			return false;
 		}
 
+		DFAState other = (DFAState)o;
 		// TODO (sam): what to do when configs==null?
 		boolean sameSet = this.configs.equals(other.configs);
 //		System.out.println("DFAState.equals: "+configs+(sameSet?"==":"!=")+other.configs);

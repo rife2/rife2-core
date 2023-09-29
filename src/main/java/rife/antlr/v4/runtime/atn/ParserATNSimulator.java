@@ -770,7 +770,7 @@ public class ParserATNSimulator extends ATNSimulator {
 			System.out.println("in computeReachSet, starting closure: " + closure);
 
 		if (mergeCache == null) {
-			mergeCache = new DoubleKeyMap<>();
+			mergeCache = new DoubleKeyMap<PredictionContext, PredictionContext, PredictionContext>();
 		}
 
 		ATNConfigSet intermediate = new ATNConfigSet(fullCtx);
@@ -795,7 +795,7 @@ public class ParserATNSimulator extends ATNSimulator {
 				assert c.context.isEmpty();
 				if (fullCtx || t == IntStream.EOF) {
 					if (skippedStopStates == null) {
-						skippedStopStates = new ArrayList<>();
+						skippedStopStates = new ArrayList<ATNConfig>();
 					}
 
 					skippedStopStates.add(c);
@@ -847,7 +847,7 @@ public class ParserATNSimulator extends ATNSimulator {
 		 */
 		if (reach == null) {
 			reach = new ATNConfigSet(fullCtx);
-			Set<ATNConfig> closureBusy = new HashSet<>();
+			Set<ATNConfig> closureBusy = new HashSet<ATNConfig>();
 			boolean treatEofAsEpsilon = t == Token.EOF;
 			for (ATNConfig c : intermediate) {
 				closure(c, reach, closureBusy, false, fullCtx, treatEofAsEpsilon);
@@ -950,7 +950,7 @@ public class ParserATNSimulator extends ATNSimulator {
 		for (int i=0; i<p.getNumberOfTransitions(); i++) {
 			ATNState target = p.transition(i).target;
 			ATNConfig c = new ATNConfig(target, i+1, initialContext);
-			Set<ATNConfig> closureBusy = new HashSet<>();
+			Set<ATNConfig> closureBusy = new HashSet<ATNConfig>();
 			closure(c, configs, closureBusy, true, fullCtx, false);
 		}
 
@@ -1121,7 +1121,7 @@ public class ParserATNSimulator extends ATNSimulator {
 	 * calling {@link Parser#getPrecedence}).
 	 */
 	protected ATNConfigSet applyPrecedenceFilter(ATNConfigSet configs) {
-		Map<Integer, PredictionContext> statesFromAlt1 = new HashMap<>();
+		Map<Integer, PredictionContext> statesFromAlt1 = new HashMap<Integer, PredictionContext>();
 		ATNConfigSet configSet = new ATNConfigSet(configs.fullCtx);
 		for (ATNConfig config : configs) {
 			// handle alt 1 first
@@ -1223,7 +1223,7 @@ public class ParserATNSimulator extends ATNSimulator {
 	protected DFAState.PredPrediction[] getPredicatePredictions(BitSet ambigAlts,
 															 SemanticContext[] altToPred)
 	{
-		List<DFAState.PredPrediction> pairs = new ArrayList<>();
+		List<DFAState.PredPrediction> pairs = new ArrayList<DFAState.PredPrediction>();
 		boolean containsPredicate = false;
 		for (int i = 1; i < altToPred.length; i++) {
 			SemanticContext pred = altToPred[i];
@@ -1303,7 +1303,7 @@ public class ParserATNSimulator extends ATNSimulator {
 			return alt;
 		}
 		// Is there a syntactically valid path with a failed pred?
-		if (!semInvalidConfigs.isEmpty()) {
+		if ( semInvalidConfigs.size()>0 ) {
 			alt = getAltThatFinishedDecisionEntryRule(semInvalidConfigs);
 			if ( alt!=ATN.INVALID_ALT_NUMBER ) { // syntactically viable path exists
 				return alt;
@@ -1352,7 +1352,7 @@ public class ParserATNSimulator extends ATNSimulator {
 				succeeded.add(c);
 			}
 		}
-		return new Pair<>(succeeded, failed);
+		return new Pair<ATNConfigSet, ATNConfigSet>(succeeded,failed);
 	}
 
 	/** Look through a list of predicate/alt pairs, returning alts for the
@@ -1999,10 +1999,12 @@ public class ParserATNSimulator extends ATNSimulator {
 			String trans = "no edges";
 			if ( c.state.getNumberOfTransitions()>0 ) {
 				Transition t = c.state.transition(0);
-				if (t instanceof AtomTransition at) {
+				if ( t instanceof AtomTransition) {
+					AtomTransition at = (AtomTransition)t;
 					trans = "Atom "+getTokenName(at.label);
 				}
-				else if (t instanceof SetTransition st) {
+				else if ( t instanceof SetTransition ) {
+					SetTransition st = (SetTransition)t;
 					boolean not = st instanceof NotSetTransition;
 					trans = (not?"~":"")+"Set "+st.set.toString();
 				}

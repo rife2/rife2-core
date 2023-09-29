@@ -40,7 +40,7 @@ import java.nio.file.Paths;
  *  a primary concern. See the extreme debugging and spelunking
  *  needed to identify this issue in our timing rig:
  *
- *      <a href="https://github.com/antlr/antlr4/pull/1781">https://github.com/antlr/antlr4/pull/1781</a>
+ *      https://github.com/antlr/antlr4/pull/1781
  *
  *  The ANTLR character streams still buffer all the input when you create
  *  the stream, as they have done for ~20 years. If you need unbuffered
@@ -190,16 +190,19 @@ public final class CharStreams {
 	 * source name. Closes the reader before returning.
 	 */
 	public static CodePointCharStream fromReader(Reader r, String sourceName) throws IOException {
-        try (r) {
-            CodePointBuffer.Builder codePointBufferBuilder = CodePointBuffer.builder(DEFAULT_BUFFER_SIZE);
-            CharBuffer charBuffer = CharBuffer.allocate(DEFAULT_BUFFER_SIZE);
-            while ((r.read(charBuffer)) != -1) {
-                charBuffer.flip();
-                codePointBufferBuilder.append(charBuffer);
-                charBuffer.compact();
-            }
-            return CodePointCharStream.fromBuffer(codePointBufferBuilder.build(), sourceName);
-        }
+		try {
+			CodePointBuffer.Builder codePointBufferBuilder = CodePointBuffer.builder(DEFAULT_BUFFER_SIZE);
+			CharBuffer charBuffer = CharBuffer.allocate(DEFAULT_BUFFER_SIZE);
+			while ((r.read(charBuffer)) != -1) {
+				charBuffer.flip();
+				codePointBufferBuilder.append(charBuffer);
+				charBuffer.compact();
+			}
+			return CodePointCharStream.fromBuffer(codePointBufferBuilder.build(), sourceName);
+		}
+		finally {
+			r.close();
+		}
 	}
 
 	/**
@@ -252,49 +255,52 @@ public final class CharStreams {
 		long inputSize)
 		throws IOException
 	{
-        try (channel) {
-            ByteBuffer utf8BytesIn = ByteBuffer.allocate(bufferSize);
-            CharBuffer utf16CodeUnitsOut = CharBuffer.allocate(bufferSize);
-            if (inputSize == -1) {
-                inputSize = bufferSize;
-            } else if (inputSize > Integer.MAX_VALUE) {
-                // ByteBuffer et al don't support long sizes
-                throw new IOException(String.format("inputSize %d larger than max %d", inputSize, Integer.MAX_VALUE));
-            }
-            CodePointBuffer.Builder codePointBufferBuilder = CodePointBuffer.builder((int) inputSize);
-            CharsetDecoder decoder = charset
-                    .newDecoder()
-                    .onMalformedInput(decodingErrorAction)
-                    .onUnmappableCharacter(decodingErrorAction);
+		try {
+			ByteBuffer utf8BytesIn = ByteBuffer.allocate(bufferSize);
+			CharBuffer utf16CodeUnitsOut = CharBuffer.allocate(bufferSize);
+			if (inputSize == -1) {
+				inputSize = bufferSize;
+			} else if (inputSize > Integer.MAX_VALUE) {
+				// ByteBuffer et al don't support long sizes
+				throw new IOException(String.format("inputSize %d larger than max %d", inputSize, Integer.MAX_VALUE));
+			}
+			CodePointBuffer.Builder codePointBufferBuilder = CodePointBuffer.builder((int) inputSize);
+			CharsetDecoder decoder = charset
+					.newDecoder()
+					.onMalformedInput(decodingErrorAction)
+					.onUnmappableCharacter(decodingErrorAction);
 
-            boolean endOfInput = false;
-            while (!endOfInput) {
-                int bytesRead = channel.read(utf8BytesIn);
-                endOfInput = (bytesRead == -1);
-                utf8BytesIn.flip();
-                CoderResult result = decoder.decode(
-                        utf8BytesIn,
-                        utf16CodeUnitsOut,
-                        endOfInput);
-                if (result.isError() && decodingErrorAction.equals(CodingErrorAction.REPORT)) {
-                    result.throwException();
-                }
-                utf16CodeUnitsOut.flip();
-                codePointBufferBuilder.append(utf16CodeUnitsOut);
-                utf8BytesIn.compact();
-                utf16CodeUnitsOut.compact();
-            }
-            // Handle any bytes at the end of the file which need to
-            // be represented as errors or substitution characters.
-            CoderResult flushResult = decoder.flush(utf16CodeUnitsOut);
-            if (flushResult.isError() && decodingErrorAction.equals(CodingErrorAction.REPORT)) {
-                flushResult.throwException();
-            }
-            utf16CodeUnitsOut.flip();
-            codePointBufferBuilder.append(utf16CodeUnitsOut);
+			boolean endOfInput = false;
+			while (!endOfInput) {
+				int bytesRead = channel.read(utf8BytesIn);
+				endOfInput = (bytesRead == -1);
+				utf8BytesIn.flip();
+				CoderResult result = decoder.decode(
+					utf8BytesIn,
+					utf16CodeUnitsOut,
+					endOfInput);
+				if (result.isError() && decodingErrorAction.equals(CodingErrorAction.REPORT)) {
+					result.throwException();
+				}
+				utf16CodeUnitsOut.flip();
+				codePointBufferBuilder.append(utf16CodeUnitsOut);
+				utf8BytesIn.compact();
+				utf16CodeUnitsOut.compact();
+			}
+			// Handle any bytes at the end of the file which need to
+			// be represented as errors or substitution characters.
+			CoderResult flushResult = decoder.flush(utf16CodeUnitsOut);
+			if (flushResult.isError() && decodingErrorAction.equals(CodingErrorAction.REPORT)) {
+				flushResult.throwException();
+			}
+			utf16CodeUnitsOut.flip();
+			codePointBufferBuilder.append(utf16CodeUnitsOut);
 
-            CodePointBuffer codePointBuffer = codePointBufferBuilder.build();
-            return CodePointCharStream.fromBuffer(codePointBuffer, sourceName);
-        }
+			CodePointBuffer codePointBuffer = codePointBufferBuilder.build();
+			return CodePointCharStream.fromBuffer(codePointBuffer, sourceName);
+		}
+		finally {
+			channel.close();
+		}
 	}
 }

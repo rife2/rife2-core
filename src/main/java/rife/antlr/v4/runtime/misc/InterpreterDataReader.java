@@ -10,7 +10,9 @@ import rife.antlr.v4.runtime.Vocabulary;
 import rife.antlr.v4.runtime.VocabularyImpl;
 import rife.antlr.v4.runtime.atn.ATN;
 import rife.antlr.v4.runtime.atn.ATNDeserializer;
+import rife.antlr.v4.runtime.dfa.DFA;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.BufferedReader;
@@ -25,9 +27,9 @@ public class InterpreterDataReader {
 	  List<String> ruleNames;
 	  List<String> channels; // Only valid for lexer grammars.
 	  List<String> modes; // ditto
-	}
+	};
 
-    /**
+	/**
 	 * The structure of the data file is very simple. Everything is line based with empty lines
 	 * separating the different parts. For lexers the layout is:
 	 * token literal names:
@@ -52,12 +54,12 @@ public class InterpreterDataReader {
 	 */
 	public static InterpreterData parseFile(String fileName) {
 		InterpreterData result = new InterpreterData();
-		result.ruleNames = new ArrayList<>();
+		result.ruleNames = new ArrayList<String>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 		    String line;
-		  	List<String> literalNames = new ArrayList<>();
-		  	List<String> symbolicNames = new ArrayList<>();
+		  	List<String> literalNames = new ArrayList<String>();
+		  	List<String> symbolicNames = new ArrayList<String>();
 
 			line = br.readLine();
 			if ( !line.equals("token literal names:") )
@@ -90,7 +92,7 @@ public class InterpreterDataReader {
 
 			line = br.readLine();
 			if ( line.equals("channel names:") ) { // Additional lexer data.
-				result.channels = new ArrayList<>();
+				result.channels = new ArrayList<String>();
 			    while ((line = br.readLine()) != null) {
 			       if ( line.isEmpty() )
 						break;
@@ -100,7 +102,7 @@ public class InterpreterDataReader {
 				line = br.readLine();
 				if ( !line.equals("mode names:") )
 					throw new RuntimeException("Unexpected data entry");
-				result.modes = new ArrayList<>();
+				result.modes = new ArrayList<String>();
 			    while ((line = br.readLine()) != null) {
 			       if ( line.isEmpty() )
 						break;

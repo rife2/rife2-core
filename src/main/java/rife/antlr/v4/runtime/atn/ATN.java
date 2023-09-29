@@ -21,13 +21,13 @@ public class ATN {
 	public static final int INVALID_ALT_NUMBER = 0;
 
 
-	public final List<ATNState> states = new ArrayList<>();
+	public final List<ATNState> states = new ArrayList<ATNState>();
 
 	/** Each subrule/rule is a decision point and we must track them so we
 	 *  can go back later and build DFA predictors for them.  This includes
 	 *  all the rules, subrules, optional blocks, ()+, ()* etc...
 	 */
-	public final List<DecisionState> decisionToState = new ArrayList<>();
+	public final List<DecisionState> decisionToState = new ArrayList<DecisionState>();
 
 	/**
 	 * Maps from rule index to starting state number.
@@ -41,7 +41,7 @@ public class ATN {
 
 
 	public final Map<String, TokensStartState> modeNameToStartState =
-            new LinkedHashMap<>();
+		new LinkedHashMap<String, TokensStartState>();
 
 	/**
 	 * The type of the ATN.
@@ -68,7 +68,7 @@ public class ATN {
 	 */
 	public LexerAction[] lexerActions;
 
-	public final List<TokensStartState> modeToStartState = new ArrayList<>();
+	public final List<TokensStartState> modeToStartState = new ArrayList<TokensStartState>();
 
 	/** Used for runtime deserialization of ATNs from strings */
 	public ATN(ATNType grammarType, int maxTokenType) {
@@ -149,9 +149,8 @@ public class ATN {
 	 *
 	 * The big difference is that with just the input, the parser could
 	 * land right in the middle of a lookahead decision. Getting
-	 * all *possible* tokens given a partial input stream is a separate
-	 * computation. See
-	 * <a href="https://github.com/antlr/antlr4/issues/1428">https://github.com/antlr/antlr4/issues/1428</a>
+     * all *possible* tokens given a partial input stream is a separate
+     * computation. See https://github.com/antlr/antlr4/issues/1428
 	 *
 	 * For this function, we are specifying an ATN state and call stack to compute
 	 * what token(s) can come next and specifically: outside of a lookahead decision.

@@ -21,7 +21,7 @@ public class IterativeParseTreeWalker extends ParseTreeWalker {
 	@Override
 	public void walk(ParseTreeListener listener, ParseTree t) {
 
-		final Deque<ParseTree> nodeStack = new ArrayDeque<>();
+		final Deque<ParseTree> nodeStack = new ArrayDeque<ParseTree>();
 		final IntegerStack indexStack = new IntegerStack();
 
 		ParseTree currentNode = t;

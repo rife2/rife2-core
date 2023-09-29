@@ -132,7 +132,8 @@ public class Array2DHashSet<T> implements Set<T> {
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) return true;
-		if ( !(o instanceof Array2DHashSet<?> other) ) return false;
+		if ( !(o instanceof Array2DHashSet) ) return false;
+		Array2DHashSet<?> other = (Array2DHashSet<?>)o;
 		if ( other.size() != size() ) return false;
 		boolean same = this.containsAll(other);
 		return same;
@@ -302,7 +303,8 @@ public class Array2DHashSet<T> implements Set<T> {
 
 	@Override
 	public boolean containsAll(Collection<?> collection) {
-		if (collection instanceof Array2DHashSet<?> s) {
+		if ( collection instanceof Array2DHashSet ) {
+			Array2DHashSet<?> s = (Array2DHashSet<?>)collection;
 			for (Object[] bucket : s.buckets) {
 				if ( bucket==null ) continue;
 				for (Object o : bucket) {

@@ -11,6 +11,7 @@ import rife.config.RifeConfig;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,16 +29,17 @@ public class LogManager {
 
 		@Override
 		public String toString() {
-            String buf = RifeConfig.tools().getSimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date(timestamp)) +
-                    " " +
-                    component +
-                    " " +
-                    location.getFileName() +
-                    ":" +
-                    location.getLineNumber() +
-                    " " +
-                    msg;
-            return buf;
+            StringBuilder buf = new StringBuilder();
+            buf.append(RifeConfig.tools().getSimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date(timestamp)));
+            buf.append(" ");
+            buf.append(component);
+            buf.append(" ");
+            buf.append(location.getFileName());
+            buf.append(":");
+            buf.append(location.getLineNumber());
+            buf.append(" ");
+            buf.append(msg);
+            return buf.toString();
 		}
 	}
 
@@ -48,7 +50,7 @@ public class LogManager {
 		r.component = component;
 		r.msg = msg;
 		if ( records==null ) {
-			records = new ArrayList<>();
+			records = new ArrayList<Record>();
 		}
 		records.add(r);
 	}
@@ -57,8 +59,12 @@ public class LogManager {
 
     public void save(String filename) throws IOException {
         FileWriter fw = new FileWriter(filename);
-        try (BufferedWriter bw = new BufferedWriter(fw)) {
+        BufferedWriter bw = new BufferedWriter(fw);
+        try {
             bw.write(toString());
+        }
+        finally {
+            bw.close();
         }
     }
 

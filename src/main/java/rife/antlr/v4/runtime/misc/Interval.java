@@ -45,9 +45,10 @@ public class Interval {
 
 	@Override
 	public boolean equals(Object o) {
-		if ( o==null || !(o instanceof Interval other) ) {
+		if ( o==null || !(o instanceof Interval) ) {
 			return false;
 		}
+		Interval other = (Interval)o;
 		return this.a==other.a && this.b==other.b;
 	}
 

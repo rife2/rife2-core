@@ -25,9 +25,10 @@ public class XPathTokenElement extends XPathElement {
 	@Override
 	public Collection<ParseTree> evaluate(ParseTree t) {
 		// return all children of t that match nodeName
-		List<ParseTree> nodes = new ArrayList<>();
+		List<ParseTree> nodes = new ArrayList<ParseTree>();
 		for (Tree c : Trees.getChildren(t)) {
-			if (c instanceof TerminalNode tnode) {
+			if ( c instanceof TerminalNode ) {
+				TerminalNode tnode = (TerminalNode)c;
 				if ( (tnode.getSymbol().getType() == tokenType && !invert) ||
 					 (tnode.getSymbol().getType() != tokenType && invert) )
 				{

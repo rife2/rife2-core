@@ -475,7 +475,11 @@ public final class Type {
       case DOUBLE:
         return "double";
       case ARRAY:
-          return getElementType().getClassName() + "[]".repeat(Math.max(0, getDimensions()));
+        StringBuilder stringBuilder = new StringBuilder(getElementType().getClassName());
+        for (int i = getDimensions(); i > 0; --i) {
+          stringBuilder.append("[]");
+        }
+        return stringBuilder.toString();
       case OBJECT:
       case INTERNAL:
         return valueBuffer.substring(valueBegin, valueEnd).replace('/', '.');
@@ -840,9 +844,10 @@ public final class Type {
     if (this == object) {
       return true;
     }
-    if (!(object instanceof Type other)) {
+    if (!(object instanceof Type)) {
       return false;
     }
+    Type other = (Type) object;
     if ((sort == INTERNAL ? OBJECT : sort) != (other.sort == INTERNAL ? OBJECT : other.sort)) {
       return false;
     }

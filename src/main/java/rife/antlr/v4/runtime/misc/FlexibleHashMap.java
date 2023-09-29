@@ -103,7 +103,7 @@ public class FlexibleHashMap<K,V> implements Map<K, V> {
 		int b = getBucket(key);
 		LinkedList<Entry<K, V>> bucket = buckets[b];
 		if ( bucket==null ) {
-			bucket = buckets[b] = new LinkedList<>();
+			bucket = buckets[b] = new LinkedList<Entry<K, V>>();
 		}
 		for (Entry<K, V> e : bucket) {
 			if ( comparator.equals(e.key, key) ) {
@@ -114,7 +114,7 @@ public class FlexibleHashMap<K,V> implements Map<K, V> {
 			}
 		}
 		// not there
-		bucket.add(new Entry<>(key, value));
+		bucket.add(new Entry<K, V>(key, value));
 		n++;
 		return null;
 	}
@@ -136,7 +136,7 @@ public class FlexibleHashMap<K,V> implements Map<K, V> {
 
 	@Override
 	public Collection<V> values() {
-		List<V> a = new ArrayList<>(size());
+		List<V> a = new ArrayList<V>(size());
 		for (LinkedList<Entry<K, V>> bucket : buckets) {
 			if ( bucket==null ) continue;
 			for (Entry<K, V> e : bucket) {
@@ -259,7 +259,7 @@ public class FlexibleHashMap<K,V> implements Map<K, V> {
 	}
 
 	public static void main(String[] args) {
-		FlexibleHashMap<String,Integer> map = new FlexibleHashMap<>();
+		FlexibleHashMap<String,Integer> map = new FlexibleHashMap<String,Integer>();
 		map.put("hi", 1);
 		map.put("mom", 2);
 		map.put("foo", 3);

@@ -43,7 +43,7 @@ public class LL1Analyzer {
 		IntervalSet[] look = new IntervalSet[s.getNumberOfTransitions()];
 		for (int alt = 0; alt < s.getNumberOfTransitions(); alt++) {
 			look[alt] = new IntervalSet();
-			Set<ATNConfig> lookBusy = new HashSet<>();
+			Set<ATNConfig> lookBusy = new HashSet<ATNConfig>();
 			boolean seeThruPreds = false; // fail to get lookahead upon pred
 			_LOOK(s.transition(alt).target, null, EmptyPredictionContext.Instance,
 				  look[alt], lookBusy, new BitSet(), seeThruPreds, false);
@@ -100,7 +100,7 @@ public class LL1Analyzer {
 		boolean seeThruPreds = true; // ignore preds; get all lookahead
 		PredictionContext lookContext = ctx != null ? PredictionContext.fromRuleContext(s.atn, ctx) : null;
    		_LOOK(s, stopState, lookContext,
-			  r, new HashSet<>(), new BitSet(), seeThruPreds, true);
+			  r, new HashSet<ATNConfig>(), new BitSet(), seeThruPreds, true);
    		return r;
    	}
 

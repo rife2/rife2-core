@@ -559,19 +559,25 @@ public class TestFileUtils {
     @Test
     void testUnzipFileNullSource() {
         // test null source file argument
-        assertThrows(IllegalArgumentException.class, () -> FileUtils.unzipFile(null, new File("destination")));
+        assertThrows(IllegalArgumentException.class, () -> {
+            FileUtils.unzipFile(null, new File("destination"));
+        });
     }
 
     @Test
     void testUnzipFileNullDestination() {
         // test null destination argument
-        assertThrows(IllegalArgumentException.class, () -> FileUtils.unzipFile(new File("source"), null));
+        assertThrows(IllegalArgumentException.class, () -> {
+            FileUtils.unzipFile(new File("source"), null);
+        });
     }
 
     @Test
     void testUnzipFileBadZipFile() {
         // test invalid zip file argument
-        assertThrows(FileUtilsErrorException.class, () -> FileUtils.unzipFile(new File("bad_zip_file"), new File("destination")));
+        assertThrows(FileUtilsErrorException.class, () -> {
+            FileUtils.unzipFile(new File("bad_zip_file"), new File("destination"));
+        });
     }
 
     @Test
@@ -587,7 +593,9 @@ public class TestFileUtils {
         destination.setWritable(false);
 
         // test unzipping to invalid output path
-        assertThrows(FileUtilsErrorException.class, () -> FileUtils.unzipFile(source, destination));
+        assertThrows(FileUtilsErrorException.class, () -> {
+            FileUtils.unzipFile(source, destination);
+        });
 
         // clean up test files/directories
         destination.setWritable(true);
@@ -626,12 +634,16 @@ public class TestFileUtils {
 
     @Test
     void testGetBaseNameWithNullFile() {
-        assertThrows(IllegalArgumentException.class, () -> FileUtils.getBaseName((File) null));
+        assertThrows(IllegalArgumentException.class, () -> {
+            FileUtils.getBaseName((File) null);
+        });
     }
 
     @Test
     void testGetBaseNameWithNullFileName() {
-        assertThrows(IllegalArgumentException.class, () -> FileUtils.getBaseName((String) null));
+        assertThrows(IllegalArgumentException.class, () -> {
+            FileUtils.getBaseName((String) null);
+        });
     }
 
     @Test
@@ -763,13 +775,17 @@ public class TestFileUtils {
 
     @Test
     public void testGenerateDirectoryListingWithNullDirectory() {
-        assertThrows(NullPointerException.class, () -> FileUtils.generateDirectoryListing(null));
+        assertThrows(NullPointerException.class, () -> {
+            FileUtils.generateDirectoryListing(null);
+        });
     }
 
     @Test
     public void testGenerateDirectoryListingWithNonexistentDirectory() {
         var directory = new File("nonexistent");
-        assertThrows(IOException.class, () -> FileUtils.generateDirectoryListing(directory));
+        assertThrows(IOException.class, () -> {
+            FileUtils.generateDirectoryListing(directory);
+        });
     }
 
     @Test
@@ -875,25 +891,25 @@ public class TestFileUtils {
     @Test
     void testPermissionsFromMode() {
         assertTrue(permissionsFromMode(0000).isEmpty());
-        assertTrue(permissionsFromMode(0001).contains(OTHERS_EXECUTE));
-        assertTrue(permissionsFromMode(0002).contains(OTHERS_WRITE));
-        assertTrue(permissionsFromMode(0004).contains(OTHERS_READ));
+        assertTrue(permissionsFromMode(0001).containsAll(Set.of(OTHERS_EXECUTE)));
+        assertTrue(permissionsFromMode(0002).containsAll(Set.of(OTHERS_WRITE)));
+        assertTrue(permissionsFromMode(0004).containsAll(Set.of(OTHERS_READ)));
         assertTrue(permissionsFromMode(0003).containsAll(Set.of(OTHERS_EXECUTE, OTHERS_WRITE)));
         assertTrue(permissionsFromMode(0005).containsAll(Set.of(OTHERS_EXECUTE, OTHERS_READ)));
         assertTrue(permissionsFromMode(0006).containsAll(Set.of(OTHERS_WRITE, OTHERS_READ)));
         assertTrue(permissionsFromMode(0007).containsAll(Set.of(OTHERS_EXECUTE, OTHERS_WRITE, OTHERS_READ)));
 
-        assertTrue(permissionsFromMode(0010).contains(GROUP_EXECUTE));
-        assertTrue(permissionsFromMode(0020).contains(GROUP_WRITE));
-        assertTrue(permissionsFromMode(0040).contains(GROUP_READ));
+        assertTrue(permissionsFromMode(0010).containsAll(Set.of(GROUP_EXECUTE)));
+        assertTrue(permissionsFromMode(0020).containsAll(Set.of(GROUP_WRITE)));
+        assertTrue(permissionsFromMode(0040).containsAll(Set.of(GROUP_READ)));
         assertTrue(permissionsFromMode(0030).containsAll(Set.of(GROUP_EXECUTE, GROUP_WRITE)));
         assertTrue(permissionsFromMode(0050).containsAll(Set.of(GROUP_EXECUTE, GROUP_READ)));
         assertTrue(permissionsFromMode(0060).containsAll(Set.of(GROUP_WRITE, GROUP_READ)));
         assertTrue(permissionsFromMode(0070).containsAll(Set.of(GROUP_EXECUTE, GROUP_WRITE, GROUP_READ)));
 
-        assertTrue(permissionsFromMode(0100).contains(OWNER_EXECUTE));
-        assertTrue(permissionsFromMode(0200).contains(OWNER_WRITE));
-        assertTrue(permissionsFromMode(0400).contains(OWNER_READ));
+        assertTrue(permissionsFromMode(0100).containsAll(Set.of(OWNER_EXECUTE)));
+        assertTrue(permissionsFromMode(0200).containsAll(Set.of(OWNER_WRITE)));
+        assertTrue(permissionsFromMode(0400).containsAll(Set.of(OWNER_READ)));
         assertTrue(permissionsFromMode(0300).containsAll(Set.of(OWNER_EXECUTE, OWNER_WRITE)));
         assertTrue(permissionsFromMode(0500).containsAll(Set.of(OWNER_EXECUTE, OWNER_READ)));
         assertTrue(permissionsFromMode(0600).containsAll(Set.of(OWNER_WRITE, OWNER_READ)));

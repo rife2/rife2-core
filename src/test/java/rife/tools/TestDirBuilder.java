@@ -100,7 +100,9 @@ public class TestDirBuilder {
     @Test
     void testDirBuilderDirWithAction()
     throws IOException {
-        var builder = new DirBuilder(tmp, d -> d.dir("subdir"));
+        var builder = new DirBuilder(tmp, d -> {
+            d.dir("subdir");
+        });
         assertNotNull(builder);
         assertTrue(new File(tmp, "subdir").exists());
     }
@@ -317,7 +319,9 @@ public class TestDirBuilder {
                 s1.file("file1.txt", f1 -> f1.write("hello world"));
                 s1.file("file2.txt", f2 -> f2.write("hello again"));
             });
-            d.dir("subdir2", s2 -> s2.file("file3.txt", f3 -> f3.write("goodbye")));
+            d.dir("subdir2", s2 -> {
+                s2.file("file3.txt", f3 -> f3.write("goodbye"));
+            });
         });
 
         var subdir1 = tmp.toPath().resolve("subdir1").toFile();
@@ -343,8 +347,14 @@ public class TestDirBuilder {
     throws IOException {
         var b = new DirBuilder(tmp, d -> {
             d.dir("subdir1", s1 -> {
-                s1.file("file1.txt", f -> f.write("Hello World!"));
-                s1.dir("subdir2", s2 -> s2.file("file2.txt", f -> f.write("Foo")));
+                s1.file("file1.txt", f -> {
+                    f.write("Hello World!");
+                });
+                s1.dir("subdir2", s2 -> {
+                    s2.file("file2.txt", f -> {
+                        f.write("Foo");
+                    });
+                });
             });
             d.dir("subdir3", s3 -> {
                 s3.file("file3.txt", f -> f.move(path(tmp, "subdir1", "subdir2", "file2.txt")));

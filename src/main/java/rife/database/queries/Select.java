@@ -415,12 +415,14 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        String buffer = "(" +
-                query.toString() +
-                ") AS " +
-                alias;
+        var buffer = new StringBuilder();
 
-        field(buffer);
+        buffer.append("(");
+        buffer.append(query.toString());
+        buffer.append(") AS ");
+        buffer.append(alias);
+
+        field(buffer.toString());
 
         fieldSubselect(query);
 

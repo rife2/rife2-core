@@ -798,6 +798,9 @@ public final class FileUtils {
                     if (!output_file_directory.isDirectory()) {
                         throw new FileUtilsErrorException("Destination '" + output_file_directory.getAbsolutePath() + "' exists and is not a directory.");
                     }
+                    if (!output_file_directory.canWrite()) {
+                        throw new FileUtilsErrorException("Destination '" + output_file_directory.getAbsolutePath() + "' isn't writable.");
+                    }
                 }
 
                 try {
@@ -926,6 +929,8 @@ public final class FileUtils {
 
     /**
      * Generates a sorted directory listing of all files and subdirectories in the specified directory.
+     * <p>
+     * This will be formatted for Posix use.
      *
      * @param directory The root directory to list.
      * @return A string containing a sorted directory listing of all files and subdirectories in the specified directory.
@@ -934,11 +939,12 @@ public final class FileUtils {
      */
     public static String generateDirectoryListing(File directory)
     throws IOException {
+        var trim_prefix = directory.getAbsolutePath().length();
         return Files.walk(Path.of(directory.getAbsolutePath()))
-            .map(path -> path.toAbsolutePath().toString().substring(directory.getAbsolutePath().length()))
+            .map(path -> path.toAbsolutePath().toString().substring(trim_prefix).replace(File.separatorChar, '/'))
             .filter(s -> !s.isEmpty())
             .sorted()
-            .collect(Collectors.joining(System.lineSeparator()));
+            .collect(Collectors.joining("\n"));
     }
 
     /**

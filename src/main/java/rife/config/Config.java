@@ -156,7 +156,18 @@ public class Config implements Cloneable {
     public static Config fromXmlFile(File file, HierarchicalProperties properties)
     throws ConfigErrorException {
         if (null == file) throw new IllegalArgumentException("file can't be null.");
-        return fromXmlResource(file.getAbsolutePath(), new ResourceFinderDirectories(new File("/")), properties);
+
+        var xml_config = new Xml2Config(properties, null, null, null, null);
+        try {
+            var content = FileUtils.readString(file);
+            xml_config.processXml(content, new ResourceFinderDirectories(new File("/")));
+
+            return new Config(file,
+                xml_config.getParameters(), xml_config.getFinalParameters(),
+                xml_config.getLists(), xml_config.getFinalLists());
+        } catch (XmlErrorException | FileUtilsErrorException e) {
+            throw new InitializationErrorException(file.getName(), e);
+        }
     }
 
     /**

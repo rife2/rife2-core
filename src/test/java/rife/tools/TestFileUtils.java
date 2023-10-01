@@ -587,8 +587,8 @@ public class TestFileUtils {
         var source = createTempZipFile("test.txt", "test file data");
         source.deleteOnExit();
 
-        // create temporary directory that should not be writable
-        var destination = Files.createTempDirectory("test_dir").toFile();
+        // create temporary file that should not be writable
+        var destination = Files.createTempFile("test_file", "").toFile();
         destination.deleteOnExit();
         destination.setWritable(false);
 

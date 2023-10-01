@@ -5,6 +5,8 @@
 package rife.tools;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
@@ -140,6 +142,7 @@ public class TestDirBuilder {
     }
 
     @Test
+    @DisabledOnOs({OS.WINDOWS})
     void testPermsMode()
     throws IOException {
         var dirBuilder = new DirBuilder(tmp);
@@ -173,6 +176,7 @@ public class TestDirBuilder {
     }
 
     @Test
+    @DisabledOnOs({OS.WINDOWS})
     void testPerms()
     throws IOException {
         var dirBuilder = new DirBuilder(tmp);
@@ -206,6 +210,8 @@ public class TestDirBuilder {
     @Test
     void testFileTouch()
     throws IOException {
+        var before = System.currentTimeMillis();
+
         var tempFile = File.createTempFile("test", ".txt");
         var fileBuilder = new FileBuilder(tempFile);
 
@@ -214,11 +220,13 @@ public class TestDirBuilder {
         assertTrue(tempFile.exists());
 
         // Test updating the last access and last modification time of an existing file
-        var now = System.currentTimeMillis();
         fileBuilder.touch();
         var lastAccessTime = (FileTime) Files.getAttribute(tempFile.toPath(), "lastAccessTime");
-        assertEquals(now, lastAccessTime.toMillis());
-        assertEquals(now, tempFile.lastModified());
+        var after = System.currentTimeMillis();
+        assertTrue(after >= lastAccessTime.toMillis());
+        assertTrue(after >= lastAccessTime.toMillis());
+        assertTrue(before <= tempFile.lastModified());
+        assertTrue(before <= tempFile.lastModified());
     }
 
     @Test
@@ -246,6 +254,7 @@ public class TestDirBuilder {
     }
 
     @Test
+    @DisabledOnOs({OS.WINDOWS})
     void testFilePermsMode()
     throws IOException {
         var tempFile = File.createTempFile("test", ".txt");
@@ -280,6 +289,7 @@ public class TestDirBuilder {
     }
 
     @Test
+    @DisabledOnOs({OS.WINDOWS})
     void testFilePerms()
     throws IOException {
         var tempFile = File.createTempFile("test", ".txt");

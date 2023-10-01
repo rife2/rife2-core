@@ -30,7 +30,8 @@ public class CoreBuild extends AbstractRife2Build {
         compileOperation()
             .mainSourceDirectories(antlr4Operation.outputDirectory())
             .compileOptions()
-                .debuggingInfo(JavacOptions.DebuggingInfo.ALL);
+                .debuggingInfo(JavacOptions.DebuggingInfo.ALL)
+                .addAll(List.of("-encoding", "UTF-8"));
 
         javadocOperation()
             .javadocOptions()

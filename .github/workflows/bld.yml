@@ -158,7 +158,7 @@ jobs:
       - name: Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: 'corretto'
           java-version: ${{ matrix.java-version }}
           check-latest: true
 

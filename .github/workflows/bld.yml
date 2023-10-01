@@ -3,7 +3,7 @@ name: bld-ci
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  build-bld-project-linux:
+  build-linux:
     runs-on: ubuntu-latest
 
     services:
@@ -111,7 +111,7 @@ jobs:
           -DtestsBadgeUrl=https://rife2.com/tests-badge/update/com.uwyn.rife2/rife2-core
           -DtestsBadgeApiKey=${{ secrets.TESTS_BADGE_API_KEY }}
 
-  build-bld-project-macos:
+  build-macos:
     runs-on: macos-latest
 
     strategy:
@@ -137,7 +137,7 @@ jobs:
         run: >-
           ./bld clean download compile test
 
-  build-bld-project-windows:
+  build-windows:
     runs-on: windows-latest
 
     strategy:

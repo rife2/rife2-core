@@ -522,11 +522,13 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
     public Select from(Select query) {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        String buffer = "(" +
-                query.toString() +
-                ")";
+        var buffer = new StringBuilder();
 
-        from(buffer);
+        buffer.append("(");
+        buffer.append(query.toString());
+        buffer.append(")");
+
+        from(buffer.toString());
 
         _tableSubselect(query);
 
@@ -538,12 +540,14 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        String buffer = "(" +
-                query.toString() +
-                ") " +
-                alias;
+        var buffer = new StringBuilder();
 
-        from(buffer);
+        buffer.append("(");
+        buffer.append(query.toString());
+        buffer.append(") ");
+        buffer.append(alias);
+
+        from(buffer.toString());
 
         _tableSubselect(query);
 
@@ -565,12 +569,13 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        String buffer = "(" +
-                query.toString() +
-                ") " +
-                alias;
+        var buffer = new StringBuilder();
+        buffer.append("(");
+        buffer.append(query.toString());
+        buffer.append(") ");
+        buffer.append(alias);
 
-        join(buffer);
+        join(buffer.toString());
 
         tableSubselect(query);
 

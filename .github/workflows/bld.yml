@@ -140,6 +140,22 @@ jobs:
   build-bld-project-windows:
     runs-on: windows-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: unittests
+          POSTGRES_PASSWORD: password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: unittests
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     strategy:
       matrix:
         java-version: [ 17, 20 ]
@@ -165,3 +181,4 @@ jobs:
       - name: Run tests
         run: >-
           .\bld.bat clean download compile test
+          -Dtest.postgres=true

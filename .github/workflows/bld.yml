@@ -145,7 +145,11 @@ jobs:
         java-version: [ 17, 20 ]
 
     steps:
+      - name: Configure git line endings
+        run: git config --global core.autocrlf input
+
       - name: Checkout source repository
+        run: git config --global core.autocrlf input
         uses: actions/checkout@v4
         with:
           clean: true

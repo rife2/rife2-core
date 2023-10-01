@@ -1208,4 +1208,17 @@ public class TestStringUtils {
                 "            \r\n" +
                 "bbb\n"));
     }
+
+    @Test
+    void testConvertLineSeparator() {
+        var lines = new String[] {
+            "one",
+            "two",
+            "three"
+        };
+
+        assertEquals(StringUtils.convertLineSeparator(StringUtils.join(lines, "\n")), StringUtils.join(lines, System.lineSeparator()));
+
+        assertEquals(StringUtils.convertLineSeparator(StringUtils.join(lines, System.lineSeparator())), StringUtils.join(lines, System.lineSeparator()));
+    }
 }

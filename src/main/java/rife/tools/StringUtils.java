@@ -3063,4 +3063,16 @@ public final class StringUtils {
         }
         return result.toString();
     }
+
+    /**
+     * Replaces {@code \n} with the system line separator.
+     *
+     * @param text the string in which the line separator should be replaced
+     * @return the new string with the replaced line separator
+     * @since 1.7.2
+     */
+    public static String convertLineSeparator(String text) {
+        var result = text.replace("\n", System.lineSeparator());
+        return result.replace("\r\r\n", System.lineSeparator());
+    }
 }

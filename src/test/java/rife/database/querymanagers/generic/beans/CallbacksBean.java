@@ -62,7 +62,7 @@ public class CallbacksBean extends Validation implements Callbacks<CallbacksBean
     }
 
     public static void clearExecuteCallbacks() {
-        sExecutedCallbacks = new ArrayList<String>();
+        sExecutedCallbacks = new ArrayList<>();
     }
 
     public void setBeforeValidateReturn(boolean beforeValidateReturn) {

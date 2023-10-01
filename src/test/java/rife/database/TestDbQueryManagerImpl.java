@@ -48,7 +48,7 @@ public abstract class TestDbQueryManagerImpl extends DbQueryManager {
 
         if (id <= 0) throw new IllegalArgumentException("id must be positive");
         if (null == value) throw new IllegalArgumentException("value can't be null");
-        if (0 == value.length()) throw new IllegalArgumentException("value can't be empty");
+        if (value.isEmpty()) throw new IllegalArgumentException("value can't be empty");
 
         if (0 == executeUpdate(store, new DbPreparedStatementHandler() {
             public void setParameters(DbPreparedStatement statement) {

@@ -83,7 +83,7 @@ public class TestDbBeanFetcher {
                         query_select
                             .from("tmp_beanmanager")
                             .fields(BeanImpl.class);
-                        fetcher = new DbBeanFetcher<BeanImpl>(datasource, BeanImpl.class);
+                        fetcher = new DbBeanFetcher<>(datasource, BeanImpl.class);
 
                         BeanImpl bean = null;
                         DbStatement statement = null;
@@ -173,7 +173,7 @@ public class TestDbBeanFetcher {
                         query_select
                             .from("tmp_beanmanager")
                             .fields(BeanImpl.class);
-                        fetcher = new DbBeanFetcher<BeanImpl>(datasource, BeanImpl.class);
+                        fetcher = new DbBeanFetcher<>(datasource, BeanImpl.class);
 
                         BeanImpl bean = null;
                         DbStatement statement = null;

@@ -313,6 +313,6 @@ public class DrupalPassword {
         } while (--count > 0);
 
         var output = setting + passwordBase64Encode(hash, hash.length);
-        return (output.length() > 0) ? output.substring(0, DRUPAL_HASH_LENGTH) : null;
+        return (!output.isEmpty()) ? output.substring(0, DRUPAL_HASH_LENGTH) : null;
     }
 }

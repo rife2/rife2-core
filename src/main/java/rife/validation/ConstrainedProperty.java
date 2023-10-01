@@ -194,7 +194,7 @@ public class ConstrainedProperty implements Cloneable {
      */
     public ConstrainedProperty(String propertyName) {
         if (null == propertyName) throw new IllegalArgumentException("propertyName can't be null.");
-        if (0 == propertyName.length()) throw new IllegalArgumentException("propertyName can't be empty.");
+        if (propertyName.isEmpty()) throw new IllegalArgumentException("propertyName can't be empty.");
 
         propertyName_ = propertyName;
     }

@@ -97,7 +97,7 @@ public class TestValidationBuilderHtml {
         assertEquals(raw_content, template.getContent());
         assertEquals(0, builder.generateValidationErrors(template, null, null, null).size());
         assertEquals(raw_content, template.getContent());
-        assertEquals(0, builder.generateValidationErrors(template, new ArrayList<ValidationError>(), null, null).size());
+        assertEquals(0, builder.generateValidationErrors(template, new ArrayList<>(), null, null).size());
         assertEquals(raw_content, template.getContent());
     }
 
@@ -330,7 +330,7 @@ public class TestValidationBuilderHtml {
         String raw_content = template.getContent();
         builder.removeValidationErrors(template, null, null);
         assertEquals(raw_content, template.getContent());
-        builder.removeValidationErrors(template, new ArrayList<String>(), null);
+        builder.removeValidationErrors(template, new ArrayList<>(), null);
         assertEquals(raw_content, template.getContent());
     }
 
@@ -425,7 +425,7 @@ public class TestValidationBuilderHtml {
         assertNotNull(template);
         assertEquals(0, builder.generateErrorMarkings(template, null, null, null).size());
         assertEquals(raw_content, template.getContent());
-        assertEquals(0, builder.generateErrorMarkings(template, new ArrayList<ValidationError>(), null, null).size());
+        assertEquals(0, builder.generateErrorMarkings(template, new ArrayList<>(), null, null).size());
         assertEquals(raw_content, template.getContent());
     }
 
@@ -614,7 +614,7 @@ public class TestValidationBuilderHtml {
         String raw_content = template.getContent();
         builder.removeErrorMarkings(template, null, null);
         assertEquals(raw_content, template.getContent());
-        builder.removeErrorMarkings(template, new ArrayList<String>(), null);
+        builder.removeErrorMarkings(template, new ArrayList<>(), null);
         assertEquals(raw_content, template.getContent());
     }
 

@@ -16,21 +16,21 @@ public class FilteredTagsMap extends HashMap<String, FilteredTags> {
 
     public boolean containsFilter(String filter) {
         if (null == filter) throw new IllegalArgumentException("filter can't be null.");
-        if (0 == filter.length()) throw new IllegalArgumentException("filter can't be empty.");
+        if (filter.isEmpty()) throw new IllegalArgumentException("filter can't be empty.");
 
         return containsKey(filter);
     }
 
     public FilteredTags getFilteredTag(String filter) {
         if (null == filter) throw new IllegalArgumentException("filter can't be null.");
-        if (0 == filter.length()) throw new IllegalArgumentException("filter can't be empty.");
+        if (filter.isEmpty()) throw new IllegalArgumentException("filter can't be empty.");
 
         return get(filter);
     }
 
     void addFilteredTag(String filter, String[] capturedGroups) {
         assert filter != null;
-        assert filter.length() > 0;
+        assert !filter.isEmpty();
         assert capturedGroups != null;
 
         var filtered_values = getFilteredTag(filter);

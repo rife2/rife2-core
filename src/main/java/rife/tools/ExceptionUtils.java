@@ -36,7 +36,7 @@ public final class ExceptionUtils {
         var messages = new StringBuilder();
         var t = exception;
         while (t != null) {
-            if (messages.length() > 0) {
+            if (!messages.isEmpty()) {
                 messages.append("; ");
             }
             messages.append(StringUtils.replace(t.getMessage(), "\n", ""));

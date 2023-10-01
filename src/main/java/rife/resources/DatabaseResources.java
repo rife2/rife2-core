@@ -5,8 +5,6 @@
 package rife.resources;
 
 import rife.database.Datasource;
-import rife.database.DbPreparedStatement;
-import rife.database.DbPreparedStatementHandler;
 import rife.database.DbQueryManager;
 import rife.database.exceptions.DatabaseException;
 import rife.database.queries.*;
@@ -100,7 +98,7 @@ public abstract class DatabaseResources extends DbQueryManager implements Resour
         assert addResource != null;
 
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (null == content) throw new IllegalArgumentException("content can't be null.");
 
         try {
@@ -118,7 +116,7 @@ public abstract class DatabaseResources extends DbQueryManager implements Resour
         assert updateResource != null;
 
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (null == content) throw new IllegalArgumentException("content can't be null.");
 
         var result = false;
@@ -142,7 +140,7 @@ public abstract class DatabaseResources extends DbQueryManager implements Resour
         assert removeResource != null;
 
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
 
         var result = false;
 

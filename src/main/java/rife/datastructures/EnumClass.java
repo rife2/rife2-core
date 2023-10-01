@@ -78,8 +78,7 @@ public abstract class EnumClass<IdentifierType> {
             return false;
         }
 
-        if (object instanceof EnumClass) {
-            EnumClass other_enumclass = (EnumClass) object;
+        if (object instanceof EnumClass other_enumclass) {
             if (null != other_enumclass &&
                 other_enumclass.identifier_.equals(identifier_)) {
                 return true;

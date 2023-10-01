@@ -70,7 +70,7 @@ public class TestObjectUtils {
         ProtectedCloneable protected_cloneable_orig = new ProtectedCloneable(89);
         assertNull(ObjectUtils.genericClone(protected_cloneable_orig));
 
-        ArrayList<String> string_collection_orig = new ArrayList<String>();
+        ArrayList<String> string_collection_orig = new ArrayList<>();
         string_collection_orig.add("one");
         string_collection_orig.add("two");
         ArrayList<String> string_collection_copy = ObjectUtils.genericClone(string_collection_orig);
@@ -84,7 +84,7 @@ public class TestObjectUtils {
         assertNotSame(cloneable_orig, cloneable_copy);
         assertEquals(cloneable_orig.getDate(), cloneable_copy.getDate());
 
-        ArrayList<Date> date_collection_orig = new ArrayList<Date>();
+        ArrayList<Date> date_collection_orig = new ArrayList<>();
         date_collection_orig.add(new Date());
         date_collection_orig.add(new Date());
         ArrayList<Date> date_collection_copy = ObjectUtils.genericClone(date_collection_orig);
@@ -265,7 +265,7 @@ public class TestObjectUtils {
             assertEquals(date_multiarray_orig[0][0], date_multiarray_copy[0][0]);
             assertEquals(date_multiarray_orig[1][0], date_multiarray_copy[1][0]);
 
-            ArrayList<String> string_collection_orig = new ArrayList<String>();
+            ArrayList<String> string_collection_orig = new ArrayList<>();
             string_collection_orig.add("one");
             string_collection_orig.add("two");
             ArrayList<String> string_collection_copy = ObjectUtils.deepClone(string_collection_orig);
@@ -274,7 +274,7 @@ public class TestObjectUtils {
             assertSame(string_collection_orig.get(0), string_collection_copy.get(0));
             assertSame(string_collection_orig.get(1), string_collection_copy.get(1));
 
-            ArrayList<Date> date_collection_orig = new ArrayList<Date>();
+            ArrayList<Date> date_collection_orig = new ArrayList<>();
             date_collection_orig.add(new Date());
             date_collection_orig.add(new Date());
             ArrayList<Date> date_collection_copy = ObjectUtils.deepClone(date_collection_orig);
@@ -285,7 +285,7 @@ public class TestObjectUtils {
             assertEquals(date_collection_orig.get(0), date_collection_copy.get(0));
             assertEquals(date_collection_orig.get(1), date_collection_copy.get(1));
 
-            LinkedHashMap<String, String> string_map_orig = new LinkedHashMap<String, String>();
+            LinkedHashMap<String, String> string_map_orig = new LinkedHashMap<>();
             string_map_orig.put("k1", "v1");
             string_map_orig.put("k2", "v2");
             string_map_orig.put("k3", "v3");
@@ -306,7 +306,7 @@ public class TestObjectUtils {
                 assertSame(string_map_orig_entry.getValue(), string_map_copy_entry.getValue());
             }
 
-            LinkedHashMap<Date, Date> date_map_orig = new LinkedHashMap<Date, Date>();
+            LinkedHashMap<Date, Date> date_map_orig = new LinkedHashMap<>();
             date_map_orig.put(new Date(), new Date());
             date_map_orig.put(new Date(), new Date());
             date_map_orig.put(new Date(), new Date());

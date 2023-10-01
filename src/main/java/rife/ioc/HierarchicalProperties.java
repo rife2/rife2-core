@@ -529,7 +529,7 @@ public class HierarchicalProperties {
         }
 
         if (null == result ||
-            0 == result.length()) {
+                result.isEmpty()) {
             return defaultValue;
         }
 
@@ -589,7 +589,7 @@ public class HierarchicalProperties {
     throws PropertyValueException {
         if (null == name ||
             null == type ||
-            0 == name.length()) {
+                name.isEmpty()) {
             return defaultValue;
         }
 

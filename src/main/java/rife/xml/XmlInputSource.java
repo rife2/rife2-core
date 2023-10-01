@@ -4,13 +4,10 @@
  */
 package rife.xml;
 
-import rife.resources.ResourceFinder;
-import rife.xml.exceptions.CantFindResourceException;
 import rife.xml.exceptions.XmlErrorException;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
 
 import org.xml.sax.InputSource;
 

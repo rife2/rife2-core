@@ -10,10 +10,8 @@ import rife.validation.MetaData;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.Date;
 import java.util.Locale;
@@ -456,11 +454,10 @@ public class BeanImpl3 extends MetaData {
                 return false;
             }
 
-            if (!(other instanceof SerializableType)) {
+            if (!(other instanceof SerializableType other_datalink)) {
                 return false;
             }
 
-            var other_datalink = (SerializableType) other;
             if (!other_datalink.getString().equals(getString())) {
                 return false;
             }

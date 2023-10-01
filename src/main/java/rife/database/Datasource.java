@@ -122,9 +122,9 @@ public class Datasource implements AutoCloseable, Cloneable {
         setPoolSize(poolSize);
 
         assert driver_ != null;
-        assert driver_.length() > 0;
+        assert !driver_.isEmpty();
         assert url_ != null;
-        assert url_.length() > 0;
+        assert !url_.isEmpty();
     }
 
     /**
@@ -352,7 +352,7 @@ public class Datasource implements AutoCloseable, Cloneable {
      */
     public void setDriver(String driver) {
         if (null == driver) throw new IllegalArgumentException("driver can't be null.");
-        if (0 == driver.length()) throw new IllegalArgumentException("driver can't be empty.");
+        if (driver.isEmpty()) throw new IllegalArgumentException("driver can't be empty.");
         if (connectionPool_.isInitialized())
             throw new IllegalArgumentException("driver can't be changed after the connection pool has been set up.");
 
@@ -411,7 +411,7 @@ public class Datasource implements AutoCloseable, Cloneable {
      */
     public void setUrl(String url) {
         if (null == url) throw new IllegalArgumentException("url can't be null.");
-        if (0 == url.length()) throw new IllegalArgumentException("url can't be empty.");
+        if (url.isEmpty()) throw new IllegalArgumentException("url can't be empty.");
         if (connectionPool_.isInitialized())
             throw new IllegalArgumentException("url can't be changed after the connection pool has been set up.");
 

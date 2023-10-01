@@ -42,7 +42,7 @@ public class XmlEntityResolver implements EntityResolver {
 
     public InputSource resolveEntity(String publicId, String systemId) {
         assert systemId != null;
-        assert systemId.length() > 0;
+        assert !systemId.isEmpty();
 
         if (catalog_ != null) {
             var alias = catalog_.get(systemId);

@@ -223,13 +223,12 @@ public class DbStatement implements Cloneable, AutoCloseable {
 
     protected void outputTrace(long start, String sql) {
         if (start != 0) {
-            StringBuilder output = new StringBuilder();
 
-            output.append(System.currentTimeMillis() - start);
-            output.append("ms : ");
-            output.append(sql);
+            String output = (System.currentTimeMillis() - start) +
+                    "ms : " +
+                    sql;
 
-            Logger.getLogger("rife.database").info(output.toString());
+            Logger.getLogger("rife.database").info(output);
         }
     }
 

@@ -133,7 +133,7 @@ public class TestDirBuilder {
         builder.dir("subdir", d -> d.file("file", f -> f.write("hello")));
         assertTrue(new File(tmp, "subdir").exists());
         assertTrue(new File(new File(tmp, "subdir"), "file").exists());
-        builder.dir("subdir", d -> d.delete());
+        builder.dir("subdir", DirBuilder::delete);
         assertFalse(new File(tmp, "subdir").exists());
         assertFalse(new File(new File(tmp, "subdir"), "file").exists());
         assertFalse(new File(tmp, "file").exists());

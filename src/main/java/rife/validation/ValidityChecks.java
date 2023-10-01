@@ -27,7 +27,7 @@ public abstract class ValidityChecks {
         }
 
         String value_string = value.toString();
-        return 0 != StringUtils.trim(value_string).length();
+        return !StringUtils.trim(value_string).isEmpty();
     }
 
     public static boolean checkNotBlank(CharSequence value) {
@@ -301,12 +301,12 @@ public abstract class ValidityChecks {
     public static boolean checkRegexp(CharSequence value, String pattern) {
         if (null == value ||
             null == pattern ||
-            0 == pattern.length()) {
+                pattern.isEmpty()) {
             return true;
         }
 
         String string = value.toString();
-        if (0 == string.length()) {
+        if (string.isEmpty()) {
             return true;
         }
 
@@ -331,7 +331,7 @@ public abstract class ValidityChecks {
         }
 
         String string = value.toString();
-        if (0 == string.length()) {
+        if (string.isEmpty()) {
             return true;
         }
 
@@ -358,11 +358,10 @@ public abstract class ValidityChecks {
 
     public static boolean checkLimitedDate(Object value, Date min, Date max) {
         if (null == value ||
-            !(value instanceof Date)) {
+            !(value instanceof Date date)) {
             return true;
         }
 
-        Date date = (Date) value;
         if (min != null &&
             date.before(min)) {
             return false;
@@ -390,7 +389,7 @@ public abstract class ValidityChecks {
         Arrays.sort(sorted);
 
         for (String string : strings) {
-            if (0 == string.length()) {
+            if (string.isEmpty()) {
                 continue;
             }
 
@@ -490,12 +489,11 @@ public abstract class ValidityChecks {
             return true;
         }
 
-        if (!(value instanceof String)) {
+        if (!(value instanceof String string)) {
             return true;
         }
 
 
-        String string = (String) value;
         try {
             Object parsed = format.parseObject(string);
             if (null == parsed) {

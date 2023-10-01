@@ -65,7 +65,7 @@ public class QueryParameters implements Cloneable {
 
     public Set<String> getDistinctNames() {
         if (null == parameters_ ||
-            0 == parameters_.size()) {
+                parameters_.isEmpty()) {
             return null;
         }
 
@@ -86,14 +86,11 @@ public class QueryParameters implements Cloneable {
             ArrayList<String> combined_parameters = null;
 
             if (parameters_ != null &&
-                parameters_.size() > 0) {
+                    !parameters_.isEmpty()) {
                 if (parameters_.containsKey(QueryParameterType.FIELD)) {
-                    combined_parameters = new ArrayList<>();
 
-                    for (var parameter : (List<String>) parameters_.get(QueryParameterType.FIELD)) {
-                        // add the parameter to the combined list
-                        combined_parameters.add(parameter);
-                    }
+                    // add the parameter to the combined list
+                    combined_parameters = new ArrayList<>((List<String>) parameters_.get(QueryParameterType.FIELD));
                 }
 
                 if (parameters_.containsKey(QueryParameterType.TABLE)) {
@@ -101,10 +98,8 @@ public class QueryParameters implements Cloneable {
                         combined_parameters = new ArrayList<>();
                     }
 
-                    for (var parameter : (List<String>) parameters_.get(QueryParameterType.TABLE)) {
-                        // add the parameter to the combined list
-                        combined_parameters.add(parameter);
-                    }
+                    // add the parameter to the combined list
+                    combined_parameters.addAll((List<String>) parameters_.get(QueryParameterType.TABLE));
                 }
 
                 if (parameters_.containsKey(QueryParameterType.WHERE)) {
@@ -112,10 +107,8 @@ public class QueryParameters implements Cloneable {
                         combined_parameters = new ArrayList<>();
                     }
 
-                    for (var parameter : (List<String>) parameters_.get(QueryParameterType.WHERE)) {
-                        // add the parameter to the combined list
-                        combined_parameters.add(parameter);
-                    }
+                    // add the parameter to the combined list
+                    combined_parameters.addAll((List<String>) parameters_.get(QueryParameterType.WHERE));
                 }
 
                 if (parameters_.containsKey(QueryParameterType.UNION)) {
@@ -123,10 +116,8 @@ public class QueryParameters implements Cloneable {
                         combined_parameters = new ArrayList<>();
                     }
 
-                    for (var parameter : (List<String>) parameters_.get(QueryParameterType.UNION)) {
-                        // add the parameter to the combined list
-                        combined_parameters.add(parameter);
-                    }
+                    // add the parameter to the combined list
+                    combined_parameters.addAll((List<String>) parameters_.get(QueryParameterType.UNION));
                 }
 
                 if (parameters_.containsKey(QueryParameterType.LIMIT) ||
@@ -201,7 +192,7 @@ public class QueryParameters implements Cloneable {
         Map<Integer, Integer> map = null;
 
         if (parameters_ != null &&
-            parameters_.size() > 0 &&
+                !parameters_.isEmpty() &&
             virtualParameters != null &&
             virtualParameters.getNumberOfTypes() > 0) {
             map = new HashMap<>();
@@ -264,7 +255,7 @@ public class QueryParameters implements Cloneable {
 
     public String[] getOrderedNamesArray() {
         if (null == parameters_ ||
-            0 == parameters_.size()) {
+                parameters_.isEmpty()) {
             return null;
         }
 
@@ -314,7 +305,7 @@ public class QueryParameters implements Cloneable {
 
         // don't add empty parameters
         if (null == parameters ||
-            0 == parameters.size()) {
+                parameters.isEmpty()) {
             return;
         }
 
@@ -355,7 +346,7 @@ public class QueryParameters implements Cloneable {
 
             // remove the table-field separator dot
             if (value.contains(".")) {
-                value = value.substring(value.lastIndexOf(".") + 1);
+                value = value.substring(value.lastIndexOf('.') + 1);
             }
         }
 
@@ -422,8 +413,7 @@ public class QueryParameters implements Cloneable {
                     if (entry.getKey().isSingular()) {
                         new_instance.parameters_.put(entry.getKey(), entry.getValue());
                     } else {
-                        List<String> values = new ArrayList<>();
-                        values.addAll((List<String>) entry.getValue());
+                        List<String> values = new ArrayList<>((List<String>) entry.getValue());
                         new_instance.parameters_.put(entry.getKey(), values);
                     }
                 }

@@ -5,7 +5,6 @@
 package rife.validation.instrument;
 
 import rife.asm.ClassReader;
-import rife.asm.ClassVisitor;
 import rife.asm.ClassWriter;
 import rife.validation.MetaDataMerged;
 

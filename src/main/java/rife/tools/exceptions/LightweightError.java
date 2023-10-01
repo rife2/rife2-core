@@ -5,7 +5,6 @@
 package rife.tools.exceptions;
 
 import java.io.Serial;
-import java.lang.reflect.Method;
 
 /**
  * An error that is intended to be as lightweight as possible.

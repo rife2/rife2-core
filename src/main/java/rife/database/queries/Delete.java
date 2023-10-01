@@ -8,7 +8,6 @@ import rife.database.Datasource;
 import rife.database.capabilities.Capabilities;
 import rife.database.exceptions.TableNameRequiredException;
 import rife.database.exceptions.UnsupportedSqlFeatureException;
-import rife.template.Template;
 import rife.template.TemplateFactory;
 import rife.tools.StringUtils;
 
@@ -73,7 +72,7 @@ public class Delete extends AbstractWhereQuery<Delete> implements Cloneable {
                 template.setValue("TABLE", from_);
 
                 if (where_ != null &&
-                    where_.length() > 0) {
+                        !where_.isEmpty()) {
                     template.setValue("CONDITION", where_);
                     template.setValue("WHERE", template.getBlock("WHERE"));
                 }
@@ -81,7 +80,7 @@ public class Delete extends AbstractWhereQuery<Delete> implements Cloneable {
                 sql_ = template.getBlock("QUERY");
 
                 assert sql_ != null;
-                assert sql_.length() > 0;
+                assert !sql_.isEmpty();
             }
         }
 
@@ -97,7 +96,7 @@ public class Delete extends AbstractWhereQuery<Delete> implements Cloneable {
 
     public Delete from(String from) {
         if (null == from) throw new IllegalArgumentException("from can't be null.");
-        if (0 == from.length()) throw new IllegalArgumentException("from can't be empty.");
+        if (from.isEmpty()) throw new IllegalArgumentException("from can't be empty.");
 
         clearGenerated();
         from_ = from;

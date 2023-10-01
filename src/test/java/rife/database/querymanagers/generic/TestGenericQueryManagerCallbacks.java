@@ -633,7 +633,7 @@ public class TestGenericQueryManagerCallbacks {
 
             manager.delete(id);
             assertEquals("beforeDelete " + id + "\n" +
-                         "afterDelete true " + id + "", StringUtils.join(CallbacksBean.getExecutedCallbacks(), "\n"));
+                         "afterDelete true " + id, StringUtils.join(CallbacksBean.getExecutedCallbacks(), "\n"));
         } finally {
             tearDownCallbacksBean(manager);
         }
@@ -657,7 +657,7 @@ public class TestGenericQueryManagerCallbacks {
 
             CallbacksBean.setBeforeDeleteReturn(false);
             manager.delete(id);
-            assertEquals("beforeDelete " + id + "", StringUtils.join(CallbacksBean.getExecutedCallbacks(), "\n"));
+            assertEquals("beforeDelete " + id, StringUtils.join(CallbacksBean.getExecutedCallbacks(), "\n"));
 
             assertNotNull(manager.restore(id));
 
@@ -693,7 +693,7 @@ public class TestGenericQueryManagerCallbacks {
                 assertEquals("deleted0", entry.getKey());
                 assertEquals(id, entry.getValue());
                 assertEquals("beforeDelete " + id + "\n" +
-                             "afterDelete true " + id + "", StringUtils.join(CallbacksBean.getExecutedCallbacks(), "\n"));
+                             "afterDelete true " + id, StringUtils.join(CallbacksBean.getExecutedCallbacks(), "\n"));
             } finally {
                 manager.removeListeners();
             }

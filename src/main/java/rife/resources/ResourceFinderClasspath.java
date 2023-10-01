@@ -15,7 +15,6 @@ import rife.tools.exceptions.FileUtilsErrorException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * This class offers {@code ResourceFinder} capabilities for resources that

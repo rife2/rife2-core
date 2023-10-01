@@ -38,12 +38,12 @@ public abstract class AbstractTemplate implements Template {
     public final void appendBlock(String valueId, String blockId)
     throws TemplateException {
         if (null == valueId ||
-            0 == valueId.length() ||
+                valueId.isEmpty() ||
             !hasValueId(valueId)) {
             throw new ValueUnknownException(valueId);
         }
         if (null == blockId ||
-            0 == blockId.length()) {
+                blockId.isEmpty()) {
             throw new BlockUnknownException(blockId);
         }
 
@@ -78,12 +78,12 @@ public abstract class AbstractTemplate implements Template {
     public final void setBlock(String valueId, String blockId)
     throws TemplateException {
         if (null == valueId ||
-            0 == valueId.length() ||
+                valueId.isEmpty() ||
             !hasValueId(valueId)) {
             throw new ValueUnknownException(valueId);
         }
         if (null == blockId ||
-            0 == blockId.length()) {
+                blockId.isEmpty()) {
             throw new BlockUnknownException(blockId);
         }
 
@@ -100,7 +100,7 @@ public abstract class AbstractTemplate implements Template {
     public String getBlock(String id)
     throws TemplateException {
         if (null == id ||
-            0 == id.length()) {
+                id.isEmpty()) {
             throw new BlockUnknownException(id);
         }
 
@@ -137,7 +137,7 @@ public abstract class AbstractTemplate implements Template {
             return;
         }
         if (null == id ||
-            0 == id.length()) {
+                id.isEmpty()) {
             throw new BlockUnknownException(id);
         }
 
@@ -178,7 +178,7 @@ public abstract class AbstractTemplate implements Template {
     public final List<CharSequence> getDeferredBlock(String id)
     throws TemplateException {
         if (null == id ||
-            0 == id.length()) {
+                id.isEmpty()) {
             throw new BlockUnknownException(id);
         }
 
@@ -269,7 +269,7 @@ public abstract class AbstractTemplate implements Template {
     private void _evaluateL10nTags(List<String> setValues) {
         // process the localization keys
         var l10n_tags = getFilteredValues(TemplateFactoryFilters.TAG_L10N);
-        if (l10n_tags != null && l10n_tags.size() > 0) {
+        if (l10n_tags != null && !l10n_tags.isEmpty()) {
             String l10n_key;
             String l10n_value;
             String l10n_bundle;
@@ -370,7 +370,7 @@ public abstract class AbstractTemplate implements Template {
     public final void setValue(String id, List<CharSequence> deferredContent)
     throws TemplateException {
         if (null == id ||
-            0 == id.length() ||
+                id.isEmpty() ||
             !hasValueId(id)) {
             throw new ValueUnknownException(id);
         }
@@ -384,7 +384,7 @@ public abstract class AbstractTemplate implements Template {
     public final void setValue(String id, InternalValue internalValue)
     throws TemplateException {
         if (null == id ||
-            0 == id.length() ||
+                id.isEmpty() ||
             !hasValueId(id)) {
             throw new ValueUnknownException(id);
         }
@@ -460,7 +460,7 @@ public abstract class AbstractTemplate implements Template {
     public final void setValue(String id, CharSequence value)
     throws TemplateException {
         if (null == id ||
-            0 == id.length() ||
+                id.isEmpty() ||
             !hasValueId(id)) {
             throw new ValueUnknownException(id);
         }
@@ -560,7 +560,7 @@ public abstract class AbstractTemplate implements Template {
     public final void appendValue(String id, String value)
     throws TemplateException {
         if (null == id ||
-            0 == id.length() ||
+                id.isEmpty() ||
             !hasValueId(id)) {
             throw new ValueUnknownException(id);
         }
@@ -587,7 +587,7 @@ public abstract class AbstractTemplate implements Template {
     public final String getValue(String id)
     throws TemplateException {
         if (null == id ||
-            0 == id.length() ||
+                id.isEmpty() ||
             !hasValueId(id)) {
             throw new ValueUnknownException(id);
         }
@@ -628,7 +628,7 @@ public abstract class AbstractTemplate implements Template {
 
     public final boolean hasBlock(String id) {
         if (null == id ||
-            0 == id.length()) {
+                id.isEmpty()) {
             return false;
         }
 
@@ -639,7 +639,7 @@ public abstract class AbstractTemplate implements Template {
 
     public final boolean isValueSet(String id) {
         if (null == id ||
-            0 == id.length()) {
+                id.isEmpty()) {
             return false;
         }
         return !generatedValues_.contains(id) && (fixedValues_.containsKey(id) || constructedValues_.containsKey(id));
@@ -647,7 +647,7 @@ public abstract class AbstractTemplate implements Template {
 
     public final boolean isValueGenerated(String id) {
         if (null == id ||
-            0 == id.length()) {
+                id.isEmpty()) {
             return false;
         }
 
@@ -668,7 +668,7 @@ public abstract class AbstractTemplate implements Template {
 
     public final void removeValue(String id) {
         if (null == id ||
-            0 == id.length() ||
+                id.isEmpty() ||
             !hasValueId(id)) {
             throw new ValueUnknownException(id);
         }
@@ -680,7 +680,7 @@ public abstract class AbstractTemplate implements Template {
 
     public final void removeValues(Collection<String> ids) {
         if (null == ids ||
-            0 == ids.size()) {
+                ids.isEmpty()) {
             return;
         }
 
@@ -748,7 +748,7 @@ public abstract class AbstractTemplate implements Template {
 
     protected final void appendValueExternalForm(String id, String tag, ExternalValue result) {
         assert id != null;
-        assert id.length() != 0;
+        assert !id.isEmpty();
 
         CharSequence fixed_value = potentiallyEvaluateRenderTag(id);
         if (fixed_value == null) {
@@ -885,7 +885,7 @@ public abstract class AbstractTemplate implements Template {
     }
 
     public final boolean hasResourceBundles() {
-        return resourceBundles_ != null && resourceBundles_.size() > 0;
+        return resourceBundles_ != null && !resourceBundles_.isEmpty();
     }
 
     public void setLanguage(String lang) {
@@ -991,7 +991,7 @@ public abstract class AbstractTemplate implements Template {
                 return true;
             }
 
-            if (templateDependencies.size() > 0) {
+            if (!templateDependencies.isEmpty()) {
                 for (var dependency_resource : templateDependencies.keySet()) {
                     if (Parser.getModificationTime(resourceFinder, dependency_resource) > templateDependencies.get(dependency_resource)) {
                         return true;
@@ -1030,9 +1030,7 @@ public abstract class AbstractTemplate implements Template {
         new_template.defaultContentType_ = defaultContentType_;
 
         new_template.generatedValues_ = new HashSet<>();
-        for (var value_id : generatedValues_) {
-            new_template.generatedValues_.add(value_id);
-        }
+        new_template.generatedValues_.addAll(generatedValues_);
 
         new_template.fixedValues_ = new HashMap<>();
         for (var value_id : fixedValues_.keySet()) {

@@ -43,7 +43,7 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
 
     public QueryType where(String where) {
         if (null == where) throw new IllegalArgumentException("where can't be null.");
-        if (0 == where.length()) throw new IllegalArgumentException("where can't be empty.");
+        if (where.isEmpty()) throw new IllegalArgumentException("where can't be empty.");
 
         clearGenerated();
         clearWhereParameters();
@@ -54,13 +54,13 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
     }
 
     public WhereGroup<QueryType> startWhere() {
-        return new WhereGroup<QueryType>(getDatasource(), this);
+        return new WhereGroup<>(getDatasource(), this);
     }
 
     public QueryType whereAnd(String where) {
         if (null == where) throw new IllegalArgumentException("where can't be null.");
-        if (0 == where.length()) throw new IllegalArgumentException("where can't be empty.");
-        if (0 == where_.length())
+        if (where.isEmpty()) throw new IllegalArgumentException("where can't be empty.");
+        if (where_.isEmpty())
             throw new IllegalArgumentException("can't perform whereAnd as initial where operation.");
 
         clearGenerated();
@@ -72,13 +72,13 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
     }
 
     public WhereGroupAnd<QueryType> startWhereAnd() {
-        return new WhereGroupAnd<QueryType>(getDatasource(), this);
+        return new WhereGroupAnd<>(getDatasource(), this);
     }
 
     public QueryType whereOr(String where) {
         if (null == where) throw new IllegalArgumentException("where can't be null.");
-        if (0 == where.length()) throw new IllegalArgumentException("where can't be empty.");
-        if (0 == where_.length())
+        if (where.isEmpty()) throw new IllegalArgumentException("where can't be empty.");
+        if (where_.isEmpty())
             throw new IllegalArgumentException("can't perform whereOr as initial where operation.");
 
         clearGenerated();
@@ -90,7 +90,7 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
     }
 
     public WhereGroupOr<QueryType> startWhereOr() {
-        return new WhereGroupOr<QueryType>(getDatasource(), this);
+        return new WhereGroupOr<>(getDatasource(), this);
     }
 
     public QueryType where(String field, String operator, boolean value) {
@@ -115,9 +115,9 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
 
     public QueryType where(String field, String operator, Object value) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
         if (null == operator) throw new IllegalArgumentException("operator can't be null.");
-        if (0 == operator.length()) throw new IllegalArgumentException("operator can't be empty.");
+        if (operator.isEmpty()) throw new IllegalArgumentException("operator can't be empty.");
 
         clearGenerated();
         clearWhereParameters();
@@ -151,9 +151,9 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
 
     public QueryType whereAnd(String field, String operator, Object value) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
         if (null == operator) throw new IllegalArgumentException("operator can't be null.");
-        if (0 == operator.length()) throw new IllegalArgumentException("operator can't be empty.");
+        if (operator.isEmpty()) throw new IllegalArgumentException("operator can't be empty.");
 
         clearGenerated();
 
@@ -186,9 +186,9 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
 
     public QueryType whereOr(String field, String operator, Object value) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
         if (null == operator) throw new IllegalArgumentException("operator can't be null.");
-        if (0 == operator.length()) throw new IllegalArgumentException("operator can't be empty.");
+        if (operator.isEmpty()) throw new IllegalArgumentException("operator can't be empty.");
 
         clearGenerated();
 
@@ -212,11 +212,11 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
 
     public QueryType whereParameter(String field, String alias, String operator) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
         if (null == alias) throw new IllegalArgumentException("alias can't be null.");
-        if (0 == alias.length()) throw new IllegalArgumentException("alias can't be empty.");
+        if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == operator) throw new IllegalArgumentException("operator can't be null.");
-        if (0 == operator.length()) throw new IllegalArgumentException("operator can't be empty.");
+        if (operator.isEmpty()) throw new IllegalArgumentException("operator can't be empty.");
 
         clearGenerated();
         clearWhereParameters();
@@ -237,12 +237,12 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
 
     public QueryType whereParameterAnd(String field, String alias, String operator) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
         if (null == alias) throw new IllegalArgumentException("alias can't be null.");
-        if (0 == alias.length()) throw new IllegalArgumentException("alias can't be empty.");
+        if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == operator) throw new IllegalArgumentException("operator can't be null.");
-        if (0 == operator.length()) throw new IllegalArgumentException("operator can't be empty.");
-        if (0 == where_.length())
+        if (operator.isEmpty()) throw new IllegalArgumentException("operator can't be empty.");
+        if (where_.isEmpty())
             throw new IllegalArgumentException("can't perform whereParameterAnd as initial where operation.");
 
         clearGenerated();
@@ -264,12 +264,12 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
 
     public QueryType whereParameterOr(String field, String alias, String operator) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
         if (null == alias) throw new IllegalArgumentException("alias can't be null.");
-        if (0 == alias.length()) throw new IllegalArgumentException("alias can't be empty.");
+        if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == operator) throw new IllegalArgumentException("operator can't be null.");
-        if (0 == operator.length()) throw new IllegalArgumentException("operator can't be empty.");
-        if (0 == where_.length())
+        if (operator.isEmpty()) throw new IllegalArgumentException("operator can't be empty.");
+        if (where_.isEmpty())
             throw new IllegalArgumentException("can't perform whereParameterOr as initial where operation.");
 
         clearGenerated();
@@ -306,7 +306,7 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
 
         Constrained constrained = ConstrainedUtils.makeConstrainedInstance(bean);
 
-        ArrayList<String> where_parts = new ArrayList<String>();
+        ArrayList<String> where_parts = new ArrayList<>();
         Map<String, String> property_values = QueryHelper.getBeanPropertyValues(bean, includedFields, excludedFields, getDatasource());
 
         for (String property_name : property_values.keySet()) {

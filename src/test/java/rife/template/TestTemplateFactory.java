@@ -5,8 +5,6 @@
 package rife.template;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import rife.config.RifeConfig;
 import rife.database.*;
 import rife.resources.*;
@@ -21,12 +19,10 @@ import rife.tools.exceptions.FileUtilsErrorException;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static rife.database.TestDatasources.DERBY;
-import static rife.database.TestDatasources.PGSQL;
 
 public class TestTemplateFactory {
     @Test

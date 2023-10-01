@@ -34,20 +34,14 @@ public class TestDbPreparedStatement {
             .precision("propertyDouble", 7, 2)
             .precision("propertyFloat", 8, 3)
             .precision("propertyBigDecimal", 16, 6);
-        var statement = datasource.getConnection().createStatement();
-        try {
+        try (var statement = datasource.getConnection().createStatement()) {
             try {
                 statement.executeUpdate(query_create);
             } catch (DatabaseException e) {
                 e.printStackTrace();
             }
-        } finally {
-            try {
-                statement.close();
-            } catch (DatabaseException e) {
-                // do nothing
-            }
         }
+        // do nothing
     }
 
     public void tearDown(Datasource datasource) {
@@ -423,14 +417,11 @@ public class TestDbPreparedStatement {
             var query_insert = new Insert(datasource);
             query_insert.into("parametersbean")
                 .fieldsParameters(BeanImpl.class);
-            var statement_insert = datasource.getConnection().getPreparedStatement(query_insert);
-            try {
+            try (var statement_insert = datasource.getConnection().getPreparedStatement(query_insert)) {
                 statement_insert.setBean(null);
                 fail();
             } catch (IllegalArgumentException e) {
                 assertTrue(true);
-            } finally {
-                statement_insert.close();
             }
         } catch (DatabaseException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
@@ -474,8 +465,7 @@ public class TestDbPreparedStatement {
             query_insert.into("parametersbean")
                 .fieldsParameters(BeanImpl.class)
                 .fieldParameter("notbeanInt");
-            var statement_insert = datasource.getConnection().getPreparedStatement(query_insert);
-            try {
+            try (var statement_insert = datasource.getConnection().getPreparedStatement(query_insert)) {
                 try {
                     statement_insert.setBean(null);
                     fail();
@@ -500,7 +490,7 @@ public class TestDbPreparedStatement {
                     assertEquals((retrieved_bean.getPropertyCalendar().getTime().getTime() / 1000) * 1000, ((new_bean.getPropertyCalendar().getTime().getTime() + 500) / 1000) * 1000);
                     assertEquals((retrieved_bean.getPropertyTimestamp().getTime() / 1000) * 1000, ((new_bean.getPropertyTimestamp().getTime() + 500) / 1000) * 1000);
                     assertEquals(new Time((retrieved_bean.getPropertyTime().getTime() / 1000) * 1000).toString(), new Time(((new_bean.getPropertyTime().getTime() + 500) / 1000) * 1000).toString());
-                } else if(datasource.getAliasedDriver().equals("org.h2.Driver")) {
+                } else if (datasource.getAliasedDriver().equals("org.h2.Driver")) {
                     // H2 rounds up the SQL time
                     assertEquals((retrieved_bean.getPropertyDate().getTime() / 1000) * 1000, (new_bean.getPropertyDate().getTime() / 1000) * 1000);
                     assertEquals((retrieved_bean.getPropertyCalendar().getTime().getTime() / 1000) * 1000, (new_bean.getPropertyCalendar().getTime().getTime() / 1000) * 1000);
@@ -531,8 +521,6 @@ public class TestDbPreparedStatement {
                 assertEquals(retrieved_bean.getPropertyShort(), new_bean.getPropertyShort());
                 assertEquals(retrieved_bean.getPropertyShortObject(), new_bean.getPropertyShortObject());
                 assertEquals(retrieved_bean.getPropertyBigDecimal(), new_bean.getPropertyBigDecimal());
-            } finally {
-                statement_insert.close();
             }
         } catch (DatabaseException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
@@ -551,8 +539,7 @@ public class TestDbPreparedStatement {
             var query_insert = new Insert(datasource);
             query_insert.into("parametersbean")
                 .fieldsParameters(BeanImpl.class);
-            var statement_insert = datasource.getConnection().getPreparedStatement(query_insert);
-            try {
+            try (var statement_insert = datasource.getConnection().getPreparedStatement(query_insert)) {
                 var null_bean = BeanImpl.getNullBean();
                 // each database has its oddities here, sadly
                 var cal = Calendar.getInstance();
@@ -615,8 +602,6 @@ public class TestDbPreparedStatement {
                 assertEquals(retrieved_bean.getPropertyShort(), new_bean.getPropertyShort());
                 assertEquals(retrieved_bean.getPropertyShortObject(), new_bean.getPropertyShortObject());
                 assertEquals(retrieved_bean.getPropertyBigDecimal(), new_bean.getPropertyBigDecimal());
-            } finally {
-                statement_insert.close();
             }
         } catch (DatabaseException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
@@ -635,8 +620,7 @@ public class TestDbPreparedStatement {
             var query_insert = new Insert(datasource);
             query_insert.into("parametersbean")
                 .fieldsParameters(BeanImpl.class);
-            var statement_insert = datasource.getConnection().getPreparedStatement(query_insert);
-            try {
+            try (var statement_insert = datasource.getConnection().getPreparedStatement(query_insert)) {
                 var cal = Calendar.getInstance();
                 cal.set(2002, Calendar.JUNE, 18, 15, 26, 14);
                 cal.set(Calendar.MILLISECOND, 167);
@@ -684,7 +668,7 @@ public class TestDbPreparedStatement {
                 assertEquals((retrieved_bean.getPropertyCalendar().getTime().getTime() / 1000) * 1000, (new_bean.getPropertyCalendar().getTime().getTime() / 1000) * 1000);
                 assertEquals((retrieved_bean.getPropertyTimestamp().getTime() / 1000) * 1000, (new_bean.getPropertyTimestamp().getTime() / 1000) * 1000);
                 assertEquals(retrieved_bean.getPropertyInstant().with(NANO_OF_SECOND, 0), new_bean.getPropertyInstant().with(NANO_OF_SECOND, 0));
-                assertEquals(retrieved_bean.getPropertyLocalDateTime().with(NANO_OF_SECOND, 0), new_bean.getPropertyLocalDateTime().with(NANO_OF_SECOND, 0));
+                assertEquals(retrieved_bean.getPropertyLocalDateTime().withNano(0), new_bean.getPropertyLocalDateTime().withNano(0));
                 assertEquals(retrieved_bean.getPropertyLocalTime().withNano(0), new_bean.getPropertyLocalTime().withNano(0));
 
                 assertEquals(retrieved_bean.getPropertyLocalDate(), new_bean.getPropertyLocalDate());
@@ -707,8 +691,6 @@ public class TestDbPreparedStatement {
                 assertEquals(retrieved_bean.getPropertyShort(), new_bean.getPropertyShort());
                 assertEquals(retrieved_bean.getPropertyShortObject(), new_bean.getPropertyShortObject());
                 assertEquals(retrieved_bean.getPropertyBigDecimal(), new_bean.getPropertyBigDecimal());
-            } finally {
-                statement_insert.close();
             }
         } catch (DatabaseException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
@@ -958,7 +940,7 @@ public class TestDbPreparedStatement {
             query_select
                 .from("parametersbean")
                 .fields(BeanImpl.class);
-            var fetcher = new DbBeanFetcher<BeanImpl>(getDatasource(), BeanImpl.class);
+            var fetcher = new DbBeanFetcher<>(getDatasource(), BeanImpl.class);
 
             var statement = executeQuery(query_select);
             fetch(statement.getResultSet(), fetcher);

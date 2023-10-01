@@ -230,7 +230,7 @@ public class Parser implements Cloneable {
 
         var class_name = template_name;
         var subpackage = "";
-        var package_separator = template_name.lastIndexOf(".");
+        var package_separator = template_name.lastIndexOf('.');
         if (package_separator != -1) {
             subpackage = "." + template_name.substring(0, package_separator);
             class_name = template_name.substring(package_separator + 1);
@@ -352,7 +352,7 @@ public class Parser implements Cloneable {
         var listener = new AntlrParserListener(parsed);
         walker.walk(listener, parser.document());
 
-        assert parsed.getBlocks().size() >= 1;
+        assert !parsed.getBlocks().isEmpty();
     }
 
     class AntlrIncludeListener extends TemplatePreParserBaseListener {
@@ -729,7 +729,7 @@ public class Parser implements Cloneable {
                     // add the returned groups to the filtered tag mapping
                     while (filter_matcher.find()) {
                         if (null == captured_groups) {
-                            captured_groups = new ArrayList<String>();
+                            captured_groups = new ArrayList<>();
                             captured_groups.add(tag);
                         }
 

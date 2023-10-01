@@ -11,11 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ModificationTimeClasspath {

@@ -1006,7 +1006,7 @@ public class TestRestoreQuery {
                 .where("testString", "=", "test")
                 .end();
 
-            assertTrue(manager_.restore(query).size() > 0);
+            assertTrue(!manager_.restore(query).isEmpty());
         } finally {
             tearDown();
         }

@@ -4,8 +4,6 @@
  */
 package rife.config.exceptions;
 
-import rife.xml.exceptions.XmlErrorException;
-
 import java.io.Serial;
 
 public class InitializationErrorException extends ConfigErrorException {

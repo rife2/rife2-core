@@ -44,7 +44,7 @@ public class InternalValue {
     public void appendBlock(String blockId)
     throws TemplateException {
         if (null == blockId) throw new IllegalArgumentException("blockId can't be null.");
-        if (0 == blockId.length()) throw new IllegalArgumentException("blockId can't be empty.");
+        if (blockId.isEmpty()) throw new IllegalArgumentException("blockId can't be empty.");
 
         if (!template_.appendBlockInternalForm(blockId, this)) {
             throw new BlockUnknownException(blockId);
@@ -283,7 +283,7 @@ public class InternalValue {
      * @since 1.0
      */
     public boolean isEmpty() {
-        return 0 == construction_.size();
+        return construction_.isEmpty();
     }
 
     /**

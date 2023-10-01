@@ -204,7 +204,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                 // handle default ordering if no order statements have been
                 // defined yet
                 if (constrained_bean.hasDefaultOrdering() &&
-                    0 == orderBy_.size()) {
+                        orderBy_.isEmpty()) {
                     var ordering_it = constrained_bean.getDefaultOrdering().iterator();
                     ConstrainedBean.Order order = null;
                     while (ordering_it.hasNext()) {
@@ -216,7 +216,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         }
 
         if (null == from_ &&
-            0 == fields_.size()) {
+                fields_.isEmpty()) {
             throw new TableNameOrFieldsRequiredException("Select");
         } else {
             if (null == sql_) {
@@ -232,9 +232,9 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                 }
 
                 if (distinct_) {
-                    if (0 == distinctOn_.size()) {
+                    if (distinctOn_.isEmpty()) {
                         block = template.getBlock("DISTINCT");
-                        if (0 == block.length()) {
+                        if (block.isEmpty()) {
                             throw new UnsupportedSqlFeatureException("DISTINCT", datasource_.getAliasedDriver());
                         }
                         template.setValue("DISTINCT", block);
@@ -243,14 +243,14 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                             template.setValue("COLUMNS", StringUtils.join(distinctOn_, template.getBlock("SEPARATOR")));
                         }
                         block = template.getBlock("DISTINCTON");
-                        if (0 == block.length()) {
+                        if (block.isEmpty()) {
                             throw new UnsupportedSqlFeatureException("DISTINCT ON", datasource_.getAliasedDriver());
                         }
                         template.setValue("DISTINCT", block);
                     }
                 }
 
-                if (0 == fields_.size()) {
+                if (fields_.isEmpty()) {
                     template.setValue("FIELDS", template.getBlock("ALLFIELDS"));
                 } else {
                     template.setValue("FIELDS", StringUtils.join(fields_, template.getBlock("SEPARATOR")));
@@ -259,13 +259,13 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                 if (null != from_) {
                     template.setValue("TABLE", from_);
                     block = template.getBlock("FROM");
-                    if (0 == block.length()) {
+                    if (block.isEmpty()) {
                         throw new UnsupportedSqlFeatureException("FROM", datasource_.getAliasedDriver());
                     }
                     template.setValue("FROM", block);
                 }
 
-                if (joins_.size() > 0) {
+                if (!joins_.isEmpty()) {
                     var join_list = new ArrayList<String>();
                     for (var join : joins_) {
                         join_list.add(join.getSql(template));
@@ -273,28 +273,28 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                     template.setValue("JOINS", StringUtils.join(join_list, ""));
                 }
 
-                if (where_.length() > 0) {
+                if (!where_.isEmpty()) {
                     template.setValue("CONDITION", where_);
                     block = template.getBlock("WHERE");
-                    if (0 == block.length()) {
+                    if (block.isEmpty()) {
                         throw new UnsupportedSqlFeatureException("WHERE", datasource_.getAliasedDriver());
                     }
                     template.setValue("WHERE", block);
                 }
 
-                if (groupBy_.size() > 0) {
+                if (!groupBy_.isEmpty()) {
                     template.setValue("EXPRESSION", StringUtils.join(groupBy_, template.getBlock("SEPARATOR")));
                     block = template.getBlock("GROUPBY");
-                    if (0 == block.length()) {
+                    if (block.isEmpty()) {
                         throw new UnsupportedSqlFeatureException("GROUP BY", datasource_.getAliasedDriver());
                     }
                     template.setValue("GROUPBY", block);
                 }
 
-                if (having_.size() > 0) {
+                if (!having_.isEmpty()) {
                     template.setValue("EXPRESSION", StringUtils.join(having_, template.getBlock("SEPARATOR")));
                     block = template.getBlock("HAVING");
-                    if (0 == block.length()) {
+                    if (block.isEmpty()) {
                         throw new UnsupportedSqlFeatureException("HAVING", datasource_.getAliasedDriver());
                     }
                     template.setValue("HAVING", block);
@@ -305,13 +305,13 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                         template.setValue("EXPRESSION", union.getExpression());
                         if (union.isAll()) {
                             block = template.getBlock("UNION_ALL");
-                            if (0 == block.length()) {
+                            if (block.isEmpty()) {
                                 throw new UnsupportedSqlFeatureException("UNION_ALL", datasource_.getAliasedDriver());
                             }
                             template.appendBlock("UNION", "UNION_ALL");
                         } else {
                             block = template.getBlock("UNION");
-                            if (0 == block.length()) {
+                            if (block.isEmpty()) {
                                 throw new UnsupportedSqlFeatureException("UNION", datasource_.getAliasedDriver());
                             }
                             template.appendBlock("UNION", "UNION");
@@ -319,14 +319,14 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                     }
                 }
 
-                if (orderBy_.size() > 0) {
+                if (!orderBy_.isEmpty()) {
                     var orderby_list = new ArrayList<String>();
                     for (var order_by : orderBy_) {
                         orderby_list.add(order_by.getSql(template));
                     }
                     template.setValue("ORDERBY_PARTS", StringUtils.join(orderby_list, template.getBlock("SEPARATOR")));
                     block = template.getBlock("ORDERBY");
-                    if (0 == block.length()) {
+                    if (block.isEmpty()) {
                         throw new UnsupportedSqlFeatureException("ORDER BY", datasource_.getAliasedDriver());
                     }
                     template.setValue("ORDERBY", block);
@@ -340,7 +340,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                         template.hasValueId("OFFSET_VALUE")) {
                         var offset_value = template.getValue("OFFSET_VALUE");
                         if (offset_value != null &&
-                            offset_value.trim().length() > 0) {
+                                !offset_value.trim().isEmpty()) {
                             offset_ = Integer.parseInt(offset_value);
                         }
                     }
@@ -356,7 +356,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                         }
 
                         block = template.getBlock("OFFSET");
-                        if (0 == block.length()) {
+                        if (block.isEmpty()) {
                             if (!excludeUnsupportedCapabilities_) {
                                 throw new UnsupportedSqlFeatureException("OFFSET", datasource_.getAliasedDriver());
                             }
@@ -374,7 +374,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                     }
 
                     block = template.getBlock("LIMIT");
-                    if (0 == block.length()) {
+                    if (block.isEmpty()) {
                         if (!excludeUnsupportedCapabilities_) {
                             throw new UnsupportedSqlFeatureException("LIMIT", datasource_.getAliasedDriver());
                         }
@@ -386,7 +386,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                 sql_ = template.getBlock("QUERY");
 
                 assert sql_ != null;
-                assert sql_.length() > 0;
+                assert !sql_.isEmpty();
             }
         }
 
@@ -402,7 +402,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select field(String field) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
 
         clearGenerated();
         fields_.add(field);
@@ -412,7 +412,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select field(String alias, Select query) {
         if (null == alias) throw new IllegalArgumentException("alias can't be null.");
-        if (0 == alias.length()) throw new IllegalArgumentException("alias can't be empty.");
+        if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var buffer = new StringBuilder();
@@ -488,7 +488,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select distinctOn(String column) {
         if (null == column) throw new IllegalArgumentException("column can't be null.");
-        if (0 == column.length()) throw new IllegalArgumentException("column can't be empty.");
+        if (column.isEmpty()) throw new IllegalArgumentException("column can't be empty.");
 
         clearGenerated();
         distinct_ = true;
@@ -511,7 +511,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select from(String from) {
         if (null == from) throw new IllegalArgumentException("from can't be null.");
-        if (0 == from.length()) throw new IllegalArgumentException("from can't be empty.");
+        if (from.isEmpty()) throw new IllegalArgumentException("from can't be empty.");
 
         clearGenerated();
         from_ = from;
@@ -537,7 +537,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select from(String alias, Select query) {
         if (null == alias) throw new IllegalArgumentException("alias can't be null.");
-        if (0 == alias.length()) throw new IllegalArgumentException("alias can't be empty.");
+        if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var buffer = new StringBuilder();
@@ -556,7 +556,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select join(String table) {
         if (null == table) throw new IllegalArgumentException("table can't be null.");
-        if (0 == table.length()) throw new IllegalArgumentException("table can't be empty.");
+        if (table.isEmpty()) throw new IllegalArgumentException("table can't be empty.");
 
         clearGenerated();
         joins_.add(new JoinDefault(table));
@@ -566,7 +566,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select join(String alias, Select query) {
         if (null == alias) throw new IllegalArgumentException("alias can't be null.");
-        if (0 == alias.length()) throw new IllegalArgumentException("alias can't be empty.");
+        if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var buffer = new StringBuilder();
@@ -584,7 +584,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select joinCustom(String customJoin) {
         if (null == customJoin) throw new IllegalArgumentException("customJoin can't be null.");
-        if (0 == customJoin.length()) throw new IllegalArgumentException("customJoin can't be empty.");
+        if (customJoin.isEmpty()) throw new IllegalArgumentException("customJoin can't be empty.");
 
         clearGenerated();
         joins_.add(new JoinCustom(customJoin));
@@ -594,7 +594,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select joinCross(String table) {
         if (null == table) throw new IllegalArgumentException("table can't be null.");
-        if (0 == table.length()) throw new IllegalArgumentException("table can't be empty.");
+        if (table.isEmpty()) throw new IllegalArgumentException("table can't be empty.");
 
         clearGenerated();
         joins_.add(new JoinCross(table));
@@ -604,7 +604,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select joinInner(String table, JoinCondition condition, String conditionExpression) {
         if (null == table) throw new IllegalArgumentException("table can't be null.");
-        if (0 == table.length()) throw new IllegalArgumentException("table can't be empty.");
+        if (table.isEmpty()) throw new IllegalArgumentException("table can't be empty.");
         if (null == condition) throw new IllegalArgumentException("condition can't be null.");
         if (NATURAL == condition &&
             conditionExpression != null)
@@ -612,7 +612,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         if (NATURAL != condition &&
             null == conditionExpression) throw new IllegalArgumentException("conditionExpression can't be null.");
         if (NATURAL != condition &&
-            0 == conditionExpression.length())
+                conditionExpression.isEmpty())
             throw new IllegalArgumentException("conditionExpression can't be empty.");
 
         clearGenerated();
@@ -623,7 +623,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select joinOuter(String table, JoinType type, JoinCondition condition, String conditionExpression) {
         if (null == table) throw new IllegalArgumentException("table can't be null.");
-        if (0 == table.length()) throw new IllegalArgumentException("table can't be empty.");
+        if (table.isEmpty()) throw new IllegalArgumentException("table can't be empty.");
         if (null == type) throw new IllegalArgumentException("type can't be null.");
         if (null == condition) throw new IllegalArgumentException("condition can't be null.");
         if (NATURAL == condition &&
@@ -632,7 +632,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         if (NATURAL != condition &&
             null == conditionExpression) throw new IllegalArgumentException("conditionExpression can't be null.");
         if (NATURAL != condition &&
-            0 == conditionExpression.length())
+                conditionExpression.isEmpty())
             throw new IllegalArgumentException("conditionExpression can't be empty.");
 
         clearGenerated();
@@ -655,7 +655,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select groupBy(String groupBy) {
         if (null == groupBy) throw new IllegalArgumentException("groupBy can't be null.");
-        if (0 == groupBy.length()) throw new IllegalArgumentException("groupBy can't be empty.");
+        if (groupBy.isEmpty()) throw new IllegalArgumentException("groupBy can't be empty.");
 
         clearGenerated();
         groupBy_.add(groupBy);
@@ -676,16 +676,14 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
         clearGenerated();
 
-        for (var property_name : property_names) {
-            groupBy_.add(property_name);
-        }
+        groupBy_.addAll(property_names);
 
         return this;
     }
 
     public Select having(String having) {
         if (null == having) throw new IllegalArgumentException("having can't be null.");
-        if (0 == having.length()) throw new IllegalArgumentException("having can't be empty.");
+        if (having.isEmpty()) throw new IllegalArgumentException("having can't be empty.");
 
         clearGenerated();
         having_.add(having);
@@ -695,7 +693,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select union(String union) {
         if (null == union) throw new IllegalArgumentException("union can't be null.");
-        if (0 == union.length()) throw new IllegalArgumentException("union can't be empty.");
+        if (union.isEmpty()) throw new IllegalArgumentException("union can't be empty.");
 
         clearGenerated();
         unions_.add(new Union(union, false));
@@ -715,7 +713,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select unionAll(String union) {
         if (null == union) throw new IllegalArgumentException("union can't be null.");
-        if (0 == union.length()) throw new IllegalArgumentException("union can't be empty.");
+        if (union.isEmpty()) throw new IllegalArgumentException("union can't be empty.");
 
         clearGenerated();
         unions_.add(new Union(union, true));
@@ -740,7 +738,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select orderBy(String column, OrderByDirection direction) {
         if (null == column) throw new IllegalArgumentException("column can't be null.");
-        if (0 == column.length()) throw new IllegalArgumentException("column can't be empty.");
+        if (column.isEmpty()) throw new IllegalArgumentException("column can't be empty.");
         if (null == direction) throw new IllegalArgumentException("direction can't be null.");
 
         var orderby = new OrderBy(column, direction);
@@ -762,7 +760,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select limitParameter(String name) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
 
         clearGenerated();
         limit_ = -1;
@@ -803,7 +801,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
     public Select offsetParameter(String name) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
 
         clearGenerated();
         offset_ = -1;
@@ -816,12 +814,12 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
         var new_instance = super.clone();
         if (new_instance != null) {
             if (fields_ != null) {
-                new_instance.fields_ = new ArrayList<String>();
+                new_instance.fields_ = new ArrayList<>();
                 new_instance.fields_.addAll(fields_);
             }
 
             if (joins_ != null) {
-                new_instance.joins_ = new ArrayList<Join>();
+                new_instance.joins_ = new ArrayList<>();
 
                 for (var join : joins_) {
                     new_instance.joins_.add(join.clone());
@@ -829,29 +827,29 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
             }
 
             if (unions_ != null) {
-                new_instance.unions_ = new ArrayList<Union>();
+                new_instance.unions_ = new ArrayList<>();
                 for (var union : unions_) {
                     new_instance.unions_.add(union.clone());
                 }
             }
 
             if (groupBy_ != null) {
-                new_instance.groupBy_ = new ArrayList<String>();
+                new_instance.groupBy_ = new ArrayList<>();
                 new_instance.groupBy_.addAll(groupBy_);
             }
 
             if (having_ != null) {
-                new_instance.having_ = new ArrayList<String>();
+                new_instance.having_ = new ArrayList<>();
                 new_instance.having_.addAll(having_);
             }
 
             if (distinctOn_ != null) {
-                new_instance.distinctOn_ = new ArrayList<String>();
+                new_instance.distinctOn_ = new ArrayList<>();
                 new_instance.distinctOn_.addAll(distinctOn_);
             }
 
             if (orderBy_ != null) {
-                new_instance.orderBy_ = new ArrayList<OrderBy>();
+                new_instance.orderBy_ = new ArrayList<>();
                 for (var order_by : orderBy_) {
                     new_instance.orderBy_.add(order_by.clone());
                 }
@@ -919,7 +917,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
             template.removeValue("TABLE");
 
             assert result != null;
-            assert result.length() > 0;
+            assert !result.isEmpty();
 
             return result;
         }
@@ -942,13 +940,13 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
             template.setValue("TABLE", getData());
             result = template.getBlock("JOIN_CROSS");
-            if (0 == result.length()) {
+            if (result.isEmpty()) {
                 throw new UnsupportedSqlFeatureException("CROSS JOIN", datasource_.getAliasedDriver());
             }
             template.removeValue("TABLE");
 
             assert result != null;
-            assert result.length() > 0;
+            assert !result.isEmpty();
 
             return result;
         }
@@ -966,7 +964,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
             super(table);
 
             assert condition != null;
-            assert condition == Select.NATURAL || (expression != null && expression.length() > 0);
+            assert condition == Select.NATURAL || (expression != null && !expression.isEmpty());
 
             setCondition(condition);
             setExpression(expression);
@@ -984,12 +982,12 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                 template.setValue("EXPRESSION", getExpression());
             }
             condition = template.getBlock("JOIN_INNER_" + getCondition().toString());
-            if (0 == condition.length()) {
+            if (condition.isEmpty()) {
                 throw new UnsupportedSqlFeatureException(getCondition().toString() + " for INNER JOIN", datasource_.getAliasedDriver());
             }
             template.setValue("JOIN_INNER_" + getCondition().toString(), condition);
             result = template.getBlock("JOIN_INNER");
-            if (0 == result.length()) {
+            if (result.isEmpty()) {
                 throw new UnsupportedSqlFeatureException("INNER JOIN", datasource_.getAliasedDriver());
             }
             template.removeValue("TABLE");
@@ -997,7 +995,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
             template.removeValue("JOIN_INNER_" + getCondition().toString());
 
             assert result != null;
-            assert result.length() > 0;
+            assert !result.isEmpty();
 
             return result;
         }
@@ -1035,7 +1033,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
             assert type != null;
             assert condition != null;
-            assert condition == Select.NATURAL || (expression != null && expression.length() > 0);
+            assert condition == Select.NATURAL || (expression != null && !expression.isEmpty());
 
             setType(type);
             setCondition(condition);
@@ -1053,7 +1051,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
             template.setValue("TABLE", getData());
             if (getType() != null) {
                 type = template.getBlock("JOIN_OUTER_" + getType().toString());
-                if (0 == type.length()) {
+                if (type.isEmpty()) {
                     throw new UnsupportedSqlFeatureException(getType().toString() + " for OUTER JOIN", datasource_.getAliasedDriver());
                 }
                 template.setValue("JOIN_OUTER_TYPE", type);
@@ -1062,12 +1060,12 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                 template.setValue("EXPRESSION", getExpression());
             }
             condition = template.getBlock("JOIN_OUTER_" + getCondition().toString());
-            if (0 == condition.length()) {
+            if (condition.isEmpty()) {
                 throw new UnsupportedSqlFeatureException(getCondition().toString() + " for OUTER JOIN", datasource_.getAliasedDriver());
             }
             template.setValue("JOIN_OUTER_" + getCondition().toString(), condition);
             result = template.getBlock("JOIN_OUTER");
-            if (0 == result.length()) {
+            if (result.isEmpty()) {
                 throw new UnsupportedSqlFeatureException("OUTER JOIN", datasource_.getAliasedDriver());
             }
             template.removeValue("TABLE");
@@ -1076,7 +1074,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
             template.removeValue("JOIN_OUTER_TYPE");
 
             assert result != null;
-            assert result.length() > 0;
+            assert !result.isEmpty();
 
             return result;
         }
@@ -1119,7 +1117,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
         Join(String data) {
             assert data != null;
-            assert data.length() > 0;
+            assert !data.isEmpty();
 
             setData(data);
         }
@@ -1133,7 +1131,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
         void setData(String data) {
             assert data != null;
-            assert data.length() > 0;
+            assert !data.isEmpty();
 
             mData = data;
         }
@@ -1156,7 +1154,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
         OrderBy(String column, OrderByDirection direction) {
             assert column != null;
-            assert column.length() > 0;
+            assert !column.isEmpty();
             assert direction != null;
 
             setColumn(column);
@@ -1175,7 +1173,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
             template.removeValue("DIRECTION");
 
             assert result != null;
-            assert result.length() > 0;
+            assert !result.isEmpty();
 
             return result;
         }
@@ -1186,7 +1184,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
         void setColumn(String column) {
             assert column != null;
-            assert column.length() > 0;
+            assert !column.isEmpty();
 
             mColumn = column;
         }
@@ -1224,7 +1222,7 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
 
         void setExpression(String expression) {
             assert expression != null;
-            assert expression.length() > 0;
+            assert !expression.isEmpty();
 
             mExpression = expression;
         }

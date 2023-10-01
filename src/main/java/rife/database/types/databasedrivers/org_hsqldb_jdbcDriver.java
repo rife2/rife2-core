@@ -25,7 +25,7 @@ public class org_hsqldb_jdbcDriver extends Common implements SqlConversion {
         }
         // make sure that strings are escaped correctly
         else if (value instanceof CharSequence) {
-            if (0 == ((CharSequence) value).length()) {
+            if (((CharSequence) value).isEmpty()) {
                 return "''";
             } else {
                 return "'" + StringUtils.encodeSql(value.toString()) + "'";

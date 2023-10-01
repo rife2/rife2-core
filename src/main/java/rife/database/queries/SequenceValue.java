@@ -64,12 +64,12 @@ public class SequenceValue extends AbstractQuery implements Cloneable, ReadQuery
                 }
 
                 sql_ = template.getBlock("OPERATION_" + operation_);
-                if (0 == sql_.length()) {
+                if (sql_.isEmpty()) {
                     throw new UnsupportedSqlFeatureException("SEQUENCE VALUE " + operation_, datasource_.getAliasedDriver());
                 }
 
                 assert sql_ != null;
-                assert sql_.length() > 0;
+                assert !sql_.isEmpty();
             }
         }
 
@@ -78,7 +78,7 @@ public class SequenceValue extends AbstractQuery implements Cloneable, ReadQuery
 
     public SequenceValue name(String name) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
 
         clearGenerated();
         name_ = name;

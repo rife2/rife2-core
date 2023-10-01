@@ -94,7 +94,7 @@ public class TestCapabilities {
         try {
             DbQueryManager manager = new DbQueryManager(datasource);
 
-            final List<Integer> limit_ids = new ArrayList<Integer>();
+            final List<Integer> limit_ids = new ArrayList<>();
 
             Select query = new Select(datasource);
             query.from("tablename")
@@ -113,7 +113,7 @@ public class TestCapabilities {
             assertEquals(3, limit_ids.get(1).intValue());
             assertEquals(4, limit_ids.get(2).intValue());
 
-            final List<Integer> offset_ids = new ArrayList<Integer>();
+            final List<Integer> offset_ids = new ArrayList<>();
 
             query.offset(1);
 
@@ -131,7 +131,7 @@ public class TestCapabilities {
 
             query.clear();
 
-            final List<Integer> plain_ids = new ArrayList<Integer>();
+            final List<Integer> plain_ids = new ArrayList<>();
 
             query.from("tablename")
                 .orderBy("propertyInt")
@@ -163,7 +163,7 @@ public class TestCapabilities {
         try {
             DbQueryManager manager = new DbQueryManager(datasource);
 
-            final List<Integer> limit_ids = new ArrayList<Integer>();
+            final List<Integer> limit_ids = new ArrayList<>();
 
             Select query = new Select(datasource);
             query.from("tablename")
@@ -187,7 +187,7 @@ public class TestCapabilities {
             assertEquals(3, limit_ids.get(1).intValue());
             assertEquals(4, limit_ids.get(2).intValue());
 
-            final List<Integer> offset_ids = new ArrayList<Integer>();
+            final List<Integer> offset_ids = new ArrayList<>();
 
             query.offsetParameter("offset");
 
@@ -211,7 +211,7 @@ public class TestCapabilities {
 
             query.clear();
 
-            final List<Integer> plain_ids = new ArrayList<Integer>();
+            final List<Integer> plain_ids = new ArrayList<>();
 
             query.from("tablename")
                 .orderBy("propertyInt")

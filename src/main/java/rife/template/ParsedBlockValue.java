@@ -15,9 +15,9 @@ public class ParsedBlockValue extends ParsedBlockPart {
 
     ParsedBlockValue(String valueKey, String valueTag) {
         assert valueKey != null;
-        assert valueKey.length() > 0;
+        assert !valueKey.isEmpty();
         assert valueTag != null;
-        assert valueTag.length() > 0;
+        assert !valueTag.isEmpty();
 
         valueKey_ = valueKey;
         valueTag_ = valueTag;

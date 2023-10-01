@@ -11,16 +11,14 @@ import rife.database.exceptions.FieldsRequiredException;
 import rife.database.exceptions.TableNameRequiredException;
 import rife.database.exceptions.UnsupportedSqlFeatureException;
 import rife.database.types.SqlNull;
-import rife.template.Template;
 import rife.template.TemplateFactory;
 import rife.tools.StringUtils;
-import rife.validation.Constrained;
 import rife.validation.ConstrainedUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 /**
  * Object representation of a SQL "UPDATE" query.
@@ -54,7 +52,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
         fields_ = new LinkedHashMap<>();
         table_ = null;
 
-        assert 0 == fields_.size();
+        assert fields_.isEmpty();
     }
 
     public String getHint() {
@@ -77,7 +75,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
         if (null == sql_) {
             if (null == table_) {
                 throw new TableNameRequiredException("Update");
-            } else if (0 == fields_.size()) {
+            } else if (fields_.isEmpty()) {
                 throw new FieldsRequiredException("Update");
             } else {
                 var template = TemplateFactory.SQL.get("sql." + StringUtils.encodeClassname(datasource_.getAliasedDriver()) + ".update");
@@ -92,7 +90,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
 
                 template.setValue("TABLE", table_);
 
-                if (fields_.size() > 0) {
+                if (!fields_.isEmpty()) {
                     var set_list = new ArrayList<String>();
 
                     for (var field : fields_.keySet()) {
@@ -104,7 +102,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
                 }
 
                 if (where_ != null &&
-                    where_.length() > 0) {
+                        !where_.isEmpty()) {
                     template.setValue("CONDITION", where_);
                     template.setValue("WHERE", template.getBlock("WHERE"));
                 }
@@ -112,7 +110,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
                 sql_ = template.getBlock("QUERY");
 
                 assert sql_ != null;
-                assert sql_.length() > 0;
+                assert !sql_.isEmpty();
             }
         }
 
@@ -128,7 +126,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
 
     public Update table(String table) {
         if (null == table) throw new IllegalArgumentException("table can't be null.");
-        if (0 == table.length()) throw new IllegalArgumentException("table can't be empty.");
+        if (table.isEmpty()) throw new IllegalArgumentException("table can't be empty.");
 
         clearGenerated();
         table_ = table;
@@ -144,14 +142,10 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
 
     protected Update _field(String field, Object value) {
         assert field != null;
-        assert field.length() > 0;
+        assert !field.isEmpty();
 
         clearGenerated();
-        if (null == value) {
-            fields_.put(field, SqlNull.NULL);
-        } else {
-            fields_.put(field, value);
-        }
+        fields_.put(field, Objects.requireNonNullElse(value, SqlNull.NULL));
 
         return this;
     }
@@ -162,9 +156,9 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
 
     public Update fieldParameter(String field, String alias) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
         if (null == alias) throw new IllegalArgumentException("alias can't be null.");
-        if (0 == alias.length()) throw new IllegalArgumentException("alias can't be empty.");
+        if (alias.isEmpty()) throw new IllegalArgumentException("alias can't be empty.");
 
         clearGenerated();
 
@@ -195,7 +189,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
 
     public Update fieldCustom(String field, String expression) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
 
         if (null == expression) {
             return _field(field, null);
@@ -206,7 +200,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
 
     public Update field(String field, Object value) {
         if (null == field) throw new IllegalArgumentException("field can't be null.");
-        if (0 == field.length()) throw new IllegalArgumentException("field can't be empty.");
+        if (field.isEmpty()) throw new IllegalArgumentException("field can't be empty.");
 
         if (null == value) {
             return _field(field, null);

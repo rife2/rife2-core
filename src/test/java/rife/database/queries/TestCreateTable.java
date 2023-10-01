@@ -34,7 +34,7 @@ public abstract class TestCreateTable extends TestQuery {
         throws InnerClassException {
             var foreign_table = new CreateTable(query_.getDatasource());
             try {
-                if (query_.getForeignKeys().size() > 0) {
+                if (!query_.getForeignKeys().isEmpty()) {
                     foreign_table.table("foreigntable")
                         .column("foreignIntColumn", int.class)
                         .column("foreignStringColumn", String.class, 50)
@@ -132,7 +132,7 @@ public abstract class TestCreateTable extends TestQuery {
             } finally {
                 // clean up foreign key table
                 try {
-                    if (query_.getForeignKeys().size() > 0) {
+                    if (!query_.getForeignKeys().isEmpty()) {
                         manager_.executeUpdate(new DropTable(query_.getDatasource()).table(foreign_table.getTable()));
                     }
                 } catch (DatabaseException e) {

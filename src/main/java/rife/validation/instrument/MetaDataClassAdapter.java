@@ -45,7 +45,7 @@ class MetaDataClassAdapter extends ClassVisitor implements Opcodes {
         List<Class> meta_interfaces = new ArrayList<>();
         var meta_classes = new Stack<Class>();
         meta_classes.push(metaData_);
-        while (meta_classes.size() > 0) {
+        while (!meta_classes.isEmpty()) {
             var current = meta_classes.pop();
             if (current == Object.class) {
                 continue;
@@ -74,7 +74,7 @@ class MetaDataClassAdapter extends ClassVisitor implements Opcodes {
         }
 
         // only instrument this class when the metadata class actually implements interfaces
-        if (meta_interfaces.size() > 0) {
+        if (!meta_interfaces.isEmpty()) {
             baseInternalName_ = name;
 
             // add a member variable that will be used to delegate the interface method calls to

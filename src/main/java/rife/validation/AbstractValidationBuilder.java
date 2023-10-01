@@ -76,7 +76,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
     public Collection<String> generateValidationErrors(Template template, Collection<ValidationError> errors, Collection<String> onlySubjectsToClear, String prefix) {
         if (null == template ||
             null == errors ||
-            0 == errors.size()) {
+                errors.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -112,7 +112,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
         // ensure that errors from previous submissions will not prevail.
         var filtered_error_values = template.getFilteredValues(TAG_ERRORS);
         ArrayList<List<String[]>> sorted_error_values = null;
-        if (filtered_error_values.size() > 0) {
+        if (!filtered_error_values.isEmpty()) {
             sorted_error_values = new ArrayList<>();
 
             List<String[]> error_values;
@@ -152,7 +152,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
         // of declaration.
         var filtered_error_blocks = template.getFilteredBlocks(TAG_ERRORS);
         ArrayList<List<String[]>> sorted_error_blocks = null;
-        if (filtered_error_blocks.size() > 0) {
+        if (!filtered_error_blocks.isEmpty()) {
             sorted_error_blocks = new ArrayList<>();
 
             List<String[]> error_blocks;
@@ -219,7 +219,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
         HashMap<String, InternalValue> values_construction = null;
         HashMap<String, String> property_value_mapping = null;
         HashMap<String, String> values_block_mapping = null;
-        if (filtered_error_values.size() > 0) {
+        if (!filtered_error_values.isEmpty()) {
             values_construction = new HashMap<>();
             property_value_mapping = new HashMap<>();
             values_block_mapping = new HashMap<>();
@@ -290,7 +290,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
         // property the first occurring block will be used.
         var filtered_error_messages = template.getFilteredBlocks(TAG_ERRORMESSAGE);
         HashMap<String, String> property_error_messages_mapping = null;
-        if (filtered_error_messages.size() > 0) {
+        if (!filtered_error_messages.isEmpty()) {
             property_error_messages_mapping = new HashMap<>();
 
             for (var filtered_errormessage : filtered_error_messages) {
@@ -528,7 +528,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
     throws ValidationBuilderException {
         if (null == template ||
             null == errors ||
-            0 == errors.size()) {
+                errors.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -552,7 +552,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
         // ensure that errors from previous submissions will not prevail.
         var filtered_marks = template.getFilteredValues(TAG_MARK);
         HashMap<String, ArrayList<List<String[]>>> sorted_marks_map = null;
-        if (filtered_marks.size() > 0) {
+        if (!filtered_marks.isEmpty()) {
             sorted_marks_map = new HashMap<>();
 
             ArrayList<List<String[]>> sorted_marks;
@@ -675,7 +675,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
         }
 
         if (null == subjects ||
-            0 == subjects.size()) {
+                subjects.isEmpty()) {
             return;
         }
 
@@ -692,7 +692,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
         }
 
         var filtered_error_values = template.getFilteredValues(TAG_ERRORS);
-        if (filtered_error_values.size() > 0) {
+        if (!filtered_error_values.isEmpty()) {
             for (var filtered_value : filtered_error_values) {
                 for (var i = 1; i < filtered_value.length; i++) {
                     if (subjects.contains(filtered_value[i])) {
@@ -714,7 +714,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
         }
 
         if (null == subjects ||
-            0 == subjects.size()) {
+                subjects.isEmpty()) {
             return;
         }
 
@@ -727,7 +727,7 @@ public abstract class AbstractValidationBuilder implements ValidationBuilder {
         }
 
         var filtered_marks = template.getFilteredValues(TAG_MARK);
-        if (filtered_marks.size() > 0) {
+        if (!filtered_marks.isEmpty()) {
             for (var filtered_mark : filtered_marks) {
                 for (var i = 2; i < filtered_mark.length; i += 2) {
                     if (subjects.contains(filtered_mark[i])) {

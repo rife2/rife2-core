@@ -725,7 +725,7 @@ public final class StringUtils {
      */
     public static String decodeHtml(String source) {
         if (null == source ||
-            0 == source.length()) {
+                source.isEmpty()) {
             return source;
         }
 
@@ -918,9 +918,7 @@ public final class StringUtils {
             hexstring = Integer.toHexString(source.charAt(i)).toUpperCase();
             encoded.append("\\u");
             // fill with zeros
-            for (var j = hexstring.length(); j < 4; j++) {
-                encoded.append("0");
-            }
+            encoded.append("0".repeat(Math.max(0, 4 - hexstring.length())));
             encoded.append(hexstring);
         }
 
@@ -1831,7 +1829,7 @@ public final class StringUtils {
             separator = "";
         }
 
-        if (0 == collection.size()) {
+        if (collection.isEmpty()) {
             return "";
         } else {
             var result = new StringBuilder();
@@ -1956,14 +1954,14 @@ public final class StringUtils {
             return "";
         } else {
             var current_index = 0;
-            var result = "";
+            StringBuilder result = new StringBuilder();
             while (current_index < array.length - 1) {
-                result = result + array[current_index] + separator;
+                result.append(array[current_index]).append(separator);
                 current_index++;
             }
 
-            result = result + array[current_index];
-            return result;
+            result.append(array[current_index]);
+            return result.toString();
         }
     }
 
@@ -1989,14 +1987,14 @@ public final class StringUtils {
             return "";
         } else {
             var current_index = 0;
-            var result = "";
+            StringBuilder result = new StringBuilder();
             while (current_index < array.length - 1) {
-                result = result + array[current_index] + separator;
+                result.append(array[current_index]).append(separator);
                 current_index++;
             }
 
-            result = result + array[current_index];
-            return result;
+            result.append(array[current_index]);
+            return result.toString();
         }
     }
 
@@ -2022,14 +2020,14 @@ public final class StringUtils {
             return "";
         } else {
             var current_index = 0;
-            var result = "";
+            StringBuilder result = new StringBuilder();
             while (current_index < array.length - 1) {
-                result = result + array[current_index] + separator;
+                result.append(array[current_index]).append(separator);
                 current_index++;
             }
 
-            result = result + array[current_index];
-            return result;
+            result.append(array[current_index]);
+            return result.toString();
         }
     }
 
@@ -2055,14 +2053,14 @@ public final class StringUtils {
             return "";
         } else {
             var current_index = 0;
-            var result = "";
+            StringBuilder result = new StringBuilder();
             while (current_index < array.length - 1) {
-                result = result + array[current_index] + separator;
+                result.append(array[current_index]).append(separator);
                 current_index++;
             }
 
-            result = result + array[current_index];
-            return result;
+            result.append(array[current_index]);
+            return result.toString();
         }
     }
 
@@ -2088,14 +2086,14 @@ public final class StringUtils {
             return "";
         } else {
             var current_index = 0;
-            var result = "";
+            StringBuilder result = new StringBuilder();
             while (current_index < array.length - 1) {
-                result = result + array[current_index] + separator;
+                result.append(array[current_index]).append(separator);
                 current_index++;
             }
 
-            result = result + array[current_index];
-            return result;
+            result.append(array[current_index]);
+            return result.toString();
         }
     }
 
@@ -2121,14 +2119,14 @@ public final class StringUtils {
             return "";
         } else {
             var current_index = 0;
-            var result = "";
+            StringBuilder result = new StringBuilder();
             while (current_index < array.length - 1) {
-                result = result + array[current_index] + separator;
+                result.append(array[current_index]).append(separator);
                 current_index++;
             }
 
-            result = result + array[current_index];
-            return result;
+            result.append(array[current_index]);
+            return result.toString();
         }
     }
 
@@ -2154,14 +2152,14 @@ public final class StringUtils {
             return "";
         } else {
             var current_index = 0;
-            var result = "";
+            StringBuilder result = new StringBuilder();
             while (current_index < array.length - 1) {
-                result = result + array[current_index] + separator;
+                result.append(array[current_index]).append(separator);
                 current_index++;
             }
 
-            result = result + array[current_index];
-            return result;
+            result.append(array[current_index]);
+            return result.toString();
         }
     }
 
@@ -2296,9 +2294,9 @@ public final class StringUtils {
      */
     public static Matcher getMatchingRegexp(String value, Collection<Pattern> regexps) {
         if (value != null &&
-            value.length() > 0 &&
+                !value.isEmpty() &&
             regexps != null &&
-            regexps.size() > 0) {
+                !regexps.isEmpty()) {
             Matcher matcher = null;
             for (var regexp : regexps) {
                 matcher = regexp.matcher(value);
@@ -2325,7 +2323,7 @@ public final class StringUtils {
      */
     public static Matcher getRegexpMatch(Collection<String> values, Pattern regexp) {
         if (values != null &&
-            values.size() > 0 &&
+                !values.isEmpty() &&
             regexp != null) {
             Matcher matcher = null;
             for (var value : values) {
@@ -2491,7 +2489,7 @@ public final class StringUtils {
      * @since 1.0
      */
     public static String capitalize(String source) {
-        if (source == null || source.length() == 0) {
+        if (source == null || source.isEmpty()) {
             return source;
         }
 
@@ -2510,7 +2508,7 @@ public final class StringUtils {
      * @since 1.0
      */
     public static String uncapitalize(String source) {
-        if (source == null || source.length() == 0) {
+        if (source == null || source.isEmpty()) {
             return source;
         }
 
@@ -2572,7 +2570,7 @@ public final class StringUtils {
                     sb.append(visual_url);
                 } else {
                     var ellipsis = "...";
-                    var query_index = visual_url.indexOf("?");
+                    var query_index = visual_url.indexOf('?');
 
                     // remove query string but keep '?'
                     if (query_index != -1) {
@@ -2580,8 +2578,8 @@ public final class StringUtils {
                     }
 
                     if (visual_url.length() >= max_length) {
-                        var last_slash = visual_url.lastIndexOf("/");
-                        var start_slash = visual_url.indexOf("/", visual_url.indexOf("://") + 3);
+                        var last_slash = visual_url.lastIndexOf('/');
+                        var start_slash = visual_url.indexOf('/', visual_url.indexOf("://") + 3);
 
                         if (last_slash != start_slash) {
                             visual_url = visual_url.substring(0, start_slash + 1) + ellipsis + visual_url.substring(last_slash);
@@ -2868,7 +2866,7 @@ public final class StringUtils {
      * @since 1.0
      */
     public static String trim(String source) {
-        if (source == null || source.length() == 0) {
+        if (source == null || source.isEmpty()) {
             return source;
         }
 

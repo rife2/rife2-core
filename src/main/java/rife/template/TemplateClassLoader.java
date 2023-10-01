@@ -7,7 +7,6 @@ package rife.template;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 
 import rife.config.RifeConfig;
 import rife.resources.ResourceFinder;

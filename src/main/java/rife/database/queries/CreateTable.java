@@ -108,7 +108,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
         if (null == sql_) {
             if (null == getTable()) {
                 throw new TableNameRequiredException("CreateTable");
-            } else if (0 == columnMapping_.size()) {
+            } else if (columnMapping_.isEmpty()) {
                 throw new ColumnsRequiredException("CreateTable");
             } else {
                 var template = TemplateFactory.SQL.get("sql." + StringUtils.encodeClassname(datasource_.getAliasedDriver()) + ".create_table");
@@ -124,64 +124,64 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
                 if (temporary_) {
                     block = template.getBlock("TEMPORARY");
-                    if (0 == block.length()) {
+                    if (block.isEmpty()) {
                         throw new UnsupportedSqlFeatureException("TEMPORARY", datasource_.getAliasedDriver());
                     }
                     template.setValue("TEMPORARY", block);
                 }
 
                 var primary = "";
-                if (primaryKeys_.size() > 0) {
+                if (!primaryKeys_.isEmpty()) {
                     var constraints = new ArrayList<String>();
                     for (var primary_key : primaryKeys_) {
                         sql = primary_key.getSql(template);
-                        if (sql.length() > 0) {
+                        if (!sql.isEmpty()) {
                             constraints.add(sql);
                         }
                     }
-                    if (constraints.size() > 0) {
+                    if (!constraints.isEmpty()) {
                         primary = template.getBlock("SEPARATOR") + StringUtils.join(constraints, template.getBlock("SEPARATOR"));
                     }
                 }
 
                 var foreign = "";
-                if (foreignKeys_.size() > 0) {
+                if (!foreignKeys_.isEmpty()) {
                     var constraints = new ArrayList<String>();
                     for (var foreign_key : foreignKeys_) {
                         sql = foreign_key.getSql(template);
-                        if (sql.length() > 0) {
+                        if (!sql.isEmpty()) {
                             constraints.add(sql);
                         }
                     }
-                    if (constraints.size() > 0) {
+                    if (!constraints.isEmpty()) {
                         foreign = template.getBlock("SEPARATOR") + StringUtils.join(constraints, template.getBlock("SEPARATOR"));
                     }
                 }
 
                 var unique = "";
-                if (uniqueConstraints_.size() > 0) {
+                if (!uniqueConstraints_.isEmpty()) {
                     var constraints = new ArrayList<String>();
                     for (var unique_constraint : uniqueConstraints_) {
                         sql = unique_constraint.getSql(template);
-                        if (sql.length() > 0) {
+                        if (!sql.isEmpty()) {
                             constraints.add(sql);
                         }
                     }
-                    if (constraints.size() > 0) {
+                    if (!constraints.isEmpty()) {
                         unique = template.getBlock("SEPARATOR") + StringUtils.join(constraints, template.getBlock("SEPARATOR"));
                     }
                 }
 
                 var check = "";
-                if (checkConstraints_.size() > 0) {
+                if (!checkConstraints_.isEmpty()) {
                     var constraints = new ArrayList<String>();
                     for (var check_constraint : checkConstraints_) {
                         sql = check_constraint.getSql(template);
-                        if (sql.length() > 0) {
+                        if (!sql.isEmpty()) {
                             constraints.add(sql);
                         }
                     }
-                    if (constraints.size() > 0) {
+                    if (!constraints.isEmpty()) {
                         check = template.getBlock("SEPARATOR") + StringUtils.join(constraints, template.getBlock("SEPARATOR"));
                     }
                 }
@@ -196,7 +196,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
                 sql_ = template.getBlock("QUERY");
 
                 assert sql_ != null;
-                assert sql_.length() > 0;
+                assert !sql_.isEmpty();
             }
         }
 
@@ -205,7 +205,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
     public CreateTable table(String table) {
         if (null == table) throw new IllegalArgumentException("table can't be null.");
-        if (0 == table.length()) throw new IllegalArgumentException("table can't be empty.");
+        if (table.isEmpty()) throw new IllegalArgumentException("table can't be empty.");
 
         table_ = table;
         clearGenerated();
@@ -266,7 +266,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
     public CreateTable column(String name, Class type, int precision, int scale, String typeAttribute, Nullable nullable) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (null == type) throw new IllegalArgumentException("type can't be null.");
 
         columnMapping_.put(name, new Column(name, type, precision, scale, typeAttribute, nullable));
@@ -280,7 +280,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
     public CreateTable column(String name, String customType, Nullable nullable) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (null == customType) throw new IllegalArgumentException("customType can't be null.");
 
         columnMapping_.put(name, new Column(name, customType, nullable));
@@ -306,7 +306,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
     public CreateTable precision(String name, int precision, int scale) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (!columnMapping_.containsKey(name))
             throw new IllegalArgumentException("the '" + name + "' column hasn't been defined.");
 
@@ -319,7 +319,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
     public CreateTable nullable(String name, Nullable nullable) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (!columnMapping_.containsKey(name))
             throw new IllegalArgumentException("the '" + name + "' column hasn't been defined.");
 
@@ -335,7 +335,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
     public CreateTable defaultValue(String name, Object value) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (!columnMapping_.containsKey(name))
             throw new IllegalArgumentException("the '" + name + "' column hasn't been defined.");
 
@@ -347,11 +347,11 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
     public CreateTable defaultFunction(String name, String defaultFunction) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (!columnMapping_.containsKey(name))
             throw new IllegalArgumentException("the '" + name + "' column hasn't been defined.");
         if (null == defaultFunction) throw new IllegalArgumentException("defaultFunction can't be null.");
-        if (0 == defaultFunction.length()) throw new IllegalArgumentException("defaultFunction can't be empty.");
+        if (defaultFunction.isEmpty()) throw new IllegalArgumentException("defaultFunction can't be empty.");
 
         var column = columnMapping_.get(name);
         column.setDefault(defaultFunction);
@@ -361,7 +361,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
     public CreateTable customAttribute(String name, String attribute) {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
-        if (0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (!columnMapping_.containsKey(name))
             throw new IllegalArgumentException("the '" + name + "' column hasn't been defined.");
 
@@ -527,7 +527,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
     }
 
     public CreateTable primaryKey(String name, String[] columns) {
-        if (name != null && 0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name != null && name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (null == columns) throw new IllegalArgumentException("columns array can't be null.");
         if (0 == columns.length) throw new IllegalArgumentException("columns array can't be empty.");
 
@@ -569,9 +569,9 @@ public class CreateTable extends AbstractQuery implements Cloneable {
     }
 
     public CreateTable foreignKey(String name, String foreignTable, String[] columnsMapping, ViolationAction onUpdate, ViolationAction onDelete) {
-        if (name != null && 0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name != null && name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (null == foreignTable) throw new IllegalArgumentException("foreignTable can't be null.");
-        if (0 == foreignTable.length()) throw new IllegalArgumentException("foreignTable can't be empty.");
+        if (foreignTable.isEmpty()) throw new IllegalArgumentException("foreignTable can't be empty.");
         if (null == columnsMapping) throw new IllegalArgumentException("columnsMapping array can't be null.");
         if (0 == columnsMapping.length) throw new IllegalArgumentException("columnsMapping array can't be empty.");
         if (columnsMapping.length % 2 != 0)
@@ -596,7 +596,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
     }
 
     public CreateTable unique(String name, String[] columns) {
-        if (name != null && 0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name != null && name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (null == columns) throw new IllegalArgumentException("columns array can't be null.");
         if (0 == columns.length) throw new IllegalArgumentException("columns array can't be empty.");
 
@@ -611,9 +611,9 @@ public class CreateTable extends AbstractQuery implements Cloneable {
     }
 
     public CreateTable check(String name, String expression) {
-        if (name != null && 0 == name.length()) throw new IllegalArgumentException("name can't be empty.");
+        if (name != null && name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
         if (null == expression) throw new IllegalArgumentException("expression can't be null.");
-        if (0 == expression.length()) throw new IllegalArgumentException("expression can't be empty.");
+        if (expression.isEmpty()) throw new IllegalArgumentException("expression can't be empty.");
 
         checkConstraints_.add(new CheckConstraint(name, expression));
 
@@ -625,7 +625,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
         var new_instance = (CreateTable) super.clone();
         if (new_instance != null) {
             if (columnMapping_ != null) {
-                new_instance.columnMapping_ = new LinkedHashMap<String, Column>();
+                new_instance.columnMapping_ = new LinkedHashMap<>();
 
                 Column column = null;
                 for (var name : columnMapping_.keySet()) {
@@ -635,7 +635,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             }
 
             if (primaryKeys_ != null) {
-                new_instance.primaryKeys_ = new ArrayList<PrimaryKey>();
+                new_instance.primaryKeys_ = new ArrayList<>();
 
                 for (var primary_key : primaryKeys_) {
                     new_instance.primaryKeys_.add(primary_key.clone());
@@ -643,7 +643,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             }
 
             if (foreignKeys_ != null) {
-                new_instance.foreignKeys_ = new ArrayList<ForeignKey>();
+                new_instance.foreignKeys_ = new ArrayList<>();
 
                 for (var foreign_key : foreignKeys_) {
                     new_instance.foreignKeys_.add(foreign_key.clone());
@@ -651,7 +651,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             }
 
             if (uniqueConstraints_ != null) {
-                new_instance.uniqueConstraints_ = new ArrayList<UniqueConstraint>();
+                new_instance.uniqueConstraints_ = new ArrayList<>();
 
                 for (var unique_constraint : uniqueConstraints_) {
                     new_instance.uniqueConstraints_.add(unique_constraint.clone());
@@ -659,7 +659,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             }
 
             if (checkConstraints_ != null) {
-                new_instance.checkConstraints_ = new ArrayList<CheckConstraint>();
+                new_instance.checkConstraints_ = new ArrayList<>();
 
                 for (var check_constraint : checkConstraints_) {
                     new_instance.checkConstraints_.add(check_constraint.clone());
@@ -690,7 +690,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             template.setValue("COLUMN_NAMES", StringUtils.join(getColumns(), template.getBlock("SEPARATOR")));
 
             result = template.getBlock("PRIMARY_KEY");
-            if (0 == result.length()) {
+            if (result.isEmpty()) {
                 throw new UnsupportedSqlFeatureException("PRIMARY KEY", datasource_.getAliasedDriver());
             }
 
@@ -733,12 +733,12 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             var violations_actions = "";
             if (getOnUpdate() != null) {
                 block = template.getBlock("ON_UPDATE_" + getOnUpdate().toString());
-                if (0 == block.length()) {
+                if (block.isEmpty()) {
                     throw new UnsupportedSqlFeatureException("ON UPDATE " + getOnUpdate().toString(), datasource_.getAliasedDriver());
                 }
                 template.setValue("ON_UPDATE_ACTION", block);
                 block = template.getBlock("ON_UPDATE");
-                if (0 == block.length()) {
+                if (block.isEmpty()) {
                     throw new UnsupportedSqlFeatureException("ON UPDATE", datasource_.getAliasedDriver());
                 }
                 violations_actions += block;
@@ -746,12 +746,12 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
             if (getOnDelete() != null) {
                 block = template.getBlock("ON_DELETE_" + getOnDelete().toString());
-                if (0 == block.length()) {
+                if (block.isEmpty()) {
                     throw new UnsupportedSqlFeatureException("ON DELETE " + getOnDelete().toString(), datasource_.getAliasedDriver());
                 }
                 template.setValue("ON_DELETE_ACTION", block);
                 block = template.getBlock("ON_DELETE");
-                if (0 == block.length()) {
+                if (block.isEmpty()) {
                     throw new UnsupportedSqlFeatureException("ON DELETE", datasource_.getAliasedDriver());
                 }
                 violations_actions += block;
@@ -768,7 +768,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             template.setValue("FOREIGN_COLUMN_NAMES", StringUtils.join(foreign_columns, template.getBlock("SEPARATOR")));
 
             result = template.getBlock("FOREIGN_KEY");
-            if (0 == result.length()) {
+            if (result.isEmpty()) {
                 throw new UnsupportedSqlFeatureException("FOREIGN KEY", datasource_.getAliasedDriver());
             }
 
@@ -783,7 +783,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
         void setForeignTable(String foreignTable) {
             assert foreignTable != null;
-            assert foreignTable.length() > 0;
+            assert !foreignTable.isEmpty();
 
             foreignTable_ = foreignTable;
         }
@@ -828,7 +828,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             template.setValue("COLUMN_NAMES", StringUtils.join(getColumns(), template.getBlock("SEPARATOR")));
 
             result = template.getBlock("UNIQUE_CONSTRAINT");
-            if (0 == result.length()) {
+            if (result.isEmpty()) {
                 throw new UnsupportedSqlFeatureException("UNIQUE", datasource_.getAliasedDriver());
             }
 
@@ -865,7 +865,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             }
 
             result = template.getBlock("CHECK");
-            if (0 == result.length()) {
+            if (result.isEmpty()) {
                 throw new UnsupportedSqlFeatureException("CHECK", datasource_.getAliasedDriver());
             }
 
@@ -925,7 +925,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
         }
 
         void setName(String name) {
-            assert null == name || name.length() > 0;
+            assert null == name || !name.isEmpty();
 
             name_ = name;
         }
@@ -951,7 +951,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
         private Nullable nullable_ = null;
         private String default_ = null;
         private String customType_ = null;
-        private ArrayList<String> customAttributes_ = new ArrayList<String>();
+        private ArrayList<String> customAttributes_ = new ArrayList<>();
 
         Column(String name, Class type) {
             setName(name);
@@ -993,7 +993,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
             if (getNullable() != null) {
                 block = template.getBlock(getNullable().toString());
-                if (0 == block.length()) {
+                if (block.isEmpty()) {
                     throw new UnsupportedSqlFeatureException("NULLABLE " + getNullable().toString(), datasource_.getAliasedDriver());
                 }
                 template.setValue("NULLABLE", block);
@@ -1001,23 +1001,23 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             if (getDefault() != null) {
                 template.setValue("V", getDefault());
                 block = template.getBlock("DEFAULT");
-                if (0 == block.length()) {
+                if (block.isEmpty()) {
                     throw new UnsupportedSqlFeatureException("DEFAULT", datasource_.getAliasedDriver());
                 }
                 template.setValue("DEFAULT", block);
                 template.removeValue("V");
             }
-            if (getCustomAttributes().size() > 0) {
+            if (!getCustomAttributes().isEmpty()) {
                 template.setValue("V", StringUtils.join(getCustomAttributes(), " "));
                 block = template.getBlock("CUSTOM_ATTRIBUTES");
-                if (0 == block.length()) {
+                if (block.isEmpty()) {
                     throw new UnsupportedSqlFeatureException("CUSTOM_ATTRIBUTES", datasource_.getAliasedDriver());
                 }
                 template.setValue("CUSTOM_ATTRIBUTES", block);
                 template.removeValue("V");
             }
             result = template.getBlock("COLUMN");
-            if (0 == result.length()) {
+            if (result.isEmpty()) {
                 throw new UnsupportedSqlFeatureException("COLUMN", datasource_.getAliasedDriver());
             }
             template.removeValue("NAME");
@@ -1026,7 +1026,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             template.removeValue("DEFAULT");
             template.removeValue("CUSTOM_ATTRIBUTES");
 
-            assert result.length() > 0;
+            assert !result.isEmpty();
 
             return result;
         }
@@ -1037,7 +1037,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
         void setName(String name) {
             assert name != null;
-            assert name.length() > 0;
+            assert !name.isEmpty();
 
             name_ = name;
         }
@@ -1108,7 +1108,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
 
         void addCustomAttribute(String attribute) {
             assert attribute != null;
-            assert attribute.length() > 0;
+            assert !attribute.isEmpty();
 
             customAttributes_.add(attribute);
         }
@@ -1123,7 +1123,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
                 new_instance = (Column) super.clone();
 
                 if (customAttributes_ != null) {
-                    new_instance.customAttributes_ = new ArrayList<String>();
+                    new_instance.customAttributes_ = new ArrayList<>();
                     new_instance.customAttributes_.addAll(customAttributes_);
                 }
             } catch (CloneNotSupportedException e) {

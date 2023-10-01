@@ -26,7 +26,7 @@ public class oracle_jdbc_driver_OracleDriver extends Common implements SqlConver
         }
         // make sure that strings are escaped correctly
         else if (value instanceof CharSequence) {
-            if (0 == ((CharSequence) value).length()) {
+            if (((CharSequence) value).isEmpty()) {
                 return "''";
             } else {
                 return "'" + StringUtils.encodeSql(value.toString()) + "'";

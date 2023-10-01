@@ -209,7 +209,7 @@ public class Config implements Cloneable {
     static Config fromXmlResource(String resourceName, ResourceFinder resourceFinder, HierarchicalProperties properties, Map<String, String> parameters, List<String> finalParameters, Map<String, List<String>> lists, List<String> finalLists)
     throws ConfigErrorException {
         if (null == resourceName) throw new IllegalArgumentException("resourceName can't be null.");
-        if (0 == resourceName.length()) throw new IllegalArgumentException("resourceName can't be empty.");
+        if (resourceName.isEmpty()) throw new IllegalArgumentException("resourceName can't be empty.");
         if (null == resourceFinder) throw new IllegalArgumentException("resourceFinder can't be null.");
 
         var config_resource = resourceFinder.getResource(resourceName);
@@ -353,7 +353,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public boolean hasParameter(String parameter) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return false;
         }
 
@@ -387,7 +387,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public boolean isFinalParameter(String parameter) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return false;
         }
 
@@ -454,7 +454,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public String getString(String parameter, String defaultValue) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return defaultValue;
         }
 
@@ -507,7 +507,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public boolean getBool(String parameter, boolean defaultValue) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return defaultValue;
         }
 
@@ -534,7 +534,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public char getChar(String parameter, char defaultValue) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return defaultValue;
         }
 
@@ -561,7 +561,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public int getInt(String parameter, int defaultValue) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return defaultValue;
         }
 
@@ -588,7 +588,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public long getLong(String parameter, long defaultValue) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return defaultValue;
         }
 
@@ -615,7 +615,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public float getFloat(String parameter, float defaultValue) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return defaultValue;
         }
 
@@ -642,7 +642,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public double getDouble(String parameter, double defaultValue) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return defaultValue;
         }
 
@@ -669,7 +669,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public <TargetType extends Serializable> TargetType getSerializable(String parameter, TargetType defaultValue) {
-        if (null == parameter || 0 == parameter.length()) {
+        if (null == parameter || parameter.isEmpty()) {
             return defaultValue;
         }
 
@@ -695,7 +695,7 @@ public class Config implements Cloneable {
      */
     public Config finalParameter(String parameter, boolean isFinal) {
         if (null == parameter) throw new IllegalArgumentException("parameter can't be null.");
-        if (0 == parameter.length()) throw new IllegalArgumentException("parameter can't be empty.");
+        if (parameter.isEmpty()) throw new IllegalArgumentException("parameter can't be empty.");
 
         writeLock_.lock();
         try {
@@ -721,7 +721,7 @@ public class Config implements Cloneable {
      */
     public Config put(String parameter, String value) {
         if (null == parameter) throw new IllegalArgumentException("parameter can't be null.");
-        if (0 == parameter.length()) throw new IllegalArgumentException("parameter can't be empty.");
+        if (parameter.isEmpty()) throw new IllegalArgumentException("parameter can't be empty.");
         if (null == value) throw new IllegalArgumentException("value can't be null.");
 
         writeLock_.lock();
@@ -843,7 +843,7 @@ public class Config implements Cloneable {
      */
     public void remove(String parameter) {
         if (null == parameter ||
-            0 == parameter.length()) {
+                parameter.isEmpty()) {
             return;
         }
 
@@ -876,7 +876,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public boolean isFinalList(String list) {
-        if (null == list || 0 == list.length()) {
+        if (null == list || list.isEmpty()) {
             return false;
         }
 
@@ -896,7 +896,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public List<String> getStringItems(String list) {
-        if (null == list || 0 == list.length()) {
+        if (null == list || list.isEmpty()) {
             return null;
         }
 
@@ -1138,7 +1138,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public boolean hasList(String list) {
-        if (null == list || 0 == list.length()) {
+        if (null == list || list.isEmpty()) {
             return false;
         }
 
@@ -1219,7 +1219,7 @@ public class Config implements Cloneable {
      */
     public Config putItem(String list, String item) {
         if (null == list) throw new IllegalArgumentException("list can't be null.");
-        if (0 == list.length()) throw new IllegalArgumentException("list can't be empty.");
+        if (list.isEmpty()) throw new IllegalArgumentException("list can't be empty.");
         if (null == item) throw new IllegalArgumentException("item can't be null.");
 
         writeLock_.lock();
@@ -1378,7 +1378,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public void clearList(String list) {
-        if (null == list || 0 == list.length()) {
+        if (null == list || list.isEmpty()) {
             return;
         }
 
@@ -1419,7 +1419,7 @@ public class Config implements Cloneable {
      * @since 1.6.0
      */
     public void removeList(String list) {
-        if (null == list || 0 == list.length()) {
+        if (null == list || list.isEmpty()) {
             return;
         }
 
@@ -1459,7 +1459,7 @@ public class Config implements Cloneable {
      */
     public Config finalList(String list, boolean isFinal) {
         if (null == list) throw new IllegalArgumentException("list can't be null.");
-        if (0 == list.length()) throw new IllegalArgumentException("list can't be empty.");
+        if (list.isEmpty()) throw new IllegalArgumentException("list can't be empty.");
 
         writeLock_.lock();
         try {

@@ -117,16 +117,13 @@ public class DbQueryManager implements Cloneable {
     throws DatabaseException {
         if (null == sql) throw new IllegalArgumentException("sql can't be null.");
 
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = connection.createStatement();
             try {
                 return statement.executeUpdate(sql);
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -155,16 +152,13 @@ public class DbQueryManager implements Cloneable {
     throws DatabaseException {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = connection.createStatement();
             try {
                 return statement.executeUpdate(query);
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -235,8 +229,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 if (null == full_handler) {
@@ -247,8 +240,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -321,8 +312,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 var result = executeHasResultRows(statement, full_handler);
@@ -342,8 +332,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -410,8 +398,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -437,8 +424,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -496,8 +481,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -523,8 +507,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -582,8 +564,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -609,8 +590,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -668,8 +647,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -695,8 +673,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -752,8 +728,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -779,8 +754,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -838,8 +811,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -865,8 +837,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -924,8 +894,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -951,8 +920,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1010,8 +977,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -1037,8 +1003,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1096,8 +1060,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -1123,8 +1086,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1182,8 +1143,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -1209,8 +1169,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1272,8 +1230,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -1299,8 +1256,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1358,8 +1313,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -1385,8 +1339,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1448,8 +1400,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -1475,8 +1426,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1534,8 +1483,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -1561,8 +1509,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1624,8 +1570,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -1651,8 +1596,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1723,8 +1666,7 @@ public class DbQueryManager implements Cloneable {
         if (null == user) throw new IllegalArgumentException("user can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             InputStream stream = null;
             try {
@@ -1750,8 +1692,6 @@ public class DbQueryManager implements Cloneable {
                 defensiveClose(stream);
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1822,8 +1762,7 @@ public class DbQueryManager implements Cloneable {
         if (null == user) throw new IllegalArgumentException("user can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             Reader reader = null;
             try {
@@ -1849,8 +1788,6 @@ public class DbQueryManager implements Cloneable {
                 defensiveClose(reader);
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -1921,8 +1858,7 @@ public class DbQueryManager implements Cloneable {
         if (null == user) throw new IllegalArgumentException("user can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             InputStream stream = null;
             try {
@@ -1948,8 +1884,6 @@ public class DbQueryManager implements Cloneable {
                 defensiveClose(stream);
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -2042,8 +1976,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 statement.setFetchSize(1);
@@ -2067,8 +2000,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -2261,8 +2192,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 executeQuery(statement, full_handler);
@@ -2284,8 +2214,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -2444,8 +2372,7 @@ public class DbQueryManager implements Cloneable {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
         var full_handler = ensureFullPreparedStatementHandler(handler);
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, full_handler, connection);
             try {
                 executeQuery(statement, full_handler);
@@ -2464,8 +2391,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -2512,8 +2437,7 @@ public class DbQueryManager implements Cloneable {
     throws DatabaseException {
         if (null == query) throw new IllegalArgumentException("query can't be null.");
 
-        var connection = getConnection();
-        try {
+        try (var connection = getConnection()) {
             var statement = getPreparedStatement(query, handler, connection);
             try {
                 executeQuery(statement, null);
@@ -2533,8 +2457,6 @@ public class DbQueryManager implements Cloneable {
             } finally {
                 defensiveClose(statement);
             }
-        } finally {
-            connection.close();
         }
     }
 

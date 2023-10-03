@@ -34,15 +34,15 @@ public class AbstractRife2Build extends Project {
             .include(dependency("org.slf4j", "slf4j-simple", version(2, 0, 7)))
             .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 9, 3)))
             .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 9, 3)))
-            .include(dependency("com.h2database", "h2", version(2, 2, 220)))
+            .include(dependency("com.h2database", "h2", version(2, 2, 224)))
             .include(dependency("net.sourceforge.htmlunit", "htmlunit", version(2, 70, 0)))
             .include(dependency("org.postgresql", "postgresql", version(42, 6, 0)))
             .include(dependency("com.mysql", "mysql-connector-j", version(8, 1, 0)))
-            .include(dependency("org.mariadb.jdbc", "mariadb-java-client", version(3, 1, 4)))
+            .include(dependency("org.mariadb.jdbc", "mariadb-java-client", version(3, 2, 0)))
             .include(dependency("org.hsqldb", "hsqldb", version(2, 7, 2)))
             .include(dependency("org.apache.derby", "derby", version("10.16.1.1")))
             .include(dependency("org.apache.derby", "derbytools", version("10.16.1.1")))
-            .include(dependency("com.oracle.database.jdbc", "ojdbc11", version("23.2.0.0")));
+            .include(dependency("com.oracle.database.jdbc", "ojdbc11", version("23.3.0.23.09")));
 
         cleanOperation()
             .directories(

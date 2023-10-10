@@ -19,7 +19,7 @@ projects, like [RIFE2](https://github.com/rife2/rife2) itself and
 # Get in touch
 
 If you have any questions, suggestions, ideas or just want to chat, feel free
-to post on the [forums](https://github.com/rife2/rife2/discussions), to join
+to post on the [forums](https://forum.uwyn.com), to join
 me on [Discord](https://discord.gg/DZRYPtkb6J) or to connect with me on
 [Mastodon](https://uwyn.net/@gbevin).
 

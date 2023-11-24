@@ -40,8 +40,8 @@ public class AbstractRife2Build extends Project {
             .include(dependency("com.mysql", "mysql-connector-j", version(8,2,0)))
             .include(dependency("org.mariadb.jdbc", "mariadb-java-client", version(3,3,0)))
             .include(dependency("org.hsqldb", "hsqldb", version(2,7,2)))
-            .include(dependency("org.apache.derby", "derby", version("10.17.1.0")))
-            .include(dependency("org.apache.derby", "derbytools", version("10.17.1.0")))
+            .include(dependency("org.apache.derby", "derby", version("10.16.1.1")))
+            .include(dependency("org.apache.derby", "derbytools", version("10.16.1.1")))
             .include(dependency("com.oracle.database.jdbc", "ojdbc11", version("23.3.0.23.09")));
 
         cleanOperation()

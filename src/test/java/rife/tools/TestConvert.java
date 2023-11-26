@@ -172,6 +172,10 @@ public class TestConvert {
         }
     }
 
+    public enum Action {
+        none, add, modify, cancel
+    }
+
     @Test
     void testFromString()
     throws ConversionException {
@@ -191,6 +195,9 @@ public class TestConvert {
         assertThrows(ConversionException.class, () -> Convert.fromString("invalid", MyCustomType.class));
 
         assertThrows(ConversionException.class, () -> Convert.fromString("custom", MyCustomType2.class));
+
+        assertEquals(Action.add, Convert.fromString("add", Action.class));
+        assertThrows(ConversionException.class, () -> Convert.fromString("nothing", Action.class));
     }
 
     @Test

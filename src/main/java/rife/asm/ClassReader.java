@@ -177,7 +177,7 @@ public class ClassReader {
       final byte[] classFileBuffer,
       final int classFileOffset,
       final int classFileLength) { // NOPMD(UnusedFormalParameter) used for backward compatibility.
-    this(classFileBuffer, classFileOffset, /* checkClassVersion = */ true);
+    this(classFileBuffer, classFileOffset, /* checkClassVersion= */ true);
   }
 
   /**
@@ -188,13 +188,14 @@ public class ClassReader {
    * @param classFileOffset the offset in byteBuffer of the first byte of the ClassFile to be read.
    * @param checkClassVersion whether to check the class version or not.
    */
+  @SuppressWarnings("PMD.ConstructorCallsOverridableMethod")
   ClassReader(
       final byte[] classFileBuffer, final int classFileOffset, final boolean checkClassVersion) {
     this.classFileBuffer = classFileBuffer;
     this.b = classFileBuffer;
     // Check the class' major_version. This field is after the magic and minor_version fields, which
     // use 4 and 2 bytes respectively.
-    if (checkClassVersion && readShort(classFileOffset + 6) > Opcodes.V20) {
+    if (checkClassVersion && readShort(classFileOffset + 6) > Opcodes.V23) {
       throw new IllegalArgumentException(
           "Unsupported class file major version " + readShort(classFileOffset + 6));
     }
@@ -494,7 +495,7 @@ public class ClassReader {
     int permittedSubclassesOffset = 0;
     // - The offset of the Record attribute, or 0.
     int recordOffset = 0;
-    // - The non-standard attributes (linked with their {@link Attribute#nextAttribute} field).
+    // - The non standard attributes (linked with their {@link Attribute#nextAttribute} field).
     //   This list in the <i>reverse order</i> or their order in the ClassFile structure.
     Attribute attributes = null;
 
@@ -606,9 +607,9 @@ public class ClassReader {
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
             readElementValues(
-                classVisitor.visitAnnotation(annotationDescriptor, /* visible = */ true),
+                classVisitor.visitAnnotation(annotationDescriptor, /* visible= */ true),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -624,9 +625,9 @@ public class ClassReader {
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
             readElementValues(
-                classVisitor.visitAnnotation(annotationDescriptor, /* visible = */ false),
+                classVisitor.visitAnnotation(annotationDescriptor, /* visible= */ false),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -648,9 +649,9 @@ public class ClassReader {
                     context.currentTypeAnnotationTarget,
                     context.currentTypeAnnotationTargetPath,
                     annotationDescriptor,
-                    /* visible = */ true),
+                    /* visible= */ true),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -672,14 +673,14 @@ public class ClassReader {
                     context.currentTypeAnnotationTarget,
                     context.currentTypeAnnotationTargetPath,
                     annotationDescriptor,
-                    /* visible = */ false),
+                    /* visible= */ false),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
 
-    // Visit the non-standard attributes.
+    // Visit the non standard attributes.
     while (attributes != null) {
       // Copy and reset the nextAttribute field so that it can also be used in ClassWriter.
       Attribute nextAttribute = attributes.nextAttribute;
@@ -910,7 +911,7 @@ public class ClassReader {
     int runtimeVisibleTypeAnnotationsOffset = 0;
     // - The offset of the RuntimeInvisibleTypeAnnotations attribute, or 0.
     int runtimeInvisibleTypeAnnotationsOffset = 0;
-    // - The non-standard attributes (linked with their {@link Attribute#nextAttribute} field).
+    // - The non standard attributes (linked with their {@link Attribute#nextAttribute} field).
     //   This list in the <i>reverse order</i> or their order in the ClassFile structure.
     Attribute attributes = null;
 
@@ -966,9 +967,9 @@ public class ClassReader {
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
             readElementValues(
-                recordComponentVisitor.visitAnnotation(annotationDescriptor, /* visible = */ true),
+                recordComponentVisitor.visitAnnotation(annotationDescriptor, /* visible= */ true),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -984,9 +985,9 @@ public class ClassReader {
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
             readElementValues(
-                recordComponentVisitor.visitAnnotation(annotationDescriptor, /* visible = */ false),
+                recordComponentVisitor.visitAnnotation(annotationDescriptor, /* visible= */ false),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -1008,9 +1009,9 @@ public class ClassReader {
                     context.currentTypeAnnotationTarget,
                     context.currentTypeAnnotationTargetPath,
                     annotationDescriptor,
-                    /* visible = */ true),
+                    /* visible= */ true),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -1032,14 +1033,14 @@ public class ClassReader {
                     context.currentTypeAnnotationTarget,
                     context.currentTypeAnnotationTargetPath,
                     annotationDescriptor,
-                    /* visible = */ false),
+                    /* visible= */ false),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
 
-    // Visit the non-standard attributes.
+    // Visit the non standard attributes.
     while (attributes != null) {
       // Copy and reset the nextAttribute field so that it can also be used in FieldWriter.
       Attribute nextAttribute = attributes.nextAttribute;
@@ -1086,7 +1087,7 @@ public class ClassReader {
     int runtimeVisibleTypeAnnotationsOffset = 0;
     // - The offset of the RuntimeInvisibleTypeAnnotations attribute, or 0.
     int runtimeInvisibleTypeAnnotationsOffset = 0;
-    // - The non-standard attributes (linked with their {@link Attribute#nextAttribute} field).
+    // - The non standard attributes (linked with their {@link Attribute#nextAttribute} field).
     //   This list in the <i>reverse order</i> or their order in the ClassFile structure.
     Attribute attributes = null;
 
@@ -1150,9 +1151,9 @@ public class ClassReader {
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
             readElementValues(
-                fieldVisitor.visitAnnotation(annotationDescriptor, /* visible = */ true),
+                fieldVisitor.visitAnnotation(annotationDescriptor, /* visible= */ true),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -1168,9 +1169,9 @@ public class ClassReader {
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
             readElementValues(
-                fieldVisitor.visitAnnotation(annotationDescriptor, /* visible = */ false),
+                fieldVisitor.visitAnnotation(annotationDescriptor, /* visible= */ false),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -1192,9 +1193,9 @@ public class ClassReader {
                     context.currentTypeAnnotationTarget,
                     context.currentTypeAnnotationTargetPath,
                     annotationDescriptor,
-                    /* visible = */ true),
+                    /* visible= */ true),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -1216,14 +1217,14 @@ public class ClassReader {
                     context.currentTypeAnnotationTarget,
                     context.currentTypeAnnotationTargetPath,
                     annotationDescriptor,
-                    /* visible = */ false),
+                    /* visible= */ false),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
 
-    // Visit the non-standard attributes.
+    // Visit the non standard attributes.
     while (attributes != null) {
       // Copy and reset the nextAttribute field so that it can also be used in FieldWriter.
       Attribute nextAttribute = attributes.nextAttribute;
@@ -1284,7 +1285,7 @@ public class ClassReader {
     int annotationDefaultOffset = 0;
     // - The offset of the MethodParameters attribute, or 0.
     int methodParametersOffset = 0;
-    // - The non-standard attributes (linked with their {@link Attribute#nextAttribute} field).
+    // - The non standard attributes (linked with their {@link Attribute#nextAttribute} field).
     //   This list in the <i>reverse order</i> or their order in the ClassFile structure.
     Attribute attributes = null;
 
@@ -1411,9 +1412,9 @@ public class ClassReader {
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
             readElementValues(
-                methodVisitor.visitAnnotation(annotationDescriptor, /* visible = */ true),
+                methodVisitor.visitAnnotation(annotationDescriptor, /* visible= */ true),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -1429,9 +1430,9 @@ public class ClassReader {
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
             readElementValues(
-                methodVisitor.visitAnnotation(annotationDescriptor, /* visible = */ false),
+                methodVisitor.visitAnnotation(annotationDescriptor, /* visible= */ false),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -1453,9 +1454,9 @@ public class ClassReader {
                     context.currentTypeAnnotationTarget,
                     context.currentTypeAnnotationTargetPath,
                     annotationDescriptor,
-                    /* visible = */ true),
+                    /* visible= */ true),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -1477,9 +1478,9 @@ public class ClassReader {
                     context.currentTypeAnnotationTarget,
                     context.currentTypeAnnotationTargetPath,
                     annotationDescriptor,
-                    /* visible = */ false),
+                    /* visible= */ false),
                 currentAnnotationOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -1487,19 +1488,16 @@ public class ClassReader {
     // Visit the RuntimeVisibleParameterAnnotations attribute.
     if (runtimeVisibleParameterAnnotationsOffset != 0) {
       readParameterAnnotations(
-          methodVisitor, context, runtimeVisibleParameterAnnotationsOffset, /* visible = */ true);
+          methodVisitor, context, runtimeVisibleParameterAnnotationsOffset, /* visible= */ true);
     }
 
     // Visit the RuntimeInvisibleParameterAnnotations attribute.
     if (runtimeInvisibleParameterAnnotationsOffset != 0) {
       readParameterAnnotations(
-          methodVisitor,
-          context,
-          runtimeInvisibleParameterAnnotationsOffset,
-          /* visible = */ false);
+          methodVisitor, context, runtimeInvisibleParameterAnnotationsOffset, /* visible= */ false);
     }
 
-    // Visit the non-standard attributes.
+    // Visit the non standard attributes.
     while (attributes != null) {
       // Copy and reset the nextAttribute field so that it can also be used in MethodWriter.
       Attribute nextAttribute = attributes.nextAttribute;
@@ -1878,7 +1876,7 @@ public class ClassReader {
     // - The offset of each 'type_annotation' entry in the RuntimeInvisibleTypeAnnotations
     // attribute, or null.
     int[] invisibleTypeAnnotationOffsets = null;
-    // - The non-standard attributes (linked with their {@link Attribute#nextAttribute} field).
+    // - The non standard attributes (linked with their {@link Attribute#nextAttribute} field).
     //   This list in the <i>reverse order</i> or their order in the ClassFile structure.
     Attribute attributes = null;
 
@@ -1925,7 +1923,7 @@ public class ClassReader {
         }
       } else if (Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS.equals(attributeName)) {
         visibleTypeAnnotationOffsets =
-            readTypeAnnotations(methodVisitor, context, currentOffset, /* visible = */ true);
+            readTypeAnnotations(methodVisitor, context, currentOffset, /* visible= */ true);
         // Here we do not extract the labels corresponding to the attribute content. This would
         // require a full parsing of the attribute, which would need to be repeated when parsing
         // the bytecode instructions (see below). Instead, the content of the attribute is read one
@@ -1934,7 +1932,7 @@ public class ClassReader {
         // time. This assumes that type annotations are ordered by increasing bytecode offset.
       } else if (Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS.equals(attributeName)) {
         invisibleTypeAnnotationOffsets =
-            readTypeAnnotations(methodVisitor, context, currentOffset, /* visible = */ false);
+            readTypeAnnotations(methodVisitor, context, currentOffset, /* visible= */ false);
         // Same comment as above for the RuntimeVisibleTypeAnnotations attribute.
       } else if (Constants.STACK_MAP_TABLE.equals(attributeName)) {
         if ((context.parsingOptions & SKIP_FRAMES) == 0) {
@@ -1948,7 +1946,7 @@ public class ClassReader {
         // labels it contains are also extracted one frame at a time. Thanks to the ordering of
         // frames, having only a "one frame lookahead" is not a problem, i.e. it is not possible to
         // see an offset smaller than the offset of the current instruction and for which no Label
-        // exists. Except for UNINITIALIZED type offsets. We solve this by parsing the stack map
+        // exist. Except for UNINITIALIZED type offsets. We solve this by parsing the stack map
         // table without a full decoding (see below).
       } else if ("StackMap".equals(attributeName)) {
         if ((context.parsingOptions & SKIP_FRAMES) == 0) {
@@ -2516,9 +2514,9 @@ public class ClassReader {
                   context.currentTypeAnnotationTarget,
                   context.currentTypeAnnotationTargetPath,
                   annotationDescriptor,
-                  /* visible = */ true),
+                  /* visible= */ true),
               currentAnnotationOffset,
-              /* named = */ true,
+              /* named= */ true,
               charBuffer);
         }
         currentVisibleTypeAnnotationBytecodeOffset =
@@ -2544,9 +2542,9 @@ public class ClassReader {
                   context.currentTypeAnnotationTarget,
                   context.currentTypeAnnotationTargetPath,
                   annotationDescriptor,
-                  /* visible = */ false),
+                  /* visible= */ false),
               currentAnnotationOffset,
-              /* named = */ true,
+              /* named= */ true,
               charBuffer);
         }
         currentInvisibleTypeAnnotationBytecodeOffset =
@@ -2617,9 +2615,9 @@ public class ClassReader {
                   context.currentLocalVariableAnnotationRangeEnds,
                   context.currentLocalVariableAnnotationRangeIndices,
                   annotationDescriptor,
-                  /* visible = */ true),
+                  /* visible= */ true),
               currentOffset,
-              /* named = */ true,
+              /* named= */ true,
               charBuffer);
         }
       }
@@ -2645,15 +2643,15 @@ public class ClassReader {
                   context.currentLocalVariableAnnotationRangeEnds,
                   context.currentLocalVariableAnnotationRangeIndices,
                   annotationDescriptor,
-                  /* visible = */ false),
+                  /* visible= */ false),
               currentOffset,
-              /* named = */ true,
+              /* named= */ true,
               charBuffer);
         }
       }
     }
 
-    // Visit the non-standard attributes.
+    // Visit the non standard attributes.
     while (attributes != null) {
       // Copy and reset the nextAttribute field so that it can also be used in MethodWriter.
       Attribute nextAttribute = attributes.nextAttribute;
@@ -2688,7 +2686,7 @@ public class ClassReader {
    * @param labels the already created labels, indexed by their offset. If a label already exists
    *     for bytecodeOffset this method must not create a new one. Otherwise it must store the new
    *     label in this array.
-   * @return a non-null Label, which must be equal to labels[bytecodeOffset].
+   * @return a non null Label, which must be equal to labels[bytecodeOffset].
    */
   protected Label readLabel(final int bytecodeOffset, final Label[] labels) {
     if (labels[bytecodeOffset] == null) {
@@ -2820,7 +2818,7 @@ public class ClassReader {
                 methodVisitor.visitTryCatchAnnotation(
                     targetType & 0xFFFFFF00, path, annotationDescriptor, visible),
                 currentOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       } else {
         // We don't want to visit the other target_type annotations, so we just skip them (which
@@ -2831,7 +2829,7 @@ public class ClassReader {
         // with a null AnnotationVisitor).
         currentOffset =
             readElementValues(
-                /* annotationVisitor = */ null, currentOffset, /* named = */ true, charBuffer);
+                /* annotationVisitor= */ null, currentOffset, /* named= */ true, charBuffer);
       }
     }
     return typeAnnotationsOffsets;
@@ -2971,7 +2969,7 @@ public class ClassReader {
             readElementValues(
                 methodVisitor.visitParameterAnnotation(i, annotationDescriptor, visible),
                 currentOffset,
-                /* named = */ true,
+                /* named= */ true,
                 charBuffer);
       }
     }
@@ -3041,9 +3039,9 @@ public class ClassReader {
         case 'e': // enum_const_value
           return currentOffset + 5;
         case '@': // annotation_value
-          return readElementValues(null, currentOffset + 3, /* named = */ true, charBuffer);
+          return readElementValues(null, currentOffset + 3, /* named= */ true, charBuffer);
         case '[': // array_value
-          return readElementValues(null, currentOffset + 1, /* named = */ false, charBuffer);
+          return readElementValues(null, currentOffset + 1, /* named= */ false, charBuffer);
         default:
           return currentOffset + 3;
       }
@@ -3111,7 +3109,7 @@ public class ClassReader {
           return readElementValues(
               annotationVisitor.visitArray(elementName),
               currentOffset - 2,
-              /* named = */ false,
+              /* named= */ false,
               charBuffer);
         }
         switch (classFileBuffer[currentOffset] & 0xFF) {
@@ -3188,7 +3186,7 @@ public class ClassReader {
                 readElementValues(
                     annotationVisitor.visitArray(elementName),
                     currentOffset - 2,
-                    /* named = */ false,
+                    /* named= */ false,
                     charBuffer);
             break;
         }
@@ -3514,7 +3512,7 @@ public class ClassReader {
   }
 
   /**
-   * Reads a non-standard JVMS 'attribute' structure in {@link #classFileBuffer}.
+   * Reads a non standard JVMS 'attribute' structure in {@link #classFileBuffer}.
    *
    * @param attributePrototypes prototypes of the attributes that must be parsed during the visit of
    *     the class. Any attribute whose type is not equal to the type of one the prototypes will not

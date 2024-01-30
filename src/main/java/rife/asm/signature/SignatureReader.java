@@ -54,8 +54,8 @@ public class SignatureReader {
    * Makes the given visitor visit the signature of this {@link SignatureReader}. This signature is
    * the one specified in the constructor (see {@link #SignatureReader}). This method is intended to
    * be called on a {@link SignatureReader} that was created using a <i>ClassSignature</i> (such as
-   * the {@code signature} parameter of the {@link rife.asm.ClassVisitor#visit}
-   * method) or a <i>MethodSignature</i> (such as the {@code signature} parameter of the {@link
+   * the <code>signature</code> parameter of the {@link rife.asm.ClassVisitor#visit}
+   * method) or a <i>MethodSignature</i> (such as the <code>signature</code> parameter of the {@link
    * rife.asm.ClassVisitor#visitMethod} method).
    *
    * @param signatureVistor the visitor that must visit this signature.
@@ -130,7 +130,7 @@ public class SignatureReader {
    * Makes the given visitor visit the signature of this {@link SignatureReader}. This signature is
    * the one specified in the constructor (see {@link #SignatureReader}). This method is intended to
    * be called on a {@link SignatureReader} that was created using a <i>JavaTypeSignature</i>, such
-   * as the {@code signature} parameter of the {@link
+   * as the <code>signature</code> parameter of the {@link
    * rife.asm.ClassVisitor#visitField} or {@link
    * rife.asm.MethodVisitor#visitLocalVariable} methods.
    *
@@ -144,7 +144,7 @@ public class SignatureReader {
    * Parses a JavaTypeSignature and makes the given visitor visit it.
    *
    * @param signature a string containing the signature that must be parsed.
-   * @param startOffset index of the first character of the signature to be parsed.
+   * @param startOffset index of the first character of the signature to parsed.
    * @param signatureVisitor the visitor that must visit this signature.
    * @return the index of the first character after the parsed signature.
    */
@@ -190,7 +190,7 @@ public class SignatureReader {
           currentChar = signature.charAt(offset++);
           if (currentChar == '.' || currentChar == ';') {
             // If a '.' or ';' is encountered, this means we have fully parsed the main class name
-            // or an inner class name. This name may already have been visited if it is followed by
+            // or an inner class name. This name may already have been visited it is was followed by
             // type arguments between '<' and '>'. If not, we need to visit it here.
             if (!visited) {
               String name = signature.substring(start, offset - 1);

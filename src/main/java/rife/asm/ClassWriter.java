@@ -204,7 +204,7 @@ public class ClassWriter extends ClassVisitor {
   private RecordComponentWriter lastRecordComponent;
 
   /**
-   * The first non-standard attribute of this class. The next ones can be accessed with the {@link
+   * The first non standard attribute of this class. The next ones can be accessed with the {@link
    * Attribute#nextAttribute} field. May be {@literal null}.
    *
    * <p><b>WARNING</b>: this list stores the attributes in the <i>reverse</i> order of their visit.
@@ -217,6 +217,7 @@ public class ClassWriter extends ClassVisitor {
   /**
    * Indicates what must be automatically computed in {@link MethodWriter}. Must be one of {@link
    * MethodWriter#COMPUTE_NOTHING}, {@link MethodWriter#COMPUTE_MAX_STACK_AND_LOCAL}, {@link
+   * MethodWriter#COMPUTE_MAX_STACK_AND_LOCAL_FROM_FRAMES}, {@link
    * MethodWriter#COMPUTE_INSERTED_FRAMES}, or {@link MethodWriter#COMPUTE_ALL_FRAMES}.
    */
   private int compute;
@@ -773,7 +774,7 @@ public class ClassWriter extends ClassVisitor {
     lastRecordComponent = null;
     firstAttribute = null;
     compute = hasFrames ? MethodWriter.COMPUTE_INSERTED_FRAMES : MethodWriter.COMPUTE_NOTHING;
-    new ClassReader(classFile, 0, /* checkClassVersion = */ false)
+    new ClassReader(classFile, 0, /* checkClassVersion= */ false)
         .accept(
             this,
             attributes,
@@ -1037,11 +1038,6 @@ public class ClassWriter extends ClassVisitor {
    *     Type#getInternalName()}).
    */
   protected String getCommonSuperClass(final String type1, final String type2) {
-    // TODO : extend ClassWriter and use bytecode analysis for finding the common superclass instead of class loading
-    if (type1.equals("java/lang/Object") || type2.equals("java/lang/Object")) {
-      return "java/lang/Object";
-    }
-
     ClassLoader classLoader = getClassLoader();
     Class<?> class1;
     try {

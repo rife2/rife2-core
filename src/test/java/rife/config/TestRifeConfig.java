@@ -83,7 +83,10 @@ public class TestRifeConfig {
             sf = RifeConfig.tools().getDefaultLongDateTimeFormatter();
             formatted = sf.format(makeZonedDateTime(2004, Calendar.AUGUST, 31, 15, 53));
 
-            if (Runtime.version().feature() >= 20 ) {
+            if (Runtime.version().feature() >= 22 ) {
+                assertEquals(formatted, "31 aug 2004, 15:53:00");
+            }
+            else if (Runtime.version().feature() >= 20 ) {
                 assertEquals(formatted, "31 aug 2004 15:53:00");
             } else {
                 assertEquals(formatted, "31 aug. 2004 15:53:00");
@@ -192,7 +195,10 @@ public class TestRifeConfig {
             sf = RifeConfig.tools().getDefaultLongDateFormat();
             formatted = sf.format(makeDate(2004, Calendar.AUGUST, 31, 15, 53));
 
-            if (Runtime.version().feature() >= 20 ) {
+            if (Runtime.version().feature() >= 22 ) {
+                assertEquals(formatted, "31 aug 2004, 15:53");
+            }
+            else if (Runtime.version().feature() >= 20 ) {
                 assertEquals(formatted, "31 aug 2004 15:53");
             } else {
                 assertEquals(formatted, "31 aug. 2004 15:53");

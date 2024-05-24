@@ -42,7 +42,7 @@ public class AbstractRife2Build extends Project {
             .include(dependency("org.hsqldb", "hsqldb", version(2,7,2)))
             .include(dependency("org.apache.derby", "derby", version("10.16.1.1")))
             .include(dependency("org.apache.derby", "derbytools", version("10.16.1.1")))
-            .include(dependency("com.oracle.database.jdbc", "ojdbc11", version("23.3.0.23.09")));
+            .include(dependency("com.oracle.database.jdbc", "ojdbc11", version("23.4.0.24.05")));
 
         cleanOperation()
             .directories(

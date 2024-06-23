@@ -362,7 +362,7 @@ public class TestTemplate {
 
             unset_value_ids = template.getUnsetValueIds();
             assertNotNull(unset_value_ids);
-            assertEquals(unset_value_ids.size(), 7);
+            assertEquals(unset_value_ids.size(), 15);
             assertTrue(unset_value_ids.contains("VALUE1"));
             assertTrue(unset_value_ids.contains("VALUE2"));
             assertTrue(unset_value_ids.contains("VALUE3"));
@@ -370,10 +370,18 @@ public class TestTemplate {
             assertTrue(unset_value_ids.contains("VALUE5"));
             assertTrue(unset_value_ids.contains("VALUE6"));
             assertTrue(unset_value_ids.contains("VALUE7"));
+            assertTrue(unset_value_ids.contains("VALUE8"));
+            assertTrue(unset_value_ids.contains("VALUE9"));
+            assertTrue(unset_value_ids.contains("VALUE10"));
+            assertTrue(unset_value_ids.contains("VALUE11"));
+            assertTrue(unset_value_ids.contains("VALUE12"));
+            assertTrue(unset_value_ids.contains("VALUE13"));
+            assertTrue(unset_value_ids.contains("VALUE14"));
+            assertTrue(unset_value_ids.contains("VALUE15"));
 
             template.setValue("VALUE1", "value");
             unset_value_ids = template.getUnsetValueIds();
-            assertEquals(unset_value_ids.size(), 6);
+            assertEquals(unset_value_ids.size(), 14);
             assertFalse(unset_value_ids.contains("VALUE1"));
             assertTrue(unset_value_ids.contains("VALUE2"));
             assertTrue(unset_value_ids.contains("VALUE3"));
@@ -381,10 +389,18 @@ public class TestTemplate {
             assertTrue(unset_value_ids.contains("VALUE5"));
             assertTrue(unset_value_ids.contains("VALUE6"));
             assertTrue(unset_value_ids.contains("VALUE7"));
+            assertTrue(unset_value_ids.contains("VALUE8"));
+            assertTrue(unset_value_ids.contains("VALUE9"));
+            assertTrue(unset_value_ids.contains("VALUE10"));
+            assertTrue(unset_value_ids.contains("VALUE11"));
+            assertTrue(unset_value_ids.contains("VALUE12"));
+            assertTrue(unset_value_ids.contains("VALUE13"));
+            assertTrue(unset_value_ids.contains("VALUE14"));
+            assertTrue(unset_value_ids.contains("VALUE15"));
 
             template.setValue("VALUE2", "value");
             unset_value_ids = template.getUnsetValueIds();
-            assertEquals(unset_value_ids.size(), 5);
+            assertEquals(unset_value_ids.size(), 13);
             assertFalse(unset_value_ids.contains("VALUE1"));
             assertFalse(unset_value_ids.contains("VALUE2"));
             assertTrue(unset_value_ids.contains("VALUE3"));
@@ -392,10 +408,18 @@ public class TestTemplate {
             assertTrue(unset_value_ids.contains("VALUE5"));
             assertTrue(unset_value_ids.contains("VALUE6"));
             assertTrue(unset_value_ids.contains("VALUE7"));
+            assertTrue(unset_value_ids.contains("VALUE8"));
+            assertTrue(unset_value_ids.contains("VALUE9"));
+            assertTrue(unset_value_ids.contains("VALUE10"));
+            assertTrue(unset_value_ids.contains("VALUE11"));
+            assertTrue(unset_value_ids.contains("VALUE12"));
+            assertTrue(unset_value_ids.contains("VALUE13"));
+            assertTrue(unset_value_ids.contains("VALUE14"));
+            assertTrue(unset_value_ids.contains("VALUE15"));
 
             template.setValue("VALUE3", "value");
             unset_value_ids = template.getUnsetValueIds();
-            assertEquals(unset_value_ids.size(), 4);
+            assertEquals(unset_value_ids.size(), 12);
             assertFalse(unset_value_ids.contains("VALUE1"));
             assertFalse(unset_value_ids.contains("VALUE2"));
             assertFalse(unset_value_ids.contains("VALUE3"));
@@ -403,10 +427,18 @@ public class TestTemplate {
             assertTrue(unset_value_ids.contains("VALUE5"));
             assertTrue(unset_value_ids.contains("VALUE6"));
             assertTrue(unset_value_ids.contains("VALUE7"));
+            assertTrue(unset_value_ids.contains("VALUE8"));
+            assertTrue(unset_value_ids.contains("VALUE9"));
+            assertTrue(unset_value_ids.contains("VALUE10"));
+            assertTrue(unset_value_ids.contains("VALUE11"));
+            assertTrue(unset_value_ids.contains("VALUE12"));
+            assertTrue(unset_value_ids.contains("VALUE13"));
+            assertTrue(unset_value_ids.contains("VALUE14"));
+            assertTrue(unset_value_ids.contains("VALUE15"));
 
             template.setValue("VALUE4", "value");
             unset_value_ids = template.getUnsetValueIds();
-            assertEquals(unset_value_ids.size(), 3);
+            assertEquals(unset_value_ids.size(), 11);
             assertFalse(unset_value_ids.contains("VALUE1"));
             assertFalse(unset_value_ids.contains("VALUE2"));
             assertFalse(unset_value_ids.contains("VALUE3"));
@@ -414,10 +446,18 @@ public class TestTemplate {
             assertTrue(unset_value_ids.contains("VALUE5"));
             assertTrue(unset_value_ids.contains("VALUE6"));
             assertTrue(unset_value_ids.contains("VALUE7"));
+            assertTrue(unset_value_ids.contains("VALUE8"));
+            assertTrue(unset_value_ids.contains("VALUE9"));
+            assertTrue(unset_value_ids.contains("VALUE10"));
+            assertTrue(unset_value_ids.contains("VALUE11"));
+            assertTrue(unset_value_ids.contains("VALUE12"));
+            assertTrue(unset_value_ids.contains("VALUE13"));
+            assertTrue(unset_value_ids.contains("VALUE14"));
+            assertTrue(unset_value_ids.contains("VALUE15"));
 
             template.setValue("VALUE5", "value");
             unset_value_ids = template.getUnsetValueIds();
-            assertEquals(unset_value_ids.size(), 2);
+            assertEquals(unset_value_ids.size(), 10);
             assertFalse(unset_value_ids.contains("VALUE1"));
             assertFalse(unset_value_ids.contains("VALUE2"));
             assertFalse(unset_value_ids.contains("VALUE3"));
@@ -425,10 +465,18 @@ public class TestTemplate {
             assertFalse(unset_value_ids.contains("VALUE5"));
             assertTrue(unset_value_ids.contains("VALUE6"));
             assertTrue(unset_value_ids.contains("VALUE7"));
+            assertTrue(unset_value_ids.contains("VALUE8"));
+            assertTrue(unset_value_ids.contains("VALUE9"));
+            assertTrue(unset_value_ids.contains("VALUE10"));
+            assertTrue(unset_value_ids.contains("VALUE11"));
+            assertTrue(unset_value_ids.contains("VALUE12"));
+            assertTrue(unset_value_ids.contains("VALUE13"));
+            assertTrue(unset_value_ids.contains("VALUE14"));
+            assertTrue(unset_value_ids.contains("VALUE15"));
 
             template.setValue("VALUE6", "value");
             unset_value_ids = template.getUnsetValueIds();
-            assertEquals(unset_value_ids.size(), 1);
+            assertEquals(unset_value_ids.size(), 9);
             assertFalse(unset_value_ids.contains("VALUE1"));
             assertFalse(unset_value_ids.contains("VALUE2"));
             assertFalse(unset_value_ids.contains("VALUE3"));
@@ -436,10 +484,18 @@ public class TestTemplate {
             assertFalse(unset_value_ids.contains("VALUE5"));
             assertFalse(unset_value_ids.contains("VALUE6"));
             assertTrue(unset_value_ids.contains("VALUE7"));
+            assertTrue(unset_value_ids.contains("VALUE8"));
+            assertTrue(unset_value_ids.contains("VALUE9"));
+            assertTrue(unset_value_ids.contains("VALUE10"));
+            assertTrue(unset_value_ids.contains("VALUE11"));
+            assertTrue(unset_value_ids.contains("VALUE12"));
+            assertTrue(unset_value_ids.contains("VALUE13"));
+            assertTrue(unset_value_ids.contains("VALUE14"));
+            assertTrue(unset_value_ids.contains("VALUE15"));
 
             template.setValue("VALUE7", "value");
             unset_value_ids = template.getUnsetValueIds();
-            assertEquals(unset_value_ids.size(), 0);
+            assertEquals(unset_value_ids.size(), 8);
             assertFalse(unset_value_ids.contains("VALUE1"));
             assertFalse(unset_value_ids.contains("VALUE2"));
             assertFalse(unset_value_ids.contains("VALUE3"));
@@ -447,6 +503,14 @@ public class TestTemplate {
             assertFalse(unset_value_ids.contains("VALUE5"));
             assertFalse(unset_value_ids.contains("VALUE6"));
             assertFalse(unset_value_ids.contains("VALUE7"));
+            assertTrue(unset_value_ids.contains("VALUE8"));
+            assertTrue(unset_value_ids.contains("VALUE9"));
+            assertTrue(unset_value_ids.contains("VALUE10"));
+            assertTrue(unset_value_ids.contains("VALUE11"));
+            assertTrue(unset_value_ids.contains("VALUE12"));
+            assertTrue(unset_value_ids.contains("VALUE13"));
+            assertTrue(unset_value_ids.contains("VALUE14"));
+            assertTrue(unset_value_ids.contains("VALUE15"));
         } catch (TemplateException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -488,6 +552,38 @@ public class TestTemplate {
             assertEquals(unset_value_ids.size(), 0);
 
             template.setValue("VALUE7", "value");
+            unset_value_ids = template.getUnsetValueIds();
+            assertEquals(unset_value_ids.size(), 0);
+
+            template.setValue("VALUE8", "value");
+            unset_value_ids = template.getUnsetValueIds();
+            assertEquals(unset_value_ids.size(), 0);
+
+            template.setValue("VALUE9", "value");
+            unset_value_ids = template.getUnsetValueIds();
+            assertEquals(unset_value_ids.size(), 0);
+
+            template.setValue("VALUE10", "value");
+            unset_value_ids = template.getUnsetValueIds();
+            assertEquals(unset_value_ids.size(), 0);
+
+            template.setValue("VALUE11", "value");
+            unset_value_ids = template.getUnsetValueIds();
+            assertEquals(unset_value_ids.size(), 0);
+
+            template.setValue("VALUE12", "value");
+            unset_value_ids = template.getUnsetValueIds();
+            assertEquals(unset_value_ids.size(), 0);
+
+            template.setValue("VALUE13", "value");
+            unset_value_ids = template.getUnsetValueIds();
+            assertEquals(unset_value_ids.size(), 0);
+
+            template.setValue("VALUE14", "value");
+            unset_value_ids = template.getUnsetValueIds();
+            assertEquals(unset_value_ids.size(), 0);
+
+            template.setValue("VALUE15", "value");
             unset_value_ids = template.getUnsetValueIds();
             assertEquals(unset_value_ids.size(), 0);
         } catch (TemplateException e) {

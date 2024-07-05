@@ -637,6 +637,35 @@ public class TestStringUtils {
         assertFalse(StringUtils.filter("test", new Pattern[]{Pattern.compile("x"), Pattern.compile("b")}, new Pattern[]{Pattern.compile("a"), Pattern.compile("t")}, false));
     }
 
+    @Test  void testFilterAsIdentifierWithValidString() {
+        var validIdentifier = "validIdentifier";
+        assertEquals(validIdentifier, StringUtils.filterAsIdentifier(validIdentifier));
+    }
+
+    @Test void testFilterAsIdentifierWithInvalidString() {
+        var invalidIdentifier = "1nvalidIdentifier";
+        assertEquals("nvalidIdentifier", StringUtils.filterAsIdentifier(invalidIdentifier));
+    }
+
+    @Test void testFilterAsIdentifierWithEmptyString() {
+        var emptyString = "";
+        assertNull(StringUtils.filterAsIdentifier(emptyString));
+    }
+
+    @Test void testFilterAsIdentifierWithNullValue() {
+        assertNull(StringUtils.filterAsIdentifier(null));
+    }
+
+    @Test void testFilterAsIdentifierWithInvalidCharacters() {
+        var stringWithInvalidChars = "some@string)with%invalid^chars";
+        assertEquals("somestringwithinvalidchars", StringUtils.filterAsIdentifier(stringWithInvalidChars));
+    }
+
+    @Test void testFilterAsIdentifierWithAllInvalidCharacters() {
+        var stringWithInvalidChars = "12987@)%^";
+        assertNull(StringUtils.filterAsIdentifier(stringWithInvalidChars));
+    }
+
     @Test
     void testCapitalize() {
         assertNull(StringUtils.capitalize(null));

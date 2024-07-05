@@ -2482,6 +2482,46 @@ public final class StringUtils {
     }
 
     /**
+     * Filters the given string by removing any characters that are not valid in a Java identifier.
+     * <p>
+     * If a valid identifier can't be generated, {@code null} will be returned.
+     *
+     * @param value the string to be filtered
+     * @return the filtered string as a valid Java identifier; or
+     * <p>{@code null} if a valid Java identifier couldn't be generated
+     * @since 1.8.0
+     */
+    public static String filterAsIdentifier(String value) {
+        if (null == value || value.isEmpty()) {
+            return null;
+        }
+
+        StringBuilder identifier = null;
+        for (int i = 0; i < value.length(); i++) {
+            var c = value.charAt(i);
+            if (identifier == null) {
+                if (!Character.isJavaIdentifierStart(c)) {
+                    identifier = new StringBuilder(value.substring(0, i));
+                }
+            }
+            else if ((identifier.isEmpty() && Character.isJavaIdentifierStart(c)) ||
+                (!identifier.isEmpty() && Character.isJavaIdentifierPart(c))) {
+                identifier.append(c);
+            }
+        }
+
+        if (identifier == null) {
+            return value;
+        }
+
+        if (identifier.isEmpty()) {
+            return null;
+        }
+
+        return identifier.toString();
+    }
+
+    /**
      * Ensure that the first character of the provided string is upper case.
      *
      * @param source The {@code String} to capitalize.

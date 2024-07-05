@@ -16,6 +16,7 @@ import rife.database.querymanagers.generic.beans.*;
 import rife.database.querymanagers.generic.exceptions.MissingDefaultConstructorException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static rife.database.TestDatasources.MYSQL;
 
 public class TestGenericQueryManagerSimple {
     protected GenericQueryManager<SimpleBean> setup(Datasource datasource) {
@@ -62,6 +63,57 @@ public class TestGenericQueryManagerSimple {
             manager.install(manager.getInstallTableQuery());
         } finally {
             tearDown(manager);
+        }
+    }
+
+    public static class TestTinyBean {
+        private int id_ = -1;
+        private int tiny_ = 0;
+
+        public void setId(int id) {
+            id_ = id;
+        }
+
+        public int getId() {
+            return id_;
+        }
+
+        public void setTiny(int tiny) {
+            tiny_ = tiny;
+        }
+
+        public int getTiny() {
+            return tiny_;
+        }
+    }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.MYSQL)
+    void testSaveRestoreTinyInt1AsInteger() {
+        var ddl = new DbQueryManager(MYSQL);
+        ddl.executeUpdate("""
+            create table testtinybean
+            (
+                id   int auto_increment primary key,
+                tiny tinyint(1) null
+            )
+            """);
+        try {
+            var manager = GenericQueryManagerFactory.instance(MYSQL, TestTinyBean.class, "testtinybean");
+            var bean = new TestTinyBean();
+
+            bean.setTiny(1);
+
+            var id = manager.save(bean);
+
+            var new_bean = manager.restore(id);
+
+            assertNotNull(new_bean);
+            assertNotSame(new_bean, bean);
+            assertEquals(bean.getId(), new_bean.getId());
+            assertEquals(bean.getTiny(), new_bean.getTiny());
+        }
+        finally {
+            ddl.executeUpdate("drop table testtinybean");
         }
     }
 

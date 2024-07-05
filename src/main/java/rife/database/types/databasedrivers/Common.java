@@ -71,6 +71,13 @@ public abstract class Common implements SqlConversion {
                     return result;
                 } else {
                     try {
+                        // handle conversion between boolean in numbers
+                        if (ClassUtils.isNumeric(targetType) && result_class == Boolean.class) {
+                            result = (Boolean) result ? 1 : 0;
+                            result_class = result.getClass();
+                        }
+
+                        // handle common primitive types and standard classes
                         if (targetType == boolean.class || targetType == Boolean.class) {
                             return StringUtils.convertToBoolean(result.toString());
                         } else if (targetType == byte.class || targetType == Byte.class) {

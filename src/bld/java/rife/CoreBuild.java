@@ -4,6 +4,7 @@
  */
 package rife;
 
+import rife.bld.dependencies.VersionNumber;
 import rife.bld.operations.*;
 import rife.bld.publish.*;
 import rife.tools.FileUtils;
@@ -18,7 +19,7 @@ public class CoreBuild extends AbstractRife2Build {
     throws Exception {
         name = "rife2-core";
 
-        version = version(FileUtils.readString(new File(srcMainResourcesDirectory(), "CORE_VERSION")));
+        version = VersionNumber.parse(FileUtils.readString(new File(srcMainResourcesDirectory(), "CORE_VERSION")));
 
         antlr4Operation
             .sourceDirectories(List.of(new File(srcMainDirectory(), "antlr")))

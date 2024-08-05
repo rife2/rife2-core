@@ -77,7 +77,6 @@ public class AbstractRife2Build extends Project {
                 .docLint(NO_MISSING)
                 .keywords()
                 .splitIndex()
-                .tag("apiNote", "a", "API Note:")
                 .link("https://jakarta.ee/specifications/servlet/5.0/apidocs/")
                 .link("https://jsoup.org/apidocs/");
     }

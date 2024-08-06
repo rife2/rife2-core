@@ -49,7 +49,9 @@ public class AbstractRife2Build extends Project {
                 new File(workDirectory(), "embedded_dbs"),
                 new File(workDirectory(), "logs"));
 
+        buildGeneratedDir = new File(buildDirectory(), "generated");
         antlr4Operation
+            .outputDirectory(new File(buildGeneratedDir, "rife/template/antlr"))
             .visitor()
             .longMessages();
 
@@ -71,6 +73,8 @@ public class AbstractRife2Build extends Project {
                 .link("https://jakarta.ee/specifications/servlet/5.0/apidocs/")
                 .link("https://jsoup.org/apidocs/");
     }
+
+    final File buildGeneratedDir;
 
     void propagateJavaProperties(JavaOptions options, String... names) {
         for (var name : names) {

@@ -21,10 +21,8 @@ public class CoreBuild extends AbstractRife2Build {
 
         version = VersionNumber.parse(FileUtils.readString(new File(srcMainResourcesDirectory(), "CORE_VERSION")));
 
-        buildGeneratedDir = new File(buildDirectory(), "generated");
         antlr4Operation
-            .sourceDirectories(List.of(new File(srcMainDirectory(), "antlr")))
-            .outputDirectory(new File(buildGeneratedDir, "rife/template/antlr"));
+            .sourceDirectories(List.of(new File(srcMainDirectory(), "antlr")));
 
         precompileOperation()
             .templateTypes(HTML, XML, SQL);
@@ -67,8 +65,7 @@ public class CoreBuild extends AbstractRife2Build {
                 .signPassphrase(property("sign.passphrase")));
     }
 
-    private final File buildGeneratedDir;
-    private final File srcMainModuleDir;
+    final File srcMainModuleDir;
 
     @Override
     public void javadoc()

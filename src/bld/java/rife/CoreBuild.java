@@ -21,15 +21,18 @@ public class CoreBuild extends AbstractRife2Build {
 
         version = VersionNumber.parse(FileUtils.readString(new File(srcMainResourcesDirectory(), "CORE_VERSION")));
 
+        buildGeneratedDir = new File(buildDirectory(), "generated");
         antlr4Operation
             .sourceDirectories(List.of(new File(srcMainDirectory(), "antlr")))
-            .outputDirectory(new File(buildDirectory(), "generated/rife/template/antlr"));
+            .outputDirectory(new File(buildGeneratedDir, "rife/template/antlr"));
 
         precompileOperation()
             .templateTypes(HTML, XML, SQL);
 
+        srcMainModuleDir = new File(srcMainDirectory(), "module");
         compileOperation()
             .mainSourceDirectories(antlr4Operation.outputDirectory())
+            .mainSourceDirectories(srcMainModuleDir)
             .compileOptions()
                 .debuggingInfo(JavacOptions.DebuggingInfo.ALL)
                 .addAll(List.of("-encoding", "UTF-8"));
@@ -62,6 +65,18 @@ public class CoreBuild extends AbstractRife2Build {
                     .url("https://github.com/rife2/core"))
                 .signKey(property("sign.key"))
                 .signPassphrase(property("sign.passphrase")));
+    }
+
+    private final File buildGeneratedDir;
+    private final File srcMainModuleDir;
+
+    @Override
+    public void javadoc()
+    throws Exception {
+        javadocOperation().executeOnce(() -> javadocOperation()
+            .fromProject(this)
+            .sourceFiles(FileUtils.getJavaFileList(srcMainModuleDir))
+            .sourceFiles(FileUtils.getJavaFileList(buildGeneratedDir)));
     }
 
     public static void main(String[] args)

@@ -66,6 +66,16 @@ public class AbstractRife2Build extends Project {
             "test.h2");
 
         javadocOperation()
+            .excluded(
+                "module-info.java",
+                "rife/antlr/",
+                "rife/asm/",
+                "rife/.*/databasedrivers/",
+                "rife/.*/imagestoredrivers/",
+                "rife/.*/rawstoredrivers/",
+                "rife/.*/textstoredrivers/",
+                "rife/database/capabilities/"
+            )
             .javadocOptions()
                 .docLint(NO_MISSING)
                 .keywords()

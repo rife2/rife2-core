@@ -67,15 +67,6 @@ public class CoreBuild extends AbstractRife2Build {
 
     final File srcMainModuleDir;
 
-    @Override
-    public void javadoc()
-    throws Exception {
-        javadocOperation().executeOnce(() -> javadocOperation()
-            .fromProject(this)
-            .sourceFiles(FileUtils.getJavaFileList(srcMainModuleDir))
-            .sourceFiles(FileUtils.getJavaFileList(buildGeneratedDir)));
-    }
-
     public static void main(String[] args)
     throws Exception {
         new CoreBuild().start(args);

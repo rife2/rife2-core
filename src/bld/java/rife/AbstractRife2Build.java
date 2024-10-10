@@ -32,8 +32,8 @@ public class AbstractRife2Build extends Project {
         repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES);
         scope(test)
             .include(dependency("org.slf4j", "slf4j-simple", version(2,0,16)))
-            .include(dependency("org.junit.jupiter", "junit-jupiter", version(5,11,0)))
-            .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1,11,0)))
+            .include(dependency("org.junit.jupiter", "junit-jupiter", version(5,11,2)))
+            .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1,11,2)))
             .include(dependency("com.h2database", "h2", version(2,3,232)))
             .include(dependency("net.sourceforge.htmlunit", "htmlunit", version(2,70,0)))
             .include(dependency("org.postgresql", "postgresql", version(42,7,4)))

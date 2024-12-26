@@ -2492,25 +2492,54 @@ public final class StringUtils {
      * @since 1.8.0
      */
     public static String filterAsIdentifier(String value) {
+        return filterAsIdentifier(value, false);
+    }
+
+    /**
+     * Filters the given string by removing any characters that are not valid in a Java identifier.
+     * <p>
+     * If a valid identifier can't be generated, {@code null} will be returned.
+     *
+     * @param value the string to be filtered
+     * @param capitalizeSegments {@code true} to capitalize each valid character segment; or
+     *                           {@code false} to leave the original characters unaffected
+     * @return the filtered string as a valid Java identifier; or
+     * <p>{@code null} if a valid Java identifier couldn't be generated
+     * @since 1.9.1
+     */
+    public static String filterAsIdentifier(String value, boolean capitalizeSegments) {
         if (null == value || value.isEmpty()) {
             return null;
         }
 
         StringBuilder identifier = null;
+        int last_valid_position = -1;
         for (int i = 0; i < value.length(); i++) {
             var c = value.charAt(i);
             if (identifier == null) {
                 if (!Character.isJavaIdentifierStart(c)) {
-                    identifier = new StringBuilder(value.substring(0, i));
+                    var segment = value.substring(0, i);
+                    if (capitalizeSegments) {
+                        segment = capitalize(segment);
+                    }
+                    identifier = new StringBuilder(segment);
+                    last_valid_position = i - 1;
                 }
             }
             else if ((identifier.isEmpty() && Character.isJavaIdentifierStart(c)) ||
                 (!identifier.isEmpty() && Character.isJavaIdentifierPart(c))) {
+                if (capitalizeSegments && (last_valid_position == -1 || i - last_valid_position > 1)) {
+                    c = Character.toUpperCase(c);
+                }
                 identifier.append(c);
+                last_valid_position = i;
             }
         }
 
         if (identifier == null) {
+            if (capitalizeSegments) {
+                return capitalize(value);
+            }
             return value;
         }
 

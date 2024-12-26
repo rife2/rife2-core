@@ -666,6 +666,35 @@ public class TestStringUtils {
         assertNull(StringUtils.filterAsIdentifier(stringWithInvalidChars));
     }
 
+    @Test  void testFilterAsCapitalizedIdentifierWithValidString() {
+        var validIdentifier = "validIdentifier";
+        assertEquals("ValidIdentifier", StringUtils.filterAsIdentifier(validIdentifier, true));
+    }
+
+    @Test void testFilterAsCapitalizedIdentifierWithInvalidString() {
+        var invalidIdentifier = "1nvalidIdentifier";
+        assertEquals("NvalidIdentifier", StringUtils.filterAsIdentifier(invalidIdentifier, true));
+    }
+
+    @Test void testFilterAsCapitalizedIdentifierWithEmptyString() {
+        var emptyString = "";
+        assertNull(StringUtils.filterAsIdentifier(emptyString, true));
+    }
+
+    @Test void testFilterAsCapitalizedIdentifierWithNullValue() {
+        assertNull(StringUtils.filterAsIdentifier(null, true));
+    }
+
+    @Test void testFilterAsCapitalizedIdentifierWithInvalidCharacters() {
+        var stringWithInvalidChars = "some@string)with%invalid^chars";
+        assertEquals("SomeStringWithInvalidChars", StringUtils.filterAsIdentifier(stringWithInvalidChars, true));
+    }
+
+    @Test void testFilterAsCapitalizedIdentifierWithAllInvalidCharacters() {
+        var stringWithInvalidChars = "12987@)%^";
+        assertNull(StringUtils.filterAsIdentifier(stringWithInvalidChars, true));
+    }
+
     @Test
     void testCapitalize() {
         assertNull(StringUtils.capitalize(null));

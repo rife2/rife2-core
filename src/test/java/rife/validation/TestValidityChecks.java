@@ -501,4 +501,34 @@ public class TestValidityChecks {
         assertFalse(ValidityChecks.checkFormat("31/02/2004", RifeConfig.tools().getSimpleDateFormat("dd/MM/yyyy")));
         assertFalse(ValidityChecks.checkFormat("testing", RifeConfig.tools().getSimpleDateFormat("dd/MM/yyyy")));
     }
+
+    @Test
+    void testJavaPackage() {
+        assertFalse(ValidityChecks.checkJavaPackage(null));
+        assertFalse(ValidityChecks.checkJavaPackage(new Object()));
+        assertFalse(ValidityChecks.checkJavaPackage(""));
+        assertFalse(ValidityChecks.checkJavaPackage("."));
+        assertFalse(ValidityChecks.checkJavaPackage("a."));
+        assertFalse(ValidityChecks.checkJavaPackage(".a"));
+        assertFalse(ValidityChecks.checkJavaPackage("a.b."));
+        assertFalse(ValidityChecks.checkJavaPackage(".a.b"));
+        assertFalse(ValidityChecks.checkJavaPackage("1.a.b"));
+        assertFalse(ValidityChecks.checkJavaPackage("a.1b"));
+        assertTrue(ValidityChecks.checkJavaPackage("a"));
+        assertTrue(ValidityChecks.checkJavaPackage("a.b"));
+        assertTrue(ValidityChecks.checkJavaPackage("com.A1.bB"));
+    }
+
+    @Test
+    void testJavaIdentifier() {
+        assertFalse(ValidityChecks.checkJavaIdentifier(null));
+        assertFalse(ValidityChecks.checkJavaIdentifier(new Object()));
+        assertFalse(ValidityChecks.checkJavaIdentifier(""));
+        assertFalse(ValidityChecks.checkJavaIdentifier("."));
+        assertFalse(ValidityChecks.checkJavaIdentifier("1"));
+        assertFalse(ValidityChecks.checkJavaIdentifier("1b"));
+        assertTrue(ValidityChecks.checkJavaIdentifier("a"));
+        assertTrue(ValidityChecks.checkJavaIdentifier("A1"));
+        assertTrue(ValidityChecks.checkJavaIdentifier("bB"));
+    }
 }

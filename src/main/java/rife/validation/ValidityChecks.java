@@ -512,21 +512,26 @@ public abstract class ValidityChecks {
             return false;
         }
 
-        if (!(value instanceof String name)) {
-            return false;
-        }
-
-        if (name.startsWith(".") || name.endsWith(".")) {
+        if (!(value instanceof String name) || name.isBlank() || name.startsWith(".") || name.endsWith(".")) {
             return false;
         }
 
         var identifier = true;
         var it = new StringCharacterIterator(name);
+        var first = true;
         for (var c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
-            if (!Character.isJavaIdentifierPart(c) && c != '.') {
-                identifier = false;
-                break;
+            if ((first && !Character.isJavaIdentifierStart(c)) ||
+                (!first && !Character.isJavaIdentifierPart(c))) {
+                if (c == '.') {
+                    first = true;
+                    continue;
+                }
+                else {
+                    identifier = false;
+                    break;
+                }
             }
+            first = false;
         }
 
         return identifier;
@@ -537,17 +542,20 @@ public abstract class ValidityChecks {
             return false;
         }
 
-        if (!(value instanceof String name)) {
+        if (!(value instanceof String name) || name.isBlank()) {
             return false;
         }
 
         var identifier = true;
+        var first = true;
         var it = new StringCharacterIterator(name);
         for (var c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
-            if (!Character.isJavaIdentifierPart(c)) {
+            if ((first && !Character.isJavaIdentifierStart(c)) ||
+                (!first && !Character.isJavaIdentifierPart(c))) {
                 identifier = false;
                 break;
             }
+            first = false;
         }
 
         return identifier;

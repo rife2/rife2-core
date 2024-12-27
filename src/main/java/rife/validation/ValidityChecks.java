@@ -6,6 +6,7 @@ package rife.validation;
 import rife.tools.ArrayUtils;
 import rife.tools.StringUtils;
 
+import javax.lang.model.SourceVersion;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -518,12 +519,19 @@ public abstract class ValidityChecks {
 
         var identifier = true;
         var it = new StringCharacterIterator(name);
+        var segment = new StringBuilder();
         var first = true;
         for (var c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
             if ((first && !Character.isJavaIdentifierStart(c)) ||
                 (!first && !Character.isJavaIdentifierPart(c))) {
                 if (c == '.') {
+                    if (SourceVersion.isKeyword(segment)) {
+                        identifier = false;
+                        break;
+                    }
+
                     first = true;
+                    segment.setLength(0);
                     continue;
                 }
                 else {
@@ -531,10 +539,12 @@ public abstract class ValidityChecks {
                     break;
                 }
             }
+
+            segment.append(c);
             first = false;
         }
 
-        return identifier;
+        return identifier && !SourceVersion.isKeyword(segment);
     }
 
     public static boolean checkJavaIdentifier(Object value) {
@@ -542,22 +552,10 @@ public abstract class ValidityChecks {
             return false;
         }
 
-        if (!(value instanceof String name) || name.isBlank()) {
+        if (!(value instanceof CharSequence name)) {
             return false;
         }
 
-        var identifier = true;
-        var first = true;
-        var it = new StringCharacterIterator(name);
-        for (var c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
-            if ((first && !Character.isJavaIdentifierStart(c)) ||
-                (!first && !Character.isJavaIdentifierPart(c))) {
-                identifier = false;
-                break;
-            }
-            first = false;
-        }
-
-        return identifier;
+        return SourceVersion.isIdentifier(name);
     }
 }

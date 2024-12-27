@@ -514,8 +514,13 @@ public class TestValidityChecks {
         assertFalse(ValidityChecks.checkJavaPackage(".a.b"));
         assertFalse(ValidityChecks.checkJavaPackage("1.a.b"));
         assertFalse(ValidityChecks.checkJavaPackage("a.1b"));
+        assertFalse(ValidityChecks.checkJavaPackage("int"));
+        assertFalse(ValidityChecks.checkJavaPackage("if.b"));
+        assertFalse(ValidityChecks.checkJavaPackage("a.while"));
         assertTrue(ValidityChecks.checkJavaPackage("a"));
         assertTrue(ValidityChecks.checkJavaPackage("a.b"));
+        assertTrue(ValidityChecks.checkJavaPackage("a.int_"));
+        assertTrue(ValidityChecks.checkJavaPackage("a.int_.while_"));
         assertTrue(ValidityChecks.checkJavaPackage("com.A1.bB"));
     }
 

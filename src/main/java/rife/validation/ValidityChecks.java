@@ -6,7 +6,6 @@ package rife.validation;
 import rife.tools.ArrayUtils;
 import rife.tools.StringUtils;
 
-import javax.lang.model.SourceVersion;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -517,7 +516,7 @@ public abstract class ValidityChecks {
             return false;
         }
 
-        var identifier = true;
+        var java_package = true;
         var it = new StringCharacterIterator(name);
         var segment = new StringBuilder();
         var first = true;
@@ -525,8 +524,8 @@ public abstract class ValidityChecks {
             if ((first && !Character.isJavaIdentifierStart(c)) ||
                 (!first && !Character.isJavaIdentifierPart(c))) {
                 if (c == '.') {
-                    if (SourceVersion.isKeyword(segment)) {
-                        identifier = false;
+                    if (isJavaKeyword(segment)) {
+                        java_package = false;
                         break;
                     }
 
@@ -535,7 +534,7 @@ public abstract class ValidityChecks {
                     continue;
                 }
                 else {
-                    identifier = false;
+                    java_package = false;
                     break;
                 }
             }
@@ -544,7 +543,64 @@ public abstract class ValidityChecks {
             first = false;
         }
 
-        return identifier && !SourceVersion.isKeyword(segment);
+        return java_package && !isJavaKeyword(segment);
+    }
+
+    public static boolean isJavaKeyword(Object value) {
+        if (null == value) {
+            return false;
+        }
+
+        var id = value.toString();
+
+        switch(id) {
+            // A trip through history
+            case "strictfp":
+            case "assert":
+            case "enum":
+            case "_":
+            case "non-sealed":
+
+            // Keywords common across versions
+
+                // Modifiers
+            case "public":    case "protected": case "private":
+            case "abstract":  case "static":    case "final":
+            case "transient": case "volatile":  case "synchronized":
+            case "native":
+
+                // Declarations
+            case "class":     case "interface": case "extends":
+            case "package":   case "throws":    case "implements":
+
+                // Primitive types and void
+            case "boolean":   case "byte":      case "char":
+            case "short":     case "int":       case "long":
+            case "float":     case "double":
+            case "void":
+
+                // Control flow
+            case "if":      case "else":
+            case "try":     case "catch":    case "finally":
+            case "do":      case "while":
+            case "for":     case "continue":
+            case "switch":  case "case":     case "default":
+            case "break":   case "throw":    case "return":
+
+                // Other keywords
+            case  "this":   case "new":      case "super":
+            case "import":  case "instanceof":
+
+                // Forbidden!
+            case "goto":        case "const":
+
+                // literals
+            case "null":         case "true":       case "false":
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     public static boolean checkJavaIdentifier(Object value) {
@@ -552,10 +608,22 @@ public abstract class ValidityChecks {
             return false;
         }
 
-        if (!(value instanceof CharSequence name)) {
+        if (!(value instanceof String name) || name.isBlank()) {
             return false;
         }
 
-        return SourceVersion.isIdentifier(name);
+        var identifier = true;
+        var first = true;
+        var it = new StringCharacterIterator(name);
+        for (var c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
+            if ((first && !Character.isJavaIdentifierStart(c)) ||
+                (!first && !Character.isJavaIdentifierPart(c))) {
+                identifier = false;
+                break;
+            }
+            first = false;
+        }
+
+        return identifier;
     }
 }

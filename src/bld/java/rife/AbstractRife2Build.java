@@ -80,8 +80,7 @@ public class AbstractRife2Build extends Project {
                 .docLint(NO_MISSING)
                 .keywords()
                 .splitIndex()
-                .link("https://jakarta.ee/specifications/servlet/5.0/apidocs/")
-                .link("https://jsoup.org/apidocs/");
+                .link("https://jakarta.ee/specifications/servlet/5.0/apidocs/");
     }
 
     final File buildGeneratedDir;

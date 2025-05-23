@@ -79,8 +79,8 @@ public class TestStringUtils {
     @Test
     void testEncodeHtml() {
         assertNull(StringUtils.encodeHtml(null));
-        assertEquals(StringUtils.encodeHtml("&<>\"¡¢£¥§¨©ª«¬®¯°±´µ¶·¸º»¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜßàáâãäåæçèéêëìíîïñòóôõö÷øùúûüÿƒΩπ•…⁄™∂∏∑√∞∫≈≠≤≥◊ascii∛plainΘ❤"),
-            "&amp;&lt;&gt;&quot;&iexcl;&cent;&pound;&yen;&sect;&uml;&copy;&ordf;&laquo;&not;&reg;&macr;&deg;&plusmn;&acute;&micro;&para;&middot;&cedil;&ordm;&raquo;&iquest;&Agrave;&Aacute;&Acirc;&Atilde;&Auml;&Aring;&AElig;&Ccedil;&Egrave;&Eacute;&Ecirc;&Euml;&Igrave;&Iacute;&Icirc;&Iuml;&Ntilde;&Ograve;&Oacute;&Ocirc;&Otilde;&Ouml;&Oslash;&Ugrave;&Uacute;&Ucirc;&Uuml;&szlig;&agrave;&aacute;&acirc;&atilde;&auml;&aring;&aelig;&ccedil;&egrave;&eacute;&ecirc;&euml;&igrave;&iacute;&icirc;&iuml;&ntilde;&ograve;&oacute;&ocirc;&otilde;&ouml;&divide;&oslash;&ugrave;&uacute;&ucirc;&uuml;&yuml;&fnof;&Omega;&pi;&bull;&hellip;&frasl;&trade;&part;&prod;&sum;&radic;&infin;&int;&asymp;&ne;&le;&ge;&loz;ascii&#8731;plain&Theta;&#10084;");
+        assertEquals(StringUtils.encodeHtml("&<>\"¡¢£¥§¨©ª«¬®¯°±´µ¶·¸º»¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜßàáâãäåæçèéêëìíîïñòóôõö÷øùúûüÿƒΩπ•…⁄™∂∏∑√∞∫≈≠≤≥◊ascii∛plainΘ❤😄"),
+            "&amp;&lt;&gt;&quot;&iexcl;&cent;&pound;&yen;&sect;&uml;&copy;&ordf;&laquo;&not;&reg;&macr;&deg;&plusmn;&acute;&micro;&para;&middot;&cedil;&ordm;&raquo;&iquest;&Agrave;&Aacute;&Acirc;&Atilde;&Auml;&Aring;&AElig;&Ccedil;&Egrave;&Eacute;&Ecirc;&Euml;&Igrave;&Iacute;&Icirc;&Iuml;&Ntilde;&Ograve;&Oacute;&Ocirc;&Otilde;&Ouml;&Oslash;&Ugrave;&Uacute;&Ucirc;&Uuml;&szlig;&agrave;&aacute;&acirc;&atilde;&auml;&aring;&aelig;&ccedil;&egrave;&eacute;&ecirc;&euml;&igrave;&iacute;&icirc;&iuml;&ntilde;&ograve;&oacute;&ocirc;&otilde;&ouml;&divide;&oslash;&ugrave;&uacute;&ucirc;&uuml;&yuml;&fnof;&Omega;&pi;&bull;&hellip;&frasl;&trade;&part;&prod;&sum;&radic;&infin;&int;&asymp;&ne;&le;&ge;&loz;ascii&#8731;plain&Theta;&#10084;&#128516;");
     }
 
     @Test

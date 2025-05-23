@@ -50,14 +50,14 @@ public final class StringUtils {
     public static final Pattern BBCODE_QUOTE_LONG = Pattern.compile("\\[quote=([^\\]]+\\]*)\\]", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
     public static final Pattern BBCODE_BAREURL = Pattern.compile("(?:[^\"'=>\\]]|^)((?:http|ftp)s?://(?:%[\\p{Digit}A-Fa-f][\\p{Digit}A-Fa-f]|[\\-_\\.!~*';\\|/?:@#&=\\+$,\\p{Alnum}])+)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-    private static final Map<Character, String> AGGRESSIVE_HTML_ENCODE_MAP = new HashMap<>();
-    private static final Map<Character, String> DEFENSIVE_HTML_ENCODE_MAP = new HashMap<>();
-    private static final Map<Character, String> XML_ENCODE_MAP = new HashMap<>();
-    private static final Map<Character, String> STRING_ENCODE_MAP = new HashMap<>();
-    private static final Map<Character, String> SQL_ENCODE_MAP = new HashMap<>();
-    private static final Map<Character, String> LATEX_ENCODE_MAP = new HashMap<>();
+    private static final Map<Integer, String> AGGRESSIVE_HTML_ENCODE_MAP = new HashMap<>();
+    private static final Map<Integer, String> DEFENSIVE_HTML_ENCODE_MAP = new HashMap<>();
+    private static final Map<Integer, String> XML_ENCODE_MAP = new HashMap<>();
+    private static final Map<Integer, String> STRING_ENCODE_MAP = new HashMap<>();
+    private static final Map<Integer, String> SQL_ENCODE_MAP = new HashMap<>();
+    private static final Map<Integer, String> LATEX_ENCODE_MAP = new HashMap<>();
 
-    private static final Map<String, Character> HTML_DECODE_MAP = new HashMap<>();
+    private static final Map<String, Integer> HTML_DECODE_MAP = new HashMap<>();
 
     private static final HtmlEncoderFallbackHandler HTML_ENCODER_FALLBACK = new HtmlEncoderFallbackHandler();
 
@@ -66,266 +66,266 @@ public final class StringUtils {
         // http://www.w3.org/TR/REC-html40/sgml/entities.html
 
         // Special characters for HTML
-        AGGRESSIVE_HTML_ENCODE_MAP.put('\u0026', "&amp;");
-        AGGRESSIVE_HTML_ENCODE_MAP.put('\u003C', "&lt;");
-        AGGRESSIVE_HTML_ENCODE_MAP.put('\u003E', "&gt;");
-        AGGRESSIVE_HTML_ENCODE_MAP.put('\u0022', "&quot;");
+        AGGRESSIVE_HTML_ENCODE_MAP.put("\u0026".codePointAt(0), "&amp;");
+        AGGRESSIVE_HTML_ENCODE_MAP.put("\u003C".codePointAt(0), "&lt;");
+        AGGRESSIVE_HTML_ENCODE_MAP.put("\u003E".codePointAt(0), "&gt;");
+        AGGRESSIVE_HTML_ENCODE_MAP.put("\"".codePointAt(0), "&quot;");
 
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0152', "&OElig;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0153', "&oelig;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0160', "&Scaron;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0161', "&scaron;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0178', "&Yuml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u02C6', "&circ;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u02DC', "&tilde;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2002', "&ensp;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2003', "&emsp;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2009', "&thinsp;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u200C', "&zwnj;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u200D', "&zwj;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u200E', "&lrm;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u200F', "&rlm;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2013', "&ndash;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2014', "&mdash;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2018', "&lsquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2019', "&rsquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u201A', "&sbquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u201C', "&ldquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u201D', "&rdquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u201E', "&bdquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2020', "&dagger;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2021', "&Dagger;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2030', "&permil;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2039', "&lsaquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u203A', "&rsaquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u20AC', "&euro;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0152".codePointAt(0), "&OElig;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0153".codePointAt(0), "&oelig;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0160".codePointAt(0), "&Scaron;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0161".codePointAt(0), "&scaron;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0178".codePointAt(0), "&Yuml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u02C6".codePointAt(0), "&circ;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u02DC".codePointAt(0), "&tilde;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2002".codePointAt(0), "&ensp;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2003".codePointAt(0), "&emsp;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2009".codePointAt(0), "&thinsp;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u200C".codePointAt(0), "&zwnj;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u200D".codePointAt(0), "&zwj;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u200E".codePointAt(0), "&lrm;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u200F".codePointAt(0), "&rlm;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2013".codePointAt(0), "&ndash;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2014".codePointAt(0), "&mdash;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2018".codePointAt(0), "&lsquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2019".codePointAt(0), "&rsquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u201A".codePointAt(0), "&sbquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u201C".codePointAt(0), "&ldquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u201D".codePointAt(0), "&rdquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u201E".codePointAt(0), "&bdquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2020".codePointAt(0), "&dagger;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2021".codePointAt(0), "&Dagger;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2030".codePointAt(0), "&permil;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2039".codePointAt(0), "&lsaquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u203A".codePointAt(0), "&rsaquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u20AC".codePointAt(0), "&euro;");
 
         // Character entity references for ISO 8859-1 characters
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A0', "&nbsp;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A1', "&iexcl;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A2', "&cent;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A3', "&pound;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A4', "&curren;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A5', "&yen;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A6', "&brvbar;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A7', "&sect;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A8', "&uml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00A9', "&copy;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00AA', "&ordf;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00AB', "&laquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00AC', "&not;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00AD', "&shy;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00AE', "&reg;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00AF', "&macr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B0', "&deg;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B1', "&plusmn;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B2', "&sup2;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B3', "&sup3;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B4', "&acute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B5', "&micro;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B6', "&para;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B7', "&middot;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B8', "&cedil;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00B9', "&sup1;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00BA', "&ordm;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00BB', "&raquo;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00BC', "&frac14;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00BD', "&frac12;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00BE', "&frac34;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00BF', "&iquest;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C0', "&Agrave;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C1', "&Aacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C2', "&Acirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C3', "&Atilde;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C4', "&Auml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C5', "&Aring;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C6', "&AElig;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C7', "&Ccedil;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C8', "&Egrave;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00C9', "&Eacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00CA', "&Ecirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00CB', "&Euml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00CC', "&Igrave;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00CD', "&Iacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00CE', "&Icirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00CF', "&Iuml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D0', "&ETH;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D1', "&Ntilde;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D2', "&Ograve;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D3', "&Oacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D4', "&Ocirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D5', "&Otilde;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D6', "&Ouml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D7', "&times;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D8', "&Oslash;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00D9', "&Ugrave;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00DA', "&Uacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00DB', "&Ucirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00DC', "&Uuml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00DD', "&Yacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00DE', "&THORN;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00DF', "&szlig;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E0', "&agrave;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E1', "&aacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E2', "&acirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E3', "&atilde;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E4', "&auml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E5', "&aring;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E6', "&aelig;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E7', "&ccedil;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E8', "&egrave;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00E9', "&eacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00EA', "&ecirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00EB', "&euml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00EC', "&igrave;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00ED', "&iacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00EE', "&icirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00EF', "&iuml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F0', "&eth;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F1', "&ntilde;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F2', "&ograve;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F3', "&oacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F4', "&ocirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F5', "&otilde;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F6', "&ouml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F7', "&divide;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F8', "&oslash;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00F9', "&ugrave;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00FA', "&uacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00FB', "&ucirc;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00FC', "&uuml;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00FD', "&yacute;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00FE', "&thorn;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u00FF', "&yuml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A0".codePointAt(0), "&nbsp;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A1".codePointAt(0), "&iexcl;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A2".codePointAt(0), "&cent;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A3".codePointAt(0), "&pound;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A4".codePointAt(0), "&curren;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A5".codePointAt(0), "&yen;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A6".codePointAt(0), "&brvbar;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A7".codePointAt(0), "&sect;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A8".codePointAt(0), "&uml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00A9".codePointAt(0), "&copy;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00AA".codePointAt(0), "&ordf;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00AB".codePointAt(0), "&laquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00AC".codePointAt(0), "&not;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00AD".codePointAt(0), "&shy;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00AE".codePointAt(0), "&reg;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00AF".codePointAt(0), "&macr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B0".codePointAt(0), "&deg;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B1".codePointAt(0), "&plusmn;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B2".codePointAt(0), "&sup2;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B3".codePointAt(0), "&sup3;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B4".codePointAt(0), "&acute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B5".codePointAt(0), "&micro;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B6".codePointAt(0), "&para;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B7".codePointAt(0), "&middot;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B8".codePointAt(0), "&cedil;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00B9".codePointAt(0), "&sup1;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00BA".codePointAt(0), "&ordm;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00BB".codePointAt(0), "&raquo;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00BC".codePointAt(0), "&frac14;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00BD".codePointAt(0), "&frac12;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00BE".codePointAt(0), "&frac34;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00BF".codePointAt(0), "&iquest;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C0".codePointAt(0), "&Agrave;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C1".codePointAt(0), "&Aacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C2".codePointAt(0), "&Acirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C3".codePointAt(0), "&Atilde;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C4".codePointAt(0), "&Auml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C5".codePointAt(0), "&Aring;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C6".codePointAt(0), "&AElig;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C7".codePointAt(0), "&Ccedil;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C8".codePointAt(0), "&Egrave;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00C9".codePointAt(0), "&Eacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00CA".codePointAt(0), "&Ecirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00CB".codePointAt(0), "&Euml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00CC".codePointAt(0), "&Igrave;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00CD".codePointAt(0), "&Iacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00CE".codePointAt(0), "&Icirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00CF".codePointAt(0), "&Iuml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D0".codePointAt(0), "&ETH;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D1".codePointAt(0), "&Ntilde;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D2".codePointAt(0), "&Ograve;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D3".codePointAt(0), "&Oacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D4".codePointAt(0), "&Ocirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D5".codePointAt(0), "&Otilde;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D6".codePointAt(0), "&Ouml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D7".codePointAt(0), "&times;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D8".codePointAt(0), "&Oslash;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00D9".codePointAt(0), "&Ugrave;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00DA".codePointAt(0), "&Uacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00DB".codePointAt(0), "&Ucirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00DC".codePointAt(0), "&Uuml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00DD".codePointAt(0), "&Yacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00DE".codePointAt(0), "&THORN;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00DF".codePointAt(0), "&szlig;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E0".codePointAt(0), "&agrave;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E1".codePointAt(0), "&aacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E2".codePointAt(0), "&acirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E3".codePointAt(0), "&atilde;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E4".codePointAt(0), "&auml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E5".codePointAt(0), "&aring;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E6".codePointAt(0), "&aelig;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E7".codePointAt(0), "&ccedil;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E8".codePointAt(0), "&egrave;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00E9".codePointAt(0), "&eacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00EA".codePointAt(0), "&ecirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00EB".codePointAt(0), "&euml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00EC".codePointAt(0), "&igrave;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00ED".codePointAt(0), "&iacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00EE".codePointAt(0), "&icirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00EF".codePointAt(0), "&iuml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F0".codePointAt(0), "&eth;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F1".codePointAt(0), "&ntilde;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F2".codePointAt(0), "&ograve;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F3".codePointAt(0), "&oacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F4".codePointAt(0), "&ocirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F5".codePointAt(0), "&otilde;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F6".codePointAt(0), "&ouml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F7".codePointAt(0), "&divide;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F8".codePointAt(0), "&oslash;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00F9".codePointAt(0), "&ugrave;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00FA".codePointAt(0), "&uacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00FB".codePointAt(0), "&ucirc;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00FC".codePointAt(0), "&uuml;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00FD".codePointAt(0), "&yacute;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00FE".codePointAt(0), "&thorn;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u00FF".codePointAt(0), "&yuml;");
 
         // Mathematical, Greek and Symbolic characters for HTML
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0192', "&fnof;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0391', "&Alpha;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0392', "&Beta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0393', "&Gamma;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0394', "&Delta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0395', "&Epsilon;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0396', "&Zeta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0397', "&Eta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0398', "&Theta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u0399', "&Iota;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u039A', "&Kappa;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u039B', "&Lambda;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u039C', "&Mu;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u039D', "&Nu;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u039E', "&Xi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u039F', "&Omicron;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03A0', "&Pi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03A1', "&Rho;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03A3', "&Sigma;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03A4', "&Tau;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03A5', "&Upsilon;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03A6', "&Phi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03A7', "&Chi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03A8', "&Psi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03A9', "&Omega;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03B1', "&alpha;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03B2', "&beta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03B3', "&gamma;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03B4', "&delta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03B5', "&epsilon;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03B6', "&zeta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03B7', "&eta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03B8', "&theta;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03B9', "&iota;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03BA', "&kappa;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03BB', "&lambda;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03BC', "&mu;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03BD', "&nu;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03BE', "&xi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03BF', "&omicron;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C0', "&pi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C1', "&rho;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C2', "&sigmaf;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C3', "&sigma;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C4', "&tau;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C5', "&upsilon;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C6', "&phi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C7', "&chi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C8', "&psi;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03C9', "&omega;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03D1', "&thetasym;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03D2', "&upsih;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u03D6', "&piv;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2022', "&bull;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2026', "&hellip;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2032', "&prime;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2033', "&Prime;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u203E', "&oline;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2044', "&frasl;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2118', "&weierp;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2111', "&image;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u211C', "&real;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2122', "&trade;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2135', "&alefsym;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2190', "&larr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2191', "&uarr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2192', "&rarr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2193', "&darr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2194', "&harr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u21B5', "&crarr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u21D0', "&lArr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u21D1', "&uArr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u21D2', "&rArr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u21D3', "&dArr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u21D4', "&hArr;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2200', "&forall;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2202', "&part;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2203', "&exist;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2205', "&empty;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2207', "&nabla;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2208', "&isin;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2209', "&notin;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u220B', "&ni;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u220F', "&prod;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2211', "&sum;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2212', "&minus;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2217', "&lowast;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u221A', "&radic;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u221D', "&prop;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u221E', "&infin;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2220', "&ang;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2227', "&and;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2228', "&or;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2229', "&cap;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u222A', "&cup;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u222B', "&int;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2234', "&there4;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u223C', "&sim;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2245', "&cong;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2248', "&asymp;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2260', "&ne;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2261', "&equiv;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2264', "&le;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2265', "&ge;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2282', "&sub;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2283', "&sup;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2284', "&nsub;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2286', "&sube;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2287', "&supe;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2295', "&oplus;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2297', "&otimes;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u22A5', "&perp;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u22C5', "&sdot;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2308', "&lceil;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2309', "&rceil;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u230A', "&lfloor;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u230B', "&rfloor;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2329', "&lang;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u232A', "&rang;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u25CA', "&loz;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2660', "&spades;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2663', "&clubs;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2665', "&hearts;");
-        DEFENSIVE_HTML_ENCODE_MAP.put('\u2666', "&diams;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0192".codePointAt(0), "&fnof;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0391".codePointAt(0), "&Alpha;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0392".codePointAt(0), "&Beta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0393".codePointAt(0), "&Gamma;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0394".codePointAt(0), "&Delta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0395".codePointAt(0), "&Epsilon;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0396".codePointAt(0), "&Zeta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0397".codePointAt(0), "&Eta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0398".codePointAt(0), "&Theta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u0399".codePointAt(0), "&Iota;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u039A".codePointAt(0), "&Kappa;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u039B".codePointAt(0), "&Lambda;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u039C".codePointAt(0), "&Mu;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u039D".codePointAt(0), "&Nu;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u039E".codePointAt(0), "&Xi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u039F".codePointAt(0), "&Omicron;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03A0".codePointAt(0), "&Pi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03A1".codePointAt(0), "&Rho;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03A3".codePointAt(0), "&Sigma;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03A4".codePointAt(0), "&Tau;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03A5".codePointAt(0), "&Upsilon;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03A6".codePointAt(0), "&Phi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03A7".codePointAt(0), "&Chi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03A8".codePointAt(0), "&Psi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03A9".codePointAt(0), "&Omega;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03B1".codePointAt(0), "&alpha;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03B2".codePointAt(0), "&beta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03B3".codePointAt(0), "&gamma;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03B4".codePointAt(0), "&delta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03B5".codePointAt(0), "&epsilon;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03B6".codePointAt(0), "&zeta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03B7".codePointAt(0), "&eta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03B8".codePointAt(0), "&theta;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03B9".codePointAt(0), "&iota;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03BA".codePointAt(0), "&kappa;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03BB".codePointAt(0), "&lambda;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03BC".codePointAt(0), "&mu;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03BD".codePointAt(0), "&nu;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03BE".codePointAt(0), "&xi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03BF".codePointAt(0), "&omicron;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C0".codePointAt(0), "&pi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C1".codePointAt(0), "&rho;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C2".codePointAt(0), "&sigmaf;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C3".codePointAt(0), "&sigma;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C4".codePointAt(0), "&tau;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C5".codePointAt(0), "&upsilon;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C6".codePointAt(0), "&phi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C7".codePointAt(0), "&chi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C8".codePointAt(0), "&psi;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03C9".codePointAt(0), "&omega;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03D1".codePointAt(0), "&thetasym;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03D2".codePointAt(0), "&upsih;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u03D6".codePointAt(0), "&piv;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2022".codePointAt(0), "&bull;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2026".codePointAt(0), "&hellip;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2032".codePointAt(0), "&prime;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2033".codePointAt(0), "&Prime;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u203E".codePointAt(0), "&oline;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2044".codePointAt(0), "&frasl;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2118".codePointAt(0), "&weierp;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2111".codePointAt(0), "&image;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u211C".codePointAt(0), "&real;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2122".codePointAt(0), "&trade;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2135".codePointAt(0), "&alefsym;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2190".codePointAt(0), "&larr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2191".codePointAt(0), "&uarr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2192".codePointAt(0), "&rarr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2193".codePointAt(0), "&darr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2194".codePointAt(0), "&harr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u21B5".codePointAt(0), "&crarr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u21D0".codePointAt(0), "&lArr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u21D1".codePointAt(0), "&uArr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u21D2".codePointAt(0), "&rArr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u21D3".codePointAt(0), "&dArr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u21D4".codePointAt(0), "&hArr;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2200".codePointAt(0), "&forall;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2202".codePointAt(0), "&part;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2203".codePointAt(0), "&exist;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2205".codePointAt(0), "&empty;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2207".codePointAt(0), "&nabla;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2208".codePointAt(0), "&isin;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2209".codePointAt(0), "&notin;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u220B".codePointAt(0), "&ni;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u220F".codePointAt(0), "&prod;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2211".codePointAt(0), "&sum;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2212".codePointAt(0), "&minus;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2217".codePointAt(0), "&lowast;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u221A".codePointAt(0), "&radic;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u221D".codePointAt(0), "&prop;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u221E".codePointAt(0), "&infin;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2220".codePointAt(0), "&ang;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2227".codePointAt(0), "&and;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2228".codePointAt(0), "&or;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2229".codePointAt(0), "&cap;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u222A".codePointAt(0), "&cup;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u222B".codePointAt(0), "&int;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2234".codePointAt(0), "&there4;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u223C".codePointAt(0), "&sim;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2245".codePointAt(0), "&cong;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2248".codePointAt(0), "&asymp;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2260".codePointAt(0), "&ne;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2261".codePointAt(0), "&equiv;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2264".codePointAt(0), "&le;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2265".codePointAt(0), "&ge;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2282".codePointAt(0), "&sub;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2283".codePointAt(0), "&sup;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2284".codePointAt(0), "&nsub;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2286".codePointAt(0), "&sube;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2287".codePointAt(0), "&supe;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2295".codePointAt(0), "&oplus;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2297".codePointAt(0), "&otimes;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u22A5".codePointAt(0), "&perp;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u22C5".codePointAt(0), "&sdot;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2308".codePointAt(0), "&lceil;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2309".codePointAt(0), "&rceil;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u230A".codePointAt(0), "&lfloor;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u230B".codePointAt(0), "&rfloor;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2329".codePointAt(0), "&lang;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u232A".codePointAt(0), "&rang;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u25CA".codePointAt(0), "&loz;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2660".codePointAt(0), "&spades;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2663".codePointAt(0), "&clubs;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2665".codePointAt(0), "&hearts;");
+        DEFENSIVE_HTML_ENCODE_MAP.put("\u2666".codePointAt(0), "&diams;");
 
-        var aggresive_entries = AGGRESSIVE_HTML_ENCODE_MAP.entrySet();
-        for (var entry : aggresive_entries) {
+        var aggressive_entries = AGGRESSIVE_HTML_ENCODE_MAP.entrySet();
+        for (var entry : aggressive_entries) {
             HTML_DECODE_MAP.put(entry.getValue(), entry.getKey());
         }
 
@@ -334,96 +334,96 @@ public final class StringUtils {
             HTML_DECODE_MAP.put(entry.getValue(), entry.getKey());
         }
 
-        XML_ENCODE_MAP.put('\u0026', "&amp;");
-        XML_ENCODE_MAP.put('\'', "&apos;");
-        XML_ENCODE_MAP.put('\u0022', "&quot;");
-        XML_ENCODE_MAP.put('\u003C', "&lt;");
-        XML_ENCODE_MAP.put('\u003E', "&gt;");
+        XML_ENCODE_MAP.put("\u0026".codePointAt(0), "&amp;");
+        XML_ENCODE_MAP.put("'".codePointAt(0), "&apos;");
+        XML_ENCODE_MAP.put("\"".codePointAt(0), "&quot;");
+        XML_ENCODE_MAP.put("\u003C".codePointAt(0), "&lt;");
+        XML_ENCODE_MAP.put("\u003E".codePointAt(0), "&gt;");
 
-        SQL_ENCODE_MAP.put('\'', "''");
+        SQL_ENCODE_MAP.put("'".codePointAt(0), "''");
 
-        STRING_ENCODE_MAP.put('\\', "\\\\");
-        STRING_ENCODE_MAP.put('\n', "\\n");
-        STRING_ENCODE_MAP.put('\r', "\\r");
-        STRING_ENCODE_MAP.put('\t', "\\t");
-        STRING_ENCODE_MAP.put('"', "\\\"");
+        STRING_ENCODE_MAP.put("\\".codePointAt(0), "\\\\");
+        STRING_ENCODE_MAP.put("\n".codePointAt(0), "\\n");
+        STRING_ENCODE_MAP.put("\r".codePointAt(0), "\\r");
+        STRING_ENCODE_MAP.put("\t".codePointAt(0), "\\t");
+        STRING_ENCODE_MAP.put("\"".codePointAt(0), "\\\"");
 
-        LATEX_ENCODE_MAP.put('\\', "\\\\");
-        LATEX_ENCODE_MAP.put('#', "\\#");
-        LATEX_ENCODE_MAP.put('$', "\\$");
-        LATEX_ENCODE_MAP.put('%', "\\%");
-        LATEX_ENCODE_MAP.put('&', "\\&");
-        LATEX_ENCODE_MAP.put('~', "\\~");
-        LATEX_ENCODE_MAP.put('_', "\\_");
-        LATEX_ENCODE_MAP.put('^', "\\^");
-        LATEX_ENCODE_MAP.put('{', "\\{");
-        LATEX_ENCODE_MAP.put('}', "\\}");
-        LATEX_ENCODE_MAP.put('\u00A1', "!'");
-        LATEX_ENCODE_MAP.put('\u00BF', "?'");
-        LATEX_ENCODE_MAP.put('\u00C0', "\\`{A}");
-        LATEX_ENCODE_MAP.put('\u00C1', "\\'{A}");
-        LATEX_ENCODE_MAP.put('\u00C2', "\\^{A}");
-        LATEX_ENCODE_MAP.put('\u00C3', "\\H{A}");
-        LATEX_ENCODE_MAP.put('\u00C4', "\\\"{A}");
-        LATEX_ENCODE_MAP.put('\u00C5', "\\AA");
-        LATEX_ENCODE_MAP.put('\u00C6', "\\AE");
-        LATEX_ENCODE_MAP.put('\u00C7', "\\c{C}");
-        LATEX_ENCODE_MAP.put('\u00C8', "\\`{E}");
-        LATEX_ENCODE_MAP.put('\u00C9', "\\'{E}");
-        LATEX_ENCODE_MAP.put('\u00CA', "\\^{E}");
-        LATEX_ENCODE_MAP.put('\u00CB', "\\\"{E}");
-        LATEX_ENCODE_MAP.put('\u00CC', "\\`{I}");
-        LATEX_ENCODE_MAP.put('\u00CD', "\\'{I}");
-        LATEX_ENCODE_MAP.put('\u00CE', "\\^{I}");
-        LATEX_ENCODE_MAP.put('\u00CF', "\\\"{I}");
+        LATEX_ENCODE_MAP.put("\\".codePointAt(0), "\\\\");
+        LATEX_ENCODE_MAP.put("#".codePointAt(0), "\\#");
+        LATEX_ENCODE_MAP.put("$".codePointAt(0), "\\$");
+        LATEX_ENCODE_MAP.put("%".codePointAt(0), "\\%");
+        LATEX_ENCODE_MAP.put("&".codePointAt(0), "\\&");
+        LATEX_ENCODE_MAP.put("~".codePointAt(0), "\\~");
+        LATEX_ENCODE_MAP.put("_".codePointAt(0), "\\_");
+        LATEX_ENCODE_MAP.put("^".codePointAt(0), "\\^");
+        LATEX_ENCODE_MAP.put("{".codePointAt(0), "\\{");
+        LATEX_ENCODE_MAP.put("}".codePointAt(0), "\\}");
+        LATEX_ENCODE_MAP.put("\u00A1".codePointAt(0), "!'");
+        LATEX_ENCODE_MAP.put("\u00BF".codePointAt(0), "?'");
+        LATEX_ENCODE_MAP.put("\u00C0".codePointAt(0), "\\`{A}");
+        LATEX_ENCODE_MAP.put("\u00C1".codePointAt(0), "\\'{A}");
+        LATEX_ENCODE_MAP.put("\u00C2".codePointAt(0), "\\^{A}");
+        LATEX_ENCODE_MAP.put("\u00C3".codePointAt(0), "\\H{A}");
+        LATEX_ENCODE_MAP.put("\u00C4".codePointAt(0), "\\\"{A}");
+        LATEX_ENCODE_MAP.put("\u00C5".codePointAt(0), "\\AA");
+        LATEX_ENCODE_MAP.put("\u00C6".codePointAt(0), "\\AE");
+        LATEX_ENCODE_MAP.put("\u00C7".codePointAt(0), "\\c{C}");
+        LATEX_ENCODE_MAP.put("\u00C8".codePointAt(0), "\\`{E}");
+        LATEX_ENCODE_MAP.put("\u00C9".codePointAt(0), "\\'{E}");
+        LATEX_ENCODE_MAP.put("\u00CA".codePointAt(0), "\\^{E}");
+        LATEX_ENCODE_MAP.put("\u00CB".codePointAt(0), "\\\"{E}");
+        LATEX_ENCODE_MAP.put("\u00CC".codePointAt(0), "\\`{I}");
+        LATEX_ENCODE_MAP.put("\u00CD".codePointAt(0), "\\'{I}");
+        LATEX_ENCODE_MAP.put("\u00CE".codePointAt(0), "\\^{I}");
+        LATEX_ENCODE_MAP.put("\u00CF".codePointAt(0), "\\\"{I}");
 // todo \u00D0
-        LATEX_ENCODE_MAP.put('\u00D1', "\\H{N}");
-        LATEX_ENCODE_MAP.put('\u00D2', "\\`{O}");
-        LATEX_ENCODE_MAP.put('\u00D3', "\\'{O}");
-        LATEX_ENCODE_MAP.put('\u00D4', "\\^{O}");
-        LATEX_ENCODE_MAP.put('\u00D5', "\\H{O}");
-        LATEX_ENCODE_MAP.put('\u00D6', "\\\"{O}");
+        LATEX_ENCODE_MAP.put("\u00D1".codePointAt(0), "\\H{N}");
+        LATEX_ENCODE_MAP.put("\u00D2".codePointAt(0), "\\`{O}");
+        LATEX_ENCODE_MAP.put("\u00D3".codePointAt(0), "\\'{O}");
+        LATEX_ENCODE_MAP.put("\u00D4".codePointAt(0), "\\^{O}");
+        LATEX_ENCODE_MAP.put("\u00D5".codePointAt(0), "\\H{O}");
+        LATEX_ENCODE_MAP.put("\u00D6".codePointAt(0), "\\\"{O}");
 // todo \u00D7
-        LATEX_ENCODE_MAP.put('\u00D8', "\\O");
-        LATEX_ENCODE_MAP.put('\u00D9', "\\`{U}");
-        LATEX_ENCODE_MAP.put('\u00DA', "\\'{U}");
-        LATEX_ENCODE_MAP.put('\u00DB', "\\^{U}");
-        LATEX_ENCODE_MAP.put('\u00DC', "\\\"{U}");
-        LATEX_ENCODE_MAP.put('\u00DD', "\\'{Y}");
+        LATEX_ENCODE_MAP.put("\u00D8".codePointAt(0), "\\O");
+        LATEX_ENCODE_MAP.put("\u00D9".codePointAt(0), "\\`{U}");
+        LATEX_ENCODE_MAP.put("\u00DA".codePointAt(0), "\\'{U}");
+        LATEX_ENCODE_MAP.put("\u00DB".codePointAt(0), "\\^{U}");
+        LATEX_ENCODE_MAP.put("\u00DC".codePointAt(0), "\\\"{U}");
+        LATEX_ENCODE_MAP.put("\u00DD".codePointAt(0), "\\'{Y}");
 // todo \u00DE
-        LATEX_ENCODE_MAP.put('\u00DF', "\\ss");
-        LATEX_ENCODE_MAP.put('\u00E0', "\\`{a}");
-        LATEX_ENCODE_MAP.put('\u00E1', "\\'{a}");
-        LATEX_ENCODE_MAP.put('\u00E2', "\\^{a}");
-        LATEX_ENCODE_MAP.put('\u00E3', "\\H{a}");
-        LATEX_ENCODE_MAP.put('\u00E4', "\\\"{a}");
-        LATEX_ENCODE_MAP.put('\u00E5', "\\aa");
-        LATEX_ENCODE_MAP.put('\u00E6', "\\ae");
-        LATEX_ENCODE_MAP.put('\u00E7', "\\c{c}");
-        LATEX_ENCODE_MAP.put('\u00E8', "\\`{e}");
-        LATEX_ENCODE_MAP.put('\u00E9', "\\'{e}");
-        LATEX_ENCODE_MAP.put('\u00EA', "\\^{e}");
-        LATEX_ENCODE_MAP.put('\u00EB', "\\\"{e}");
-        LATEX_ENCODE_MAP.put('\u00EC', "\\`{i}");
-        LATEX_ENCODE_MAP.put('\u00ED', "\\'{i}");
-        LATEX_ENCODE_MAP.put('\u00EE', "\\^{i}");
-        LATEX_ENCODE_MAP.put('\u00EF', "\\\"{i}");
+        LATEX_ENCODE_MAP.put("\u00DF".codePointAt(0), "\\ss");
+        LATEX_ENCODE_MAP.put("\u00E0".codePointAt(0), "\\`{a}");
+        LATEX_ENCODE_MAP.put("\u00E1".codePointAt(0), "\\'{a}");
+        LATEX_ENCODE_MAP.put("\u00E2".codePointAt(0), "\\^{a}");
+        LATEX_ENCODE_MAP.put("\u00E3".codePointAt(0), "\\H{a}");
+        LATEX_ENCODE_MAP.put("\u00E4".codePointAt(0), "\\\"{a}");
+        LATEX_ENCODE_MAP.put("\u00E5".codePointAt(0), "\\aa");
+        LATEX_ENCODE_MAP.put("\u00E6".codePointAt(0), "\\ae");
+        LATEX_ENCODE_MAP.put("\u00E7".codePointAt(0), "\\c{c}");
+        LATEX_ENCODE_MAP.put("\u00E8".codePointAt(0), "\\`{e}");
+        LATEX_ENCODE_MAP.put("\u00E9".codePointAt(0), "\\'{e}");
+        LATEX_ENCODE_MAP.put("\u00EA".codePointAt(0), "\\^{e}");
+        LATEX_ENCODE_MAP.put("\u00EB".codePointAt(0), "\\\"{e}");
+        LATEX_ENCODE_MAP.put("\u00EC".codePointAt(0), "\\`{i}");
+        LATEX_ENCODE_MAP.put("\u00ED".codePointAt(0), "\\'{i}");
+        LATEX_ENCODE_MAP.put("\u00EE".codePointAt(0), "\\^{i}");
+        LATEX_ENCODE_MAP.put("\u00EF".codePointAt(0), "\\\"{i}");
 // todo \u00F0
-        LATEX_ENCODE_MAP.put('\u00F1', "\\H{n}");
-        LATEX_ENCODE_MAP.put('\u00F2', "\\`{o}");
-        LATEX_ENCODE_MAP.put('\u00F3', "\\'{o}");
-        LATEX_ENCODE_MAP.put('\u00F4', "\\^{o}");
-        LATEX_ENCODE_MAP.put('\u00F5', "\\H{o}");
-        LATEX_ENCODE_MAP.put('\u00F6', "\\\"{o}");
+        LATEX_ENCODE_MAP.put("\u00F1".codePointAt(0), "\\H{n}");
+        LATEX_ENCODE_MAP.put("\u00F2".codePointAt(0), "\\`{o}");
+        LATEX_ENCODE_MAP.put("\u00F3".codePointAt(0), "\\'{o}");
+        LATEX_ENCODE_MAP.put("\u00F4".codePointAt(0), "\\^{o}");
+        LATEX_ENCODE_MAP.put("\u00F5".codePointAt(0), "\\H{o}");
+        LATEX_ENCODE_MAP.put("\u00F6".codePointAt(0), "\\\"{o}");
 // todo \u00F7
-        LATEX_ENCODE_MAP.put('\u00F8', "\\o");
-        LATEX_ENCODE_MAP.put('\u00F9', "\\`{u}");
-        LATEX_ENCODE_MAP.put('\u00FA', "\\'{u}");
-        LATEX_ENCODE_MAP.put('\u00FB', "\\^{u}");
-        LATEX_ENCODE_MAP.put('\u00FC', "\\\"{u}");
-        LATEX_ENCODE_MAP.put('\u00FD', "\\'{y}");
+        LATEX_ENCODE_MAP.put("\u00F8".codePointAt(0), "\\o");
+        LATEX_ENCODE_MAP.put("\u00F9".codePointAt(0), "\\`{u}");
+        LATEX_ENCODE_MAP.put("\u00FA".codePointAt(0), "\\'{u}");
+        LATEX_ENCODE_MAP.put("\u00FB".codePointAt(0), "\\^{u}");
+        LATEX_ENCODE_MAP.put("\u00FC".codePointAt(0), "\\\"{u}");
+        LATEX_ENCODE_MAP.put("\u00FD".codePointAt(0), "\\'{y}");
 // todo \u00FE
-        LATEX_ENCODE_MAP.put('\u00FF', "\\\"{y}");
+        LATEX_ENCODE_MAP.put("\u00FF".codePointAt(0), "\\\"{y}");
     }
 
     private StringUtils() {
@@ -755,7 +755,7 @@ public final class StringUtils {
 
                     current_index = delimiter_end_index + 1;
 
-                    // try to decoded numeric entities
+                    // try to decode numeric entities
                     if (entity.charAt(1) == '#') {
                         var start = 2;
                         var radix = 10;
@@ -776,7 +776,7 @@ public final class StringUtils {
                         // try to decode the entity as a literal
                         var decoded = HTML_DECODE_MAP.get(entity);
                         if (decoded != null) {
-                            result.append(decoded);
+                            result.append(Character.toChars(decoded));
                         }
                         // if there was no match, add the entity as-is
                         else {
@@ -989,7 +989,7 @@ public final class StringUtils {
      * @return The encoded {@code String} object.
      * @since 1.0
      */
-    private static String encode(String source, EncoderFallbackHandler fallbackHandler, Map<Character, String>... encodingTables) {
+    private static String encode(String source, EncoderFallbackHandler fallbackHandler, Map<Integer, String>... encodingTables) {
         if (null == source) {
             return null;
         }
@@ -1000,26 +1000,25 @@ public final class StringUtils {
         }
 
         StringBuilder encoded_string = null;
-        var string_to_encode_array = source.toCharArray();
         var last_match = -1;
 
-        for (var i = 0; i < string_to_encode_array.length; i++) {
-            var char_to_encode = string_to_encode_array[i];
+        for (int i = 0; i < source.length(); i = source.offsetByCodePoints(i, 1)) {
+            int code_point_to_encode = source.codePointAt(i);
             for (var encoding_table : encodingTables) {
-                if (encoding_table.containsKey(char_to_encode)) {
-                    encoded_string = prepareEncodedString(source, encoded_string, i, last_match, string_to_encode_array);
+                if (encoding_table.containsKey(code_point_to_encode)) {
+                    encoded_string = prepareEncodedString(source, encoded_string, i, last_match);
 
-                    encoded_string.append(encoding_table.get(char_to_encode));
+                    encoded_string.append(encoding_table.get(code_point_to_encode));
                     last_match = i;
                 }
             }
 
             if (fallbackHandler != null &&
                 last_match < i &&
-                fallbackHandler.hasFallback(char_to_encode)) {
-                encoded_string = prepareEncodedString(source, encoded_string, i, last_match, string_to_encode_array);
+                fallbackHandler.hasFallback(code_point_to_encode)) {
+                encoded_string = prepareEncodedString(source, encoded_string, i, last_match);
 
-                fallbackHandler.appendFallback(encoded_string, char_to_encode);
+                fallbackHandler.appendFallback(encoded_string, code_point_to_encode);
                 last_match = i;
             }
         }
@@ -1027,44 +1026,48 @@ public final class StringUtils {
         if (null == encoded_string) {
             return source;
         } else {
-            var difference = string_to_encode_array.length - (last_match + 1);
+            var past_last_match = source.offsetByCodePoints(last_match, 1);
+            var difference = source.length() - past_last_match;
             if (difference > 0) {
-                encoded_string.append(string_to_encode_array, last_match + 1, difference);
+                encoded_string.append(source, past_last_match, source.length());
             }
             return encoded_string.toString();
         }
     }
 
-    private static StringBuilder prepareEncodedString(String source, StringBuilder encodedString, int i, int lastMatch, char[] stringToEncodeArray) {
+    private static StringBuilder prepareEncodedString(String source, StringBuilder encodedString, int i, int lastMatch) {
         if (null == encodedString) {
             encodedString = new StringBuilder(source.length());
         }
 
-        var difference = i - (lastMatch + 1);
-        if (difference > 0) {
-            encodedString.append(stringToEncodeArray, lastMatch + 1, difference);
+        int past_last_match = 0;
+        if (lastMatch >= 0) {
+            past_last_match = source.offsetByCodePoints(lastMatch, 1);
+        }
+        if (past_last_match < i) {
+            encodedString.append(source, past_last_match, i);
         }
 
         return encodedString;
     }
 
     private interface EncoderFallbackHandler {
-        boolean hasFallback(char character);
+        boolean hasFallback(int codePoint);
 
-        void appendFallback(StringBuilder encodedBuffer, char character);
+        void appendFallback(StringBuilder encodedBuffer, int codePoint);
     }
 
     private static class HtmlEncoderFallbackHandler implements EncoderFallbackHandler {
         private static final String PREFIX = "&#";
         private static final String SUFFIX = ";";
 
-        public boolean hasFallback(char character) {
-            return character >= '\u00A0';
+        public boolean hasFallback(int codePoint) {
+            return codePoint >= '\u00A0';
         }
 
-        public void appendFallback(StringBuilder encodedBuffer, char character) {
+        public void appendFallback(StringBuilder encodedBuffer, int codePoint) {
             encodedBuffer.append(PREFIX);
-            encodedBuffer.append((int) character);
+            encodedBuffer.append(codePoint);
             encodedBuffer.append(SUFFIX);
         }
     }

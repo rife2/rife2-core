@@ -765,8 +765,13 @@ public final class StringUtils {
                             radix = 16;
                         }
                         try {
-                            Character c = (char) Integer.parseInt(entity.substring(start, entity.length() - 1), radix);
-                            result.append(c);
+                            var code_point = Integer.parseInt(entity.substring(start, entity.length() - 1), radix);
+                            // when the number of the entity isn't a valid code point, add the entity as-is
+                            if (Character.isValidCodePoint(code_point)) {
+                                result.append(Character.toChars(code_point));
+                            } else {
+                                result.append(entity);
+                            }
                         }
                         // when the number of the entity can't be parsed, add the entity as-is
                         catch (NumberFormatException e) {

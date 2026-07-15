@@ -182,7 +182,7 @@ public class TemplateFactory extends EnumClass<String> {
                 TemplateFactoryFilters.TAG_RENDER,
                 TemplateFactoryFilters.TAG_ROUTE
             },
-        BeanHandlerPlain.instance(),
+        BeanHandlerJson.instance(),
         EncoderJsonSingleton.INSTANCE,
         null);
 

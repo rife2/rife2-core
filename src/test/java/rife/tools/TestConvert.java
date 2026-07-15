@@ -177,6 +177,16 @@ public class TestConvert {
     }
 
     @Test
+    void testIso8601Conversions()
+    throws ConversionException {
+        assertEquals(new Date(0), Convert.toDate("1970-01-01T00:00:00Z"));
+        assertEquals(Instant.parse("2026-07-15T10:15:30Z"), Convert.toInstant("2026-07-15T10:15:30Z"));
+        assertEquals(LocalDateTime.of(2026, 7, 15, 10, 15, 30), Convert.toLocalDateTime("2026-07-15T10:15:30"));
+        assertEquals(LocalDate.of(2026, 7, 15), Convert.toLocalDate("2026-07-15"));
+        assertEquals(LocalTime.of(10, 15, 30), Convert.toLocalTime("10:15:30"));
+    }
+
+    @Test
     void testFromString()
     throws ConversionException {
         assertNull(Convert.fromString(null, null));

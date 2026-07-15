@@ -15,6 +15,7 @@ import rife.datastructures.EnumClass;
  * @since 1.0
  */
 public class MimeType extends EnumClass<String> {
+    public static final String APPLICATION_JSON_IDENTIFIER = "application/json";
     public static final String APPLICATION_XHTML_IDENTIFIER = "application/xhtml+xml";
     public static final String IMAGE_GIF_IDENTIFIER = "image/gif";
     public static final String IMAGE_JPEG_IDENTIFIER = "image/jpeg";
@@ -23,6 +24,12 @@ public class MimeType extends EnumClass<String> {
     public static final String TEXT_XML_IDENTIFIER = "text/xml";
     public static final String RAW_IDENTIFIER = "raw";
 
+    /**
+     * The {@code application/json} mime type.
+     *
+     * @since 1.10
+     */
+    public static final MimeType APPLICATION_JSON = new MimeType(APPLICATION_JSON_IDENTIFIER);
     /**
      * The {@code application/xhtml+xml} mime type.
      */

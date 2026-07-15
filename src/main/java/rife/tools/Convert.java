@@ -720,7 +720,11 @@ public final class Convert {
                 try {
                     return RifeConfig.tools().getDefaultInputDateFormat().parse(string);
                 } catch (ParseException e3) {
-                    throw new ConversionException(string, Date.class, e2);
+                    try {
+                        return Date.from(Instant.parse(string));
+                    } catch (DateTimeParseException e4) {
+                        throw new ConversionException(string, Date.class, e2);
+                    }
                 }
             }
         }
@@ -1518,7 +1522,11 @@ public final class Convert {
                 try {
                     return RifeConfig.tools().getDefaultInputDateFormat().parse(string).toInstant();
                 } catch (ParseException e3) {
-                    throw new ConversionException(string, Instant.class, e2);
+                    try {
+                        return Instant.parse(string);
+                    } catch (DateTimeParseException e4) {
+                        throw new ConversionException(string, Instant.class, e2);
+                    }
                 }
             }
         }
@@ -1733,7 +1741,11 @@ public final class Convert {
                 try {
                     return LocalDateTime.from(RifeConfig.tools().getDefaultInputDateTimeFormatter().parse(string));
                 } catch (DateTimeParseException e3) {
-                    throw new ConversionException(string, LocalDateTime.class, e2);
+                    try {
+                        return LocalDateTime.parse(string);
+                    } catch (DateTimeParseException e4) {
+                        throw new ConversionException(string, LocalDateTime.class, e2);
+                    }
                 }
             }
         }
@@ -1948,7 +1960,11 @@ public final class Convert {
                 try {
                     return LocalDate.from(RifeConfig.tools().getDefaultInputDateTimeFormatter().parse(string));
                 } catch (DateTimeParseException e3) {
-                    throw new ConversionException(string, LocalDate.class, e2);
+                    try {
+                        return LocalDate.parse(string);
+                    } catch (DateTimeParseException e4) {
+                        throw new ConversionException(string, LocalDate.class, e2);
+                    }
                 }
             }
         }
@@ -2163,7 +2179,11 @@ public final class Convert {
                 try {
                     return LocalTime.from(RifeConfig.tools().getDefaultInputTimeFormatter().parse(string));
                 } catch (DateTimeParseException e3) {
-                    throw new ConversionException(string, LocalTime.class, e2);
+                    try {
+                        return LocalTime.parse(string);
+                    } catch (DateTimeParseException e4) {
+                        throw new ConversionException(string, LocalTime.class, e2);
+                    }
                 }
             }
         }

@@ -92,6 +92,22 @@ public class ConstrainedUtils {
             !constrained_property.isEditable());
     }
 
+    public static boolean serializeConstrainedProperty(Constrained bean, String propertyName, String prefix) {
+        if (null == bean) {
+            return true;
+        }
+
+        if (prefix != null &&
+            propertyName.startsWith(prefix)) {
+            propertyName = propertyName.substring(prefix.length());
+        }
+
+        var constrained_property = bean.getConstrainedProperty(propertyName);
+
+        return !(constrained_property != null &&
+            !constrained_property.isSerialized());
+    }
+
     public static boolean persistConstrainedProperty(Constrained bean, String propertyName, String prefix) {
         if (null == bean) {
             return true;

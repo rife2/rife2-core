@@ -21,6 +21,7 @@ module rife.core {
     exports rife.forms;
     exports rife.ioc;
     exports rife.ioc.exceptions;
+    exports rife.json;
     exports rife.resources;
     exports rife.resources.exceptions;
     exports rife.selector;

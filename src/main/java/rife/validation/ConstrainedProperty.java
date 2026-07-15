@@ -82,6 +82,7 @@ public class ConstrainedProperty implements Cloneable {
     public static final String EDITABLE = "EDITABLE";
     public static final String PERSISTENT = "PERSISTENT";
     public static final String SAVED = "SAVED";
+    public static final String SERIALIZED = "SERIALIZED";
     public static final String DISPLAYED_RAW = "DISPLAYED_RAW";
     public static final String MIN_LENGTH = "MIN_LENGTH";
     public static final String MAX_LENGTH = "MAX_LENGTH";
@@ -541,6 +542,33 @@ public class ConstrainedProperty implements Cloneable {
 
     public boolean isSaved() {
         return Convert.toBoolean(constraints_.get(SAVED), true);
+    }
+
+    /**
+     * Sets whether the property takes part in data-interchange
+     * representations like JSON.
+     * <p>
+     * When a property isn't serialized, it's not included when such
+     * representations are generated and it's not filled in when they are
+     * bound back to beans. This doesn't affect Java object serialization.
+     *
+     * @param serialized {@code true} when the property takes part in
+     *                   data-interchange representations; or {@code false} otherwise
+     * @return this {@code ConstrainedProperty} instance
+     * @since 1.10
+     */
+    public ConstrainedProperty serialized(boolean serialized) {
+        setSerialized(serialized);
+
+        return this;
+    }
+
+    public void setSerialized(boolean serialized) {
+        setConstraint(SERIALIZED, serialized);
+    }
+
+    public boolean isSerialized() {
+        return Convert.toBoolean(constraints_.get(SERIALIZED), true);
     }
 
     public ConstrainedProperty displayedRaw(boolean displayedRaw) {

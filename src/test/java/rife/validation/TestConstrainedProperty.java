@@ -42,6 +42,7 @@ public class TestConstrainedProperty {
         assertFalse(property.isIdentifier());
         assertTrue(property.isEditable());
         assertTrue(property.isSaved());
+        assertTrue(property.isSerialized());
         assertFalse(property.isDisplayedRaw());
         assertTrue(property.isPersistent());
         assertFalse(property.hasLimitedLength());
@@ -243,6 +244,16 @@ public class TestConstrainedProperty {
 
         assertSame(property, property.saved(true));
         assertTrue(property.isSaved());
+    }
+
+    @Test
+    void testSerialized() {
+        var property = new ConstrainedProperty("the_name");
+        assertSame(property, property.serialized(false));
+        assertFalse(property.isSerialized());
+
+        assertSame(property, property.serialized(true));
+        assertTrue(property.isSerialized());
     }
 
     @Test

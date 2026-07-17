@@ -82,9 +82,9 @@ public interface BeanHandler {
     throws TemplateException;
 
     /**
-     * Returns a form builder which will be used to {@linkplain
-     * rife.engine.Context#generateForm(Template, Object) generate
-     * forms} in the corresponding template.
+     * Returns a form builder which will be used to generate forms in
+     * the corresponding template, for instance by
+     * {@code rife.engine.Context.generateForm(Template, Object)}.
      *
      * @return a form builder for use with the corresponding template
      * @since 1.0

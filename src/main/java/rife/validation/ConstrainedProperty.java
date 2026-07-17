@@ -1445,8 +1445,8 @@ public class ConstrainedProperty implements Cloneable {
 
     /**
      * Sets the mime type of the property.
-     * <p>Setting this constraint will make the {@link
-     * rife.cmf.dam.ContentQueryManager ContentQueryManager}
+     * <p>Setting this constraint will make the
+     * {@code rife.cmf.dam.ContentQueryManager}
      * automatically store the data in this property in the content management
      * back-end. This column will not be stored in a regular database table.
      * All this is handled transparently and automatically.
@@ -1748,15 +1748,10 @@ public class ConstrainedProperty implements Cloneable {
     /**
      * Sets whether this property has to be used as an ordinal.
      * <p>The value of this property will be handled in the back-end by an
-     * {@link rife.cmf.dam.OrdinalManager OrdinalManager}. It will
-     * also enable the {@link
-     * rife.cmf.dam.ContentQueryManager#move(Constrained, String, rife.cmf.dam.OrdinalManager.Direction)
-     * move}, {@link
-     * rife.cmf.dam.ContentQueryManager#up(Constrained, String) up}
-     * and {@link
-     * rife.cmf.dam.ContentQueryManager#down(Constrained, String)
-     * down} methods in the {@link rife.cmf.dam.ContentQueryManager
-     * ContentQueryManager} to easily reorder data rows in the back-end.
+     * {@code rife.cmf.dam.OrdinalManager}. It will also enable the
+     * {@code move}, {@code up} and {@code down} methods in the
+     * {@code rife.cmf.dam.ContentQueryManager} to easily reorder data
+     * rows in the back-end.
      *
      * @param ordinal {@code true} if this property is an ordinal; or
      *                <p>{@code false} otherwise

@@ -103,6 +103,7 @@ public class ConstrainedProperty implements Cloneable {
     public static final String MANY_TO_MANY_ASSOCIATION = "MANY_TO_MANY_ASSOCIATION";
     public static final String FORMAT = "FORMAT";
     public static final String SPARSE = "SPARSE";
+    public static final String COLUMN_NAME = "COLUMN_NAME";
 
     // standard CMF constraint identifiers
     public static final String LISTED = "LISTED";
@@ -1082,6 +1083,74 @@ public class ConstrainedProperty implements Cloneable {
 
     public boolean hasDefaultValue() {
         return constraints_.containsKey(DEFAULT_VALUE);
+    }
+
+    /**
+     * Sets the name of the database column that this property maps to.
+     * <p>
+     * This makes it possible to use column names that can't be expressed
+     * as bean property names, for instance because they contain characters
+     * that are invalid in Java identifiers. The column name is used as-is
+     * when queries are generated from the bean, and result set columns
+     * with this name are mapped back to this property when beans are
+     * fetched.
+     *
+     * @param name the name of the database column
+     * @return this {@code ConstrainedProperty}
+     * @see #setColumnName(String)
+     * @see #hasColumnName()
+     * @see #getColumnName()
+     * @since 1.10
+     */
+    public ConstrainedProperty columnName(String name) {
+        setColumnName(name);
+
+        return this;
+    }
+
+    /**
+     * Sets the name of the database column that this property maps to.
+     *
+     * @param name the name of the database column
+     * @see #columnName(String)
+     * @see #hasColumnName()
+     * @see #getColumnName()
+     * @since 1.10
+     */
+    public void setColumnName(String name) {
+        if (null == name) {
+            constraints_.remove(COLUMN_NAME);
+        } else {
+            setConstraint(COLUMN_NAME, name);
+        }
+    }
+
+    /**
+     * Retrieves the name of the database column that this property maps to.
+     *
+     * @return the name of the database column; or {@code null} when none
+     * was set
+     * @see #columnName(String)
+     * @see #setColumnName(String)
+     * @see #hasColumnName()
+     * @since 1.10
+     */
+    public String getColumnName() {
+        return (String) constraints_.get(COLUMN_NAME);
+    }
+
+    /**
+     * Indicates whether a database column name was set for this property.
+     *
+     * @return {@code true} when a column name was set; or {@code false}
+     * otherwise
+     * @see #columnName(String)
+     * @see #setColumnName(String)
+     * @see #getColumnName()
+     * @since 1.10
+     */
+    public boolean hasColumnName() {
+        return constraints_.containsKey(COLUMN_NAME);
     }
 
     public ConstrainedProperty sameAs(String reference) {

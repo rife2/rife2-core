@@ -7,7 +7,9 @@ package rife.database;
 import rife.database.exceptions.BeanException;
 import rife.database.exceptions.DatabaseException;
 import rife.tools.Convert;
+import rife.tools.StringUtils;
 import rife.tools.exceptions.ConversionException;
+import rife.validation.ConstrainedUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -37,6 +39,7 @@ public class DbBeanFetcher<BeanType> extends DbRowProcessor {
     private Class<BeanType> beanClass_ = null;
     private BeanType lastBeanInstance_ = null;
     private final HashMap<String, PropertyDescriptor> beanProperties_ = new HashMap<>();
+    private final HashMap<String, String> columnAliases_ = new HashMap<>();
     private ArrayList<BeanType> collectedInstances_ = null;
 
     /**
@@ -84,6 +87,22 @@ public class DbBeanFetcher<BeanType> extends DbRowProcessor {
             beanProperties_.put(bean_property.getName().toLowerCase(), bean_property);
         }
 
+        // map explicitly constrained column names back to their properties,
+        // so that columns whose name can't be expressed as a property name
+        // are populated too
+        var constrained = ConstrainedUtils.getConstrainedInstance(beanClass);
+        if (constrained != null) {
+            for (var property : constrained.getConstrainedProperties()) {
+                if (property.hasColumnName()) {
+                    var column_alias = StringUtils.stripColumnQuotes(property.getColumnName()).toLowerCase();
+                    var property_key = property.getPropertyName().toLowerCase();
+                    if (columnAliases_.putIfAbsent(column_alias, property_key) != null) {
+                        throw new BeanException("The column name '" + property.getColumnName() + "' is mapped by multiple properties of bean class '" + beanClass.getName() + "'.", beanClass);
+                    }
+                }
+            }
+        }
+
         if (collectInstances) {
             collectedInstances_ = new ArrayList<>();
         }
@@ -92,6 +111,7 @@ public class DbBeanFetcher<BeanType> extends DbRowProcessor {
         assert beanClass_ != null;
         assert null == lastBeanInstance_;
     }
+
 
     /**
      * Process a ResultSet row into a bean. Call this method on a {@link
@@ -139,6 +159,9 @@ public class DbBeanFetcher<BeanType> extends DbRowProcessor {
         for (var i = 1; i <= meta.getColumnCount(); i++) {
             column_name = meta.getColumnName(i).toLowerCase();
             column_label = meta.getColumnLabel(i).toLowerCase();
+            // translate explicitly mapped column names to their properties
+            column_name = columnAliases_.getOrDefault(column_name, column_name);
+            column_label = columnAliases_.getOrDefault(column_label, column_label);
             if (beanProperties_.containsKey(column_name) && !processed_columns.contains(column_name)) {
                 processed_columns.add(column_name);
                 populateBeanProperty(instance, column_name, meta, resultSet, i);

@@ -314,7 +314,7 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
                 continue;
             }
 
-            where_parts.add(property_name + " = " + property_values.get(property_name));
+            where_parts.add(QueryHelper.getColumnName(constrained, property_name) + " = " + property_values.get(property_name));
         }
 
         where(StringUtils.join(where_parts, " AND "));
@@ -342,10 +342,13 @@ public abstract class AbstractWhereQuery<QueryType extends AbstractWhereQuery> e
                 continue;
             }
 
+            // the parameter keeps the property name so that beans can
+            // provide its value, the column uses the mapped column name
+            var column_name = QueryHelper.getColumnName(constrained, property_name);
             if (null == getWhereParameters()) {
-                whereParameter(property_name, "=");
+                whereParameter(column_name, property_name, "=");
             } else {
-                whereParameterAnd(property_name, "=");
+                whereParameterAnd(column_name, property_name, "=");
             }
         }
 

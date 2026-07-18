@@ -458,10 +458,11 @@ public class Select extends AbstractWhereQuery<Select> implements Cloneable, Rea
                 continue;
             }
 
+            var column_name = QueryHelper.getColumnName(constrained, property_name);
             if (null == table) {
-                field(property_name);
+                field(column_name);
             } else {
-                field(table + "." + property_name);
+                field(table + "." + column_name);
             }
         }
 

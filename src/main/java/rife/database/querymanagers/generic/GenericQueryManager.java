@@ -8,6 +8,8 @@ package rife.database.querymanagers.generic;
 import rife.database.*;
 import rife.database.exceptions.DatabaseException;
 import rife.database.queries.CreateTable;
+import rife.database.queries.QueryHelper;
+import rife.validation.ConstrainedUtils;
 import rife.validation.ValidationContext;
 
 import java.util.List;
@@ -51,6 +53,19 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * @since 1.0
      */
     String getIdentifierName();
+
+    /**
+     * Get the name of the database column that the identifier property
+     * maps to.
+     * <p>This is the same as the identifier property name unless the
+     * property is constrained with an explicit column name.
+     *
+     * @return the name of the identifier column
+     * @since 1.10
+     */
+    default String getIdentifierColumn() {
+        return QueryHelper.getColumnName(ConstrainedUtils.getConstrainedInstance(getBaseClass()), getIdentifierName());
+    }
 
     /**
      * Get the value of the property defined as the identifier.

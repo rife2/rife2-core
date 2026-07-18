@@ -35,11 +35,11 @@ public class org_apache_derby_jdbc_EmbeddedDriver<BeanType> extends generic<Bean
                 .columns(baseClass_);
             if (!isIdentifierSparse()) {
                 query
-                    .customAttribute(primaryKey_, "GENERATED ALWAYS AS IDENTITY");
+                    .customAttribute(getIdentifierColumn(), "GENERATED ALWAYS AS IDENTITY");
             }
             if (!hasIdentifier_) {
                 query
-                    .primaryKey(primaryKey_);
+                    .primaryKey(getIdentifierColumn());
             }
 
             addCreateTableManyToOneColumns(query);

@@ -35,11 +35,11 @@ public class com_mysql_cj_jdbc_Driver<BeanType> extends generic<BeanType> implem
                 .columns(baseClass_);
             if (!isIdentifierSparse()) {
                 query
-                    .customAttribute(primaryKey_, "AUTO_INCREMENT");
+                    .customAttribute(getIdentifierColumn(), "AUTO_INCREMENT");
             }
             if (!hasIdentifier_) {
                 query
-                    .primaryKey(primaryKey_);
+                    .primaryKey(getIdentifierColumn());
             }
 
             addCreateTableManyToOneColumns(query);
@@ -153,7 +153,7 @@ public class com_mysql_cj_jdbc_Driver<BeanType> extends generic<BeanType> implem
                                 statement.setBean(bean);
 
                                 if (!isIdentifierSparse() &&
-                                    save.getFields().containsKey(getIdentifierName())) {
+                                    save.getFields().containsKey(getIdentifierColumn())) {
                                     statement.setNull(getIdentifierName(), Types.INTEGER);
                                 }
 

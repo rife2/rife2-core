@@ -75,7 +75,7 @@ public abstract class GenericQueryManagerRelationalUtils {
                 // retrieve the entity from the database for this property
                 var declaration = createManyToOneDeclaration(manager, property, return_type);
                 if (!declaration.isBasic()) {
-                    var column_name = generateManyToOneJoinColumnName(property.getPropertyName(), declaration);
+                    var column_name = generateManyToOneJoinColumnName(constrained, propertyName, declaration);
                     result = restoreManyToOneProperty(manager, constrained, declaration.getAssociationManager(), column_name, associated_class);
                 }
             }
@@ -88,8 +88,8 @@ public abstract class GenericQueryManagerRelationalUtils {
         var query = associationManager.getRestoreQuery()
             .fields(associationManager.getTable(), propertyType)
             .join(manager.getTable())
-            .where(associationManager.getTable() + "." + associationManager.getIdentifierName() + " = " + manager.getTable() + "." + columnName)
-            .whereAnd(manager.getTable() + "." + manager.getIdentifierName(), "=", manager.getIdentifierValue(constrained));
+            .where(associationManager.getTable() + "." + associationManager.getIdentifierColumn() + " = " + manager.getTable() + "." + columnName)
+            .whereAnd(manager.getTable() + "." + manager.getIdentifierColumn(), "=", manager.getIdentifierValue(constrained));
         return associationManager.restoreFirst(query);
     }
 
@@ -147,7 +147,9 @@ public abstract class GenericQueryManagerRelationalUtils {
                     declaration.setAssociationTable(association_manager.getTable());
                 }
 
-                // determine the association column name
+                // determine the association column name, this is the
+                // identifier property name, it's resolved to its mapped
+                // column name where it's used as a database column
                 if (null == declaration.getAssociationColumn()) {
                     declaration.setAssociationColumn(association_manager.getIdentifierName());
                 }
@@ -374,6 +376,28 @@ public abstract class GenericQueryManagerRelationalUtils {
         return mainPropertyName + "_" + declaration.getAssociationColumn();
     }
 
+    /**
+     * Generates the name of the join column for a many-to-one property,
+     * honoring the explicit column name when the constrained property
+     * defines one.
+     *
+     * @param constrained      the constrained bean that holds the property,
+     *                         {@code null} when the bean isn't constrained
+     * @param mainPropertyName the name of the many-to-one property
+     * @param declaration      the many-to-one declaration of the property
+     * @return the name of the join column
+     * @since 1.10
+     */
+    public static String generateManyToOneJoinColumnName(Constrained constrained, String mainPropertyName, ManyToOneDeclaration declaration) {
+        if (constrained != null) {
+            var property = constrained.getConstrainedProperty(mainPropertyName);
+            if (property != null && property.hasColumnName()) {
+                return property.getColumnName();
+            }
+        }
+        return generateManyToOneJoinColumnName(mainPropertyName, declaration);
+    }
+
     public static void processManyToOneJoinColumns(GenericQueryManager manager, ManyToOneJoinColumnProcessor processor) {
         if (null == processor) {
             return;
@@ -389,7 +413,7 @@ public abstract class GenericQueryManagerRelationalUtils {
                 for (var entry : manytoone_declarations.entrySet()) {
                     var declaration = entry.getValue();
                     if (!declaration.isBasic()) {
-                        var column_name = generateManyToOneJoinColumnName(entry.getKey(), declaration);
+                        var column_name = generateManyToOneJoinColumnName(constrained, entry.getKey(), declaration);
                         if (!processor.processJoinColumn(column_name, entry.getKey(), declaration)) {
                             break;
                         }

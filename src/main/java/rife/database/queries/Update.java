@@ -249,7 +249,7 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
                 continue;
             }
 
-            _field(property_name, property_values.get(property_name));
+            _field(QueryHelper.getColumnName(constrained, property_name), property_values.get(property_name));
         }
 
         return this;
@@ -274,8 +274,10 @@ public class Update extends AbstractWhereQuery<Update> implements Cloneable {
                 continue;
             }
 
+            // the parameter keeps the property name so that beans can
+            // provide its value, the column uses the mapped column name
             addFieldParameter(property_name);
-            _field(property_name, "?");
+            _field(QueryHelper.getColumnName(constrained, property_name), "?");
         }
 
         return this;

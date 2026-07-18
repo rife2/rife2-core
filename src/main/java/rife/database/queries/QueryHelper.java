@@ -10,12 +10,37 @@ import rife.database.exceptions.DbQueryException;
 import rife.database.types.SqlNull;
 import rife.tools.BeanUtils;
 import rife.tools.exceptions.BeanUtilsException;
+import rife.validation.Constrained;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public abstract class QueryHelper {
+    /**
+     * Returns the database column name that a bean property maps to.
+     * <p>
+     * When the property is constrained with an explicit column name, that
+     * name is returned, otherwise the column name is simply the property
+     * name. This makes it possible to use column names that can't be
+     * expressed as bean property names.
+     *
+     * @param constrained  the constrained bean to look the property up in,
+     *                     {@code null} when the bean isn't constrained
+     * @param propertyName the name of the bean property
+     * @return the column name to use for the property
+     * @since 1.10
+     */
+    public static String getColumnName(Constrained constrained, String propertyName) {
+        if (constrained != null) {
+            var property = constrained.getConstrainedProperty(propertyName);
+            if (property != null && property.hasColumnName()) {
+                return property.getColumnName();
+            }
+        }
+        return propertyName;
+    }
+
     public static Set<String> getBeanPropertyNames(Class beanClass, String[] excludedFields)
     throws DbQueryException {
         try {

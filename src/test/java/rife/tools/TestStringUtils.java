@@ -139,6 +139,15 @@ public class TestStringUtils {
     }
 
     @Test
+    void testStripColumnQuotes() {
+        assertNull(StringUtils.stripColumnQuotes(null));
+        assertEquals("total-count", StringUtils.stripColumnQuotes("\"total-count\""));
+        assertEquals("total-count", StringUtils.stripColumnQuotes("`total-count`"));
+        assertEquals("total-count", StringUtils.stripColumnQuotes("[total-count]"));
+        assertEquals("plain", StringUtils.stripColumnQuotes("plain"));
+    }
+
+    @Test
     void testEncodeString() {
         assertNull(StringUtils.encodeString(null));
         assertEquals(StringUtils.encodeString("abcd\"\na\t\r\\wxyz"), "abcd\\\"\\na\\t\\r\\\\wxyz");

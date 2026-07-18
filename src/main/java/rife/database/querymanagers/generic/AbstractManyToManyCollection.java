@@ -33,7 +33,7 @@ abstract class AbstractManyToManyCollection<E> implements Collection<E> {
 
         RestoreQuery restore_mappings = association_manager.getRestoreQuery()
             .fields(declaration_.getAssociationType())
-            .joinInner(join_table, Select.ON, association_manager.getTable() + "." + association_manager.getIdentifierName() + " = " + join_table + "." + column2_name)
+            .joinInner(join_table, Select.ON, association_manager.getTable() + "." + association_manager.getIdentifierColumn() + " = " + join_table + "." + column2_name)
             .where(join_table + "." + columnName1_, "=", objectId_);
 
         // restore the many to many associations

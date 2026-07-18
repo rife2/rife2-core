@@ -10,6 +10,7 @@ import rife.database.queries.*;
 import rife.database.querymanagers.generic.*;
 
 import rife.database.exceptions.DatabaseException;
+import rife.validation.ConstrainedUtils;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
                 .table(tableName_)
                 .columns(baseClass_);
             if (!hasIdentifier_) {
-                query.primaryKey(primaryKey_);
+                query.primaryKey(getIdentifierColumn());
             }
 
             addCreateTableManyToOneColumns(query);
@@ -61,9 +62,14 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
         final var columns = query.getColumnMapping();
         GenericQueryManagerRelationalUtils.processManyToOneJoinColumns(this, (columnName, propertyName, declaration) -> {
             if (!columns.containsKey(columnName)) {
+                // the association column is the identifier property of the
+                // association bean, the foreign key targets its mapped
+                // database column
+                var association_column = QueryHelper.getColumnName(
+                    ConstrainedUtils.getConstrainedInstance(declaration.getAssociationType()), declaration.getAssociationColumn());
                 query
                     .column(columnName, int.class, CreateTable.NULL)
-                    .foreignKey(declaration.getAssociationTable(), columnName, declaration.getAssociationColumn());
+                    .foreignKey(declaration.getAssociationTable(), columnName, association_column);
             }
             return true;
         });
@@ -107,7 +113,7 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
         if (null == restore_) {
             var query = new Select(getDatasource())
                 .from(tableName_)
-                .whereParameter(primaryKey_, "=");
+                .whereParameter(getIdentifierColumn(), primaryKey_, "=");
             restore_ = query;
         }
 
@@ -129,7 +135,7 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
         if (null == delete_) {
             var query = new Delete(getDatasource())
                 .from(tableName_)
-                .whereParameter(primaryKey_, "=");
+                .whereParameter(getIdentifierColumn(), primaryKey_, "=");
             delete_ = query;
         }
 
@@ -151,7 +157,7 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
             final var query = new Update(getDatasource())
                 .table(tableName_)
                 .fieldsParametersExcluded(baseClass_, new String[]{primaryKey_})
-                .whereParameter(primaryKey_, "=");
+                .whereParameter(getIdentifierColumn(), primaryKey_, "=");
 
             addSaveUpdateManyToOneFields(query);
 
@@ -187,8 +193,10 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
             final var query = new Insert(getDatasource())
                 .into(tableName_)
                 .fieldsParameters(getBaseClass());
-            if (!query.getFields().containsKey(primaryKey_)) {
-                query.fieldParameter(primaryKey_);
+            // the fields are keyed by their column names while the
+            // parameter keeps the identifier property name
+            if (!query.getFields().containsKey(getIdentifierColumn())) {
+                query.fieldParameter(getIdentifierColumn(), primaryKey_);
             }
 
             addSaveManyToOneFields(query);
@@ -320,7 +328,7 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
     }
 
     public RestoreQuery getRestoreQuery(int objectId) {
-        return new RestoreQuery(getInternalRestoreListQuery()).where(primaryKey_, "=", objectId);
+        return new RestoreQuery(getInternalRestoreListQuery()).where(getIdentifierColumn(), "=", objectId);
     }
 
     public CountQuery getCountQuery() {
@@ -332,7 +340,7 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
     }
 
     public DeleteQuery getDeleteQuery(int objectId) {
-        return new DeleteQuery(getInternalDeleteNoIdQuery()).where(primaryKey_, "=", objectId);
+        return new DeleteQuery(getInternalDeleteNoIdQuery()).where(getIdentifierColumn(), "=", objectId);
     }
 
     public String getTable() {

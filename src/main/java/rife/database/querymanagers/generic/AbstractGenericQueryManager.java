@@ -189,9 +189,9 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
 
                     if (property_value != null) {
                         var count_query = getCountQuery()
-                            .where(property.getPropertyName(), "=", property_value);
+                            .where(QueryHelper.getColumnName(constrained, property.getPropertyName()), "=", property_value);
                         if (identifier_exists) {
-                            count_query.whereAnd(primaryKey_, "!=", identifier_value);
+                            count_query.whereAnd(getIdentifierColumn(), "!=", identifier_value);
                         }
 
                         if (count(count_query) > 0) {
@@ -302,7 +302,7 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
                 for (var uniques : constrained_bean.getUniques()) {
                     var count_query = getCountQuery();
                     if (identifier_exists) {
-                        count_query.where(primaryKey_, "!=", identifier_value);
+                        count_query.where(getIdentifierColumn(), "!=", identifier_value);
                     }
 
                     for (var unique : uniques) {
@@ -317,7 +317,7 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
                             count_query = null;
                             break;
                         } else {
-                            count_query.where(unique, "=", property_value);
+                            count_query.where(QueryHelper.getColumnName(constrained, unique), "=", property_value);
                         }
                     }
 
@@ -352,7 +352,7 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
 
             // check if the many-to-one associations exist
             var count_query = element_manager.getCountQuery()
-                .where(element_manager.getIdentifierName() + " IN (" + StringUtils.join(identifiers, ",") + ")");
+                .where(element_manager.getIdentifierColumn() + " IN (" + StringUtils.join(identifiers, ",") + ")");
             var count = element_manager.count(count_query);
             if (count != identifiers.size()) {
                 validated.addValidationError(new ValidationError.INVALID(property.getPropertyName()));
@@ -575,8 +575,8 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
                 var value = values.get(property_name);
 
                 final var main_table = main_manager.getTable();
-                final var main_identify_column = main_manager.getIdentifierName();
-                final var main_join_column = generateManyToOneJoinColumnName(declaration.getMainProperty(), declaration.getMainDeclaration());
+                final var main_identify_column = main_manager.getIdentifierColumn();
+                final var main_join_column = generateManyToOneJoinColumnName(ConstrainedUtils.getConstrainedInstance(declaration.getMainType()), declaration.getMainProperty(), declaration.getMainDeclaration());
 
                 var clear_previous_mappings = new Update(getDatasource())
                     .table(main_table)
@@ -867,7 +867,7 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
             // iterate over all the many-to-one association relationships
             for (var entry : declarations.entrySet()) {
                 var declaration = entry.getValue();
-                var column_name = generateManyToOneJoinColumnName(declaration.getMainProperty(), declaration.getMainDeclaration());
+                var column_name = generateManyToOneJoinColumnName(ConstrainedUtils.getConstrainedInstance(declaration.getMainType()), declaration.getMainProperty(), declaration.getMainDeclaration());
                 var main_manager = createNewManager(declaration.getMainType());
 
                 // create an update statement that will set all the columns that
@@ -1129,8 +1129,8 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
                     .table(table)
                     .column(column1, int.class, CreateTable.NOTNULL)
                     .column(column2, int.class, CreateTable.NOTNULL)
-                    .foreignKey(getTable(), column1, getIdentifierName(), onupdate, ondelete)
-                    .foreignKey(association_manager.getTable(), column2, association_manager.getIdentifierName(), onupdate, ondelete);
+                    .foreignKey(getTable(), column1, getIdentifierColumn(), onupdate, ondelete)
+                    .foreignKey(association_manager.getTable(), column2, association_manager.getIdentifierColumn(), onupdate, ondelete);
                 executeUpdate(create_join_table);
             }
         }

@@ -952,6 +952,24 @@ public final class StringUtils {
     }
 
     /**
+     * Strips the quote characters that databases use around SQL
+     * identifiers, this handles double quotes, backticks and square
+     * brackets.
+     *
+     * @param identifier the SQL identifier to strip the quotes from
+     * @return the identifier without quote characters; or {@code null}
+     * when {@code null} was provided
+     * @see #encodeSql(String)
+     * @since 1.10
+     */
+    public static String stripColumnQuotes(String identifier) {
+        if (null == identifier) {
+            return null;
+        }
+        return identifier.replace("\"", "").replace("`", "").replace("[", "").replace("]", "");
+    }
+
+    /**
      * Transforms a provided {@code String} object into a new string,
      * containing only valid LaTeX characters.
      *

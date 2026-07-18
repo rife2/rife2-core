@@ -17,6 +17,7 @@ import rife.validation.ConstrainedProperty;
 import rife.validation.ConstrainedUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -396,10 +397,14 @@ public class CreateTable extends AbstractQuery implements Cloneable {
         if (constrained != null) {
             var constrained_bean = constrained.getConstrainedBean();
             if (constrained_bean != null) {
-                // handle multi-column uniques
+                // handle multi-column uniques, mapped to their column names
                 if (constrained_bean.hasUniques()) {
                     for (var o : (List<String[]>) constrained_bean.getUniques()) {
-                        unique(o);
+                        var unique_columns = new String[o.length];
+                        for (var i = 0; i < o.length; ++i) {
+                            unique_columns[i] = QueryHelper.getColumnName(constrained, o[i]);
+                        }
+                        unique(unique_columns);
                     }
                 }
             }
@@ -410,12 +415,20 @@ public class CreateTable extends AbstractQuery implements Cloneable {
         var column_types = QueryHelper.getBeanPropertyTypes(beanClass, includedFields, excludedFields);
         Class column_type = null;
         Column column = null;
-        for (var column_name : column_types.keySet()) {
-            if (!ConstrainedUtils.persistConstrainedProperty(constrained, column_name, null)) {
+        var generated_columns = new HashSet<String>();
+        for (var property_name : column_types.keySet()) {
+            if (!ConstrainedUtils.persistConstrainedProperty(constrained, property_name, null)) {
                 continue;
             }
 
-            column_type = column_types.get(column_name);
+            // the column name can be mapped explicitly by the constrained
+            // property, several properties can never share the same column
+            var column_name = QueryHelper.getColumnName(constrained, property_name);
+            if (!generated_columns.add(column_name)) {
+                throw new DbQueryException("The column name '" + column_name + "' is mapped by multiple properties of bean class '" + beanClass.getName() + "'.");
+            }
+
+            column_type = column_types.get(property_name);
             column = new Column(column_name, column_type);
             columnMapping_.put(column_name, column);
 
@@ -424,7 +437,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
             in_list_values = ClassUtils.getEnumClassValues(column_type);
 
             if (constrained != null) {
-                constrained_property = constrained.getConstrainedProperty(column_name);
+                constrained_property = constrained.getConstrainedProperty(property_name);
                 if (constrained_property != null) {
                     if (constrained_property.isNotNull()) {
                         nullable(column_name, NOTNULL);
@@ -482,7 +495,7 @@ public class CreateTable extends AbstractQuery implements Cloneable {
                             throw new MissingManyToOneColumnException(beanClass, constrained_property.getPropertyName());
                         }
 
-                        foreignKey(many_to_one.getDerivedTable(), constrained_property.getPropertyName(), many_to_one.getColumn(), many_to_one.getOnUpdate(), many_to_one.getOnDelete());
+                        foreignKey(many_to_one.getDerivedTable(), column_name, many_to_one.getColumn(), many_to_one.getOnUpdate(), many_to_one.getOnDelete());
                     }
                 }
             }

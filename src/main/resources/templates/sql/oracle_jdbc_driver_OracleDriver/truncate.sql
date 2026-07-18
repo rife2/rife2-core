@@ -1,0 +1,1 @@
+{{b QUERY}}TRUNCATE TABLE {{v TABLE/}}{{/b}}

@@ -889,6 +889,32 @@ public class TestValidation {
         assertTrue(other.validate());
     }
 
+    @Test
+    void testHasPropertyConstraintActivatesValidation() {
+        // the constraint presence check activates the lazy validation, so
+        // that constraints declared in activateValidation are visible
+        // without another accessor being called first
+        var bean = new LazyActivationBean();
+        assertTrue(bean.hasPropertyConstraint(ConstrainedProperty.NOT_NULL));
+        assertFalse(bean.hasPropertyConstraint(ConstrainedProperty.UNIQUE));
+    }
+
+    public static class LazyActivationBean extends Validation {
+        private String property_ = null;
+
+        protected void activateValidation() {
+            addConstraint(new ConstrainedProperty("property").notNull(true));
+        }
+
+        public void setProperty(String property) {
+            property_ = property;
+        }
+
+        public String getProperty() {
+            return property_;
+        }
+    }
+
     public class Bean extends Validation {
         private String property_ = null;
         private String other_ = null;

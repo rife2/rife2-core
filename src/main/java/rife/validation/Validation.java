@@ -358,6 +358,8 @@ public class Validation implements Validated, Cloneable, Constrained, Constraine
     }
 
     public boolean hasPropertyConstraint(String name) {
+        ensureActivatedValidation();
+
         if (null == activePropertyConstraints_) {
             return false;
         }

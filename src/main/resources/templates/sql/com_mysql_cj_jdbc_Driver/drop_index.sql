@@ -1,1 +1,3 @@
-{{b QUERY}}DROP INDEX {{v NAME/}} ON {{v TABLE/}}{{/b}}
+{{b QUERY}}DROP INDEX {{v EXPRESSION/}} ON {{v TABLE/}}{{/b}}
+{{b NAMES}}{{/b}}
+{{b SEPARATOR}}, {{/b}}

@@ -12,6 +12,9 @@ import rife.database.exceptions.UnsupportedSqlFeatureException;
 import rife.template.TemplateFactory;
 import rife.tools.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Object representation of a SQL "TRUNCATE TABLE" query.
  *
@@ -24,7 +27,7 @@ import rife.tools.StringUtils;
  * @since 1.10
  */
 public class Truncate extends AbstractQuery implements Cloneable {
-    private String table_ = null;
+    private List<String> tables_ = null;
 
     public Truncate(Datasource datasource) {
         super(datasource);
@@ -37,22 +40,22 @@ public class Truncate extends AbstractQuery implements Cloneable {
     public void clear() {
         super.clear();
 
-        table_ = null;
+        tables_ = new ArrayList<>();
     }
 
     public Capabilities getCapabilities() {
         return null;
     }
 
-    public String getTable() {
-        return table_;
+    public List<String> getTables() {
+        return tables_;
     }
 
     public Truncate table(String table) {
         if (null == table) throw new IllegalArgumentException("table can't be null.");
         if (table.isEmpty()) throw new IllegalArgumentException("table can't be empty.");
 
-        table_ = table;
+        tables_.add(table);
         clearGenerated();
 
         return this;
@@ -61,17 +64,29 @@ public class Truncate extends AbstractQuery implements Cloneable {
     public String getSql()
     throws DbQueryException {
         if (null == sql_) {
-            if (null == table_) {
+            if (tables_.isEmpty()) {
                 throw new TableNameRequiredException("Truncate");
             } else {
                 var template = TemplateFactory.SQL.get("sql." + StringUtils.encodeClassname(datasource_.getAliasedDriver()) + ".truncate");
 
-                template.setValue("TABLE", table_);
+                if (1 == tables_.size()) {
+                    template.setValue("EXPRESSION", tables_.get(0));
+                } else {
+                    if (template.hasValueId("TABLES")) {
+                        template.setValue("TABLES", StringUtils.join(tables_, template.getBlock("SEPARATOR")));
+                    }
+                    var block = template.getBlock("TABLES");
+                    if (block.isEmpty()) {
+                        throw new UnsupportedSqlFeatureException("MULTIPLE TABLE TRUNCATE", datasource_.getAliasedDriver());
+                    }
+                    template.setValue("EXPRESSION", block);
+                }
 
                 sql_ = template.getBlock("QUERY");
-                if (sql_.isEmpty()) {
-                    throw new UnsupportedSqlFeatureException("TRUNCATE", datasource_.getAliasedDriver());
+                if (template.hasValueId("TABLES")) {
+                    template.removeValue("TABLES");
                 }
+                template.removeValue("EXPRESSION");
 
                 assert !sql_.isEmpty();
             }
@@ -81,6 +96,12 @@ public class Truncate extends AbstractQuery implements Cloneable {
     }
 
     public Truncate clone() {
-        return (Truncate) super.clone();
+        var new_instance = (Truncate) super.clone();
+        if (new_instance != null &&
+            tables_ != null) {
+            new_instance.tables_ = new ArrayList<>(tables_);
+        }
+
+        return new_instance;
     }
 }

@@ -137,4 +137,17 @@ public class TestCreateViewH2 extends TestCreateView {
         query.view("viewname");
         assertEquals("DROP VIEW viewname", query.getSql());
     }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.H2)
+    void testDropMultipleH2() {
+        var query = new DropView(H2);
+        query.view("view1")
+            .view("view2");
+        try {
+            query.getSql();
+            fail();
+        } catch (UnsupportedSqlFeatureException e) {
+            assertEquals("MULTIPLE VIEW DROP", e.getFeature());
+        }
+    }
 }

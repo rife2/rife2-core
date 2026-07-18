@@ -206,4 +206,40 @@ public class TestAlterTableH2 extends TestAlterTable {
         assertEquals("ALTER TABLE tablename RENAME TO renamedtable", query.getSql());
         execute(setupTable(H2), query, null, "renamedtable");
     }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.H2)
+    void testDropColumnBeanH2() {
+        var query = new AlterTable(H2).table("tablename").dropColumn(MappedBean.class, "firstName");
+        assertEquals("ALTER TABLE tablename DROP COLUMN first_name", query.getSql());
+        // a second column since the last column of a table can't be dropped
+        execute(new CreateTable(H2).table("tablename").column("propint", int.class).columns(MappedBean.class), query);
+    }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.H2)
+    void testAlterColumnTypeBeanH2() {
+        var query = new AlterTable(H2).table("tablename").alterColumnType(MappedBean.class, "firstName");
+        assertEquals("ALTER TABLE tablename ALTER COLUMN first_name SET DATA TYPE VARCHAR(50)", query.getSql());
+        execute(new CreateTable(H2).table("tablename").columns(MappedBean.class), query);
+    }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.H2)
+    void testAlterColumnNullableBeanH2() {
+        var query = new AlterTable(H2).table("tablename").alterColumnNullable(MappedBean.class, "firstName", AlterTable.NULL);
+        assertEquals("ALTER TABLE tablename ALTER COLUMN first_name SET NULL", query.getSql());
+        execute(new CreateTable(H2).table("tablename").columns(MappedBean.class), query);
+    }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.H2)
+    void testAlterColumnDefaultBeanH2() {
+        var query = new AlterTable(H2).table("tablename").alterColumnDefault(MappedBean.class, "firstName", "abc");
+        assertEquals("ALTER TABLE tablename ALTER COLUMN first_name SET DEFAULT 'abc'", query.getSql());
+        execute(new CreateTable(H2).table("tablename").columns(MappedBean.class), query);
+    }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.H2)
+    void testDropColumnDefaultBeanH2() {
+        var query = new AlterTable(H2).table("tablename").dropColumnDefault(MappedBean.class, "firstName");
+        assertEquals("ALTER TABLE tablename ALTER COLUMN first_name DROP DEFAULT", query.getSql());
+        execute(new CreateTable(H2).table("tablename").columns(MappedBean.class), query);
+    }
 }

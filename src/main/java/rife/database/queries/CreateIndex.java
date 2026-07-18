@@ -129,6 +129,19 @@ public class CreateIndex extends AbstractQuery implements Cloneable {
         return this;
     }
 
+    public CreateIndex columns(Class beanClass, String... propertyNames) {
+        if (null == beanClass) throw new IllegalArgumentException("beanClass can't be null.");
+        if (null == propertyNames) throw new IllegalArgumentException("propertyNames can't be null.");
+        if (0 == propertyNames.length) throw new IllegalArgumentException("propertyNames can't be empty.");
+
+        var constrained = ConstrainedUtils.getConstrainedInstance(beanClass);
+        for (var property_name : propertyNames) {
+            column(QueryHelper.getColumnName(constrained, property_name));
+        }
+
+        return this;
+    }
+
     public String getSql()
     throws DbQueryException {
         if (null == sql_) {

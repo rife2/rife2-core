@@ -39,4 +39,21 @@ public class TestTruncatePgsql extends TestTruncate {
         assertNotSame(query, cloned);
         assertEquals(query.getSql(), cloned.getSql());
     }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.PGSQL)
+    void testTruncateMultiplePgsql() {
+        var query = new Truncate(PGSQL);
+        query.table("tablename")
+            .table("tablename2");
+        assertEquals("TRUNCATE TABLE tablename, tablename2", query.getSql());
+        var manager = new DbQueryManager(PGSQL);
+        manager.executeUpdate(setupTable(PGSQL));
+        manager.executeUpdate(new CreateTable(PGSQL).table("tablename2").column("propint", int.class));
+        try {
+            manager.executeUpdate(query);
+        } finally {
+            try { manager.executeUpdate(new DropTable(PGSQL).table("tablename")); } catch (rife.database.exceptions.DatabaseException e) { }
+            try { manager.executeUpdate(new DropTable(PGSQL).table("tablename2")); } catch (rife.database.exceptions.DatabaseException e) { }
+        }
+    }
 }

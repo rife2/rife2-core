@@ -13,6 +13,9 @@ import rife.database.exceptions.UnsupportedSqlFeatureException;
 import rife.template.TemplateFactory;
 import rife.tools.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Object representation of a SQL "DROP INDEX" query.
  *
@@ -29,7 +32,7 @@ import rife.tools.StringUtils;
  * @since 1.10
  */
 public class DropIndex extends AbstractQuery implements Cloneable {
-    private String name_ = null;
+    private List<String> names_ = null;
     private String table_ = null;
 
     public DropIndex(Datasource datasource) {
@@ -43,7 +46,7 @@ public class DropIndex extends AbstractQuery implements Cloneable {
     public void clear() {
         super.clear();
 
-        name_ = null;
+        names_ = new ArrayList<>();
         table_ = null;
     }
 
@@ -51,8 +54,8 @@ public class DropIndex extends AbstractQuery implements Cloneable {
         return null;
     }
 
-    public String getName() {
-        return name_;
+    public List<String> getNames() {
+        return names_;
     }
 
     public String getTable() {
@@ -63,7 +66,7 @@ public class DropIndex extends AbstractQuery implements Cloneable {
         if (null == name) throw new IllegalArgumentException("name can't be null.");
         if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
 
-        name_ = name;
+        names_.add(name);
         clearGenerated();
 
         return this;
@@ -82,7 +85,7 @@ public class DropIndex extends AbstractQuery implements Cloneable {
     public String getSql()
     throws DbQueryException {
         if (null == sql_) {
-            if (null == name_) {
+            if (names_.isEmpty()) {
                 throw new IndexNameRequiredException("DropIndex");
             } else {
                 var template = TemplateFactory.SQL.get("sql." + StringUtils.encodeClassname(datasource_.getAliasedDriver()) + ".drop_index");
@@ -95,12 +98,25 @@ public class DropIndex extends AbstractQuery implements Cloneable {
                     }
                     template.setValue("TABLE", table_);
                 }
-                template.setValue("NAME", name_);
+
+                if (1 == names_.size()) {
+                    template.setValue("EXPRESSION", names_.get(0));
+                } else {
+                    if (template.hasValueId("NAMES")) {
+                        template.setValue("NAMES", StringUtils.join(names_, template.getBlock("SEPARATOR")));
+                    }
+                    var block = template.getBlock("NAMES");
+                    if (block.isEmpty()) {
+                        throw new UnsupportedSqlFeatureException("MULTIPLE INDEX DROP", datasource_.getAliasedDriver());
+                    }
+                    template.setValue("EXPRESSION", block);
+                }
 
                 sql_ = template.getBlock("QUERY");
-                if (sql_.isEmpty()) {
-                    throw new UnsupportedSqlFeatureException("DROP INDEX", datasource_.getAliasedDriver());
+                if (template.hasValueId("NAMES")) {
+                    template.removeValue("NAMES");
                 }
+                template.removeValue("EXPRESSION");
 
                 assert !sql_.isEmpty();
             }
@@ -110,6 +126,12 @@ public class DropIndex extends AbstractQuery implements Cloneable {
     }
 
     public DropIndex clone() {
-        return (DropIndex) super.clone();
+        var new_instance = (DropIndex) super.clone();
+        if (new_instance != null &&
+            names_ != null) {
+            new_instance.names_ = new ArrayList<>(names_);
+        }
+
+        return new_instance;
     }
 }

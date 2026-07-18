@@ -148,4 +148,21 @@ public class TestCreateIndexPgsql extends TestCreateIndex {
         assertNotSame(query, cloned);
         assertEquals(query.getSql(), cloned.getSql());
     }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.PGSQL)
+    void testDropMultiplePgsql() {
+        var query = new DropIndex(PGSQL);
+        query.name("idx_one")
+            .name("idx_two");
+        assertEquals("DROP INDEX idx_one, idx_two", query.getSql());
+        var manager = new DbQueryManager(PGSQL);
+        manager.executeUpdate(setupTable(PGSQL));
+        try {
+            manager.executeUpdate(new CreateIndex(PGSQL).name("idx_one").table("tablename").column("propint"));
+            manager.executeUpdate(new CreateIndex(PGSQL).name("idx_two").table("tablename").column("propstring"));
+            manager.executeUpdate(query);
+        } finally {
+            try { manager.executeUpdate(new DropTable(PGSQL).table("tablename")); } catch (rife.database.exceptions.DatabaseException e) { }
+        }
+    }
 }

@@ -281,6 +281,12 @@ public class AlterTable extends AbstractQuery implements Cloneable {
 
     public AlterTable addColumn(Class beanClass, String propertyName)
     throws DbQueryException {
+        initAlteration(Alteration.ADD_COLUMN);
+        defineColumnFromBean(beanClass, propertyName);
+        return this;
+    }
+
+    private void defineColumnFromBean(Class beanClass, String propertyName) {
         if (null == beanClass) throw new IllegalArgumentException("beanClass can't be null.");
         if (null == propertyName) throw new IllegalArgumentException("propertyName can't be null.");
         if (propertyName.isEmpty()) throw new IllegalArgumentException("propertyName can't be empty.");
@@ -290,8 +296,6 @@ public class AlterTable extends AbstractQuery implements Cloneable {
         if (null == type) {
             throw new IllegalArgumentException("the '" + propertyName + "' property couldn't be found in bean class '" + beanClass.getName() + "'.");
         }
-
-        initAlteration(Alteration.ADD_COLUMN);
 
         var constrained = ConstrainedUtils.getConstrainedInstance(beanClass);
         var column_name = QueryHelper.getColumnName(constrained, propertyName);
@@ -316,8 +320,14 @@ public class AlterTable extends AbstractQuery implements Cloneable {
                 }
             }
         }
+    }
 
-        return this;
+    private static String resolveColumnName(Class beanClass, String propertyName) {
+        if (null == beanClass) throw new IllegalArgumentException("beanClass can't be null.");
+        if (null == propertyName) throw new IllegalArgumentException("propertyName can't be null.");
+        if (propertyName.isEmpty()) throw new IllegalArgumentException("propertyName can't be empty.");
+
+        return QueryHelper.getColumnName(ConstrainedUtils.getConstrainedInstance(beanClass), propertyName);
     }
 
     private void ensureColumnDefinition() {
@@ -378,6 +388,10 @@ public class AlterTable extends AbstractQuery implements Cloneable {
     public AlterTable dropColumn(String name) {
         initColumnAlteration(Alteration.DROP_COLUMN, name);
         return this;
+    }
+
+    public AlterTable dropColumn(Class beanClass, String propertyName) {
+        return dropColumn(resolveColumnName(beanClass, propertyName));
     }
 
     public AlterTable renameColumn(String name, String newName) {
@@ -487,12 +501,22 @@ public class AlterTable extends AbstractQuery implements Cloneable {
         return this;
     }
 
+    public AlterTable alterColumnType(Class beanClass, String propertyName) {
+        initAlteration(Alteration.ALTER_COLUMN_TYPE);
+        defineColumnFromBean(beanClass, propertyName);
+        return this;
+    }
+
     public AlterTable alterColumnNullable(String name, CreateTable.Nullable nullable) {
         if (null == nullable) throw new IllegalArgumentException("nullable can't be null.");
 
         initColumnAlteration(Alteration.ALTER_COLUMN_NULLABLE, name);
         nullable_ = nullable;
         return this;
+    }
+
+    public AlterTable alterColumnNullable(Class beanClass, String propertyName, CreateTable.Nullable nullable) {
+        return alterColumnNullable(resolveColumnName(beanClass, propertyName), nullable);
     }
 
     public AlterTable alterColumnDefault(String name, boolean value) {
@@ -516,9 +540,17 @@ public class AlterTable extends AbstractQuery implements Cloneable {
         return this;
     }
 
+    public AlterTable alterColumnDefault(Class beanClass, String propertyName, Object value) {
+        return alterColumnDefault(resolveColumnName(beanClass, propertyName), value);
+    }
+
     public AlterTable dropColumnDefault(String name) {
         initColumnAlteration(Alteration.DROP_COLUMN_DEFAULT, name);
         return this;
+    }
+
+    public AlterTable dropColumnDefault(Class beanClass, String propertyName) {
+        return dropColumnDefault(resolveColumnName(beanClass, propertyName));
     }
 
     public AlterTable addPrimaryKey(String column) {

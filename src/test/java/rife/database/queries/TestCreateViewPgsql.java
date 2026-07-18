@@ -137,4 +137,19 @@ public class TestCreateViewPgsql extends TestCreateView {
         query.view("viewname");
         assertEquals("DROP VIEW viewname", query.getSql());
     }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.PGSQL)
+    void testDropMultiplePgsql() {
+        var query = new DropView(PGSQL);
+        query.view("view1")
+            .view("view2");
+        assertEquals("DROP VIEW view1, view2", query.getSql());
+        var view1 = new CreateView(PGSQL);
+        view1.view("view1")
+            .as(new Select(PGSQL).from("tablename").field("propstring"));
+        var view2 = new CreateView(PGSQL);
+        view2.view("view2")
+            .as(new Select(PGSQL).from("tablename").field("propint"));
+        execute(setupTable(PGSQL), query, view1, view2);
+    }
 }

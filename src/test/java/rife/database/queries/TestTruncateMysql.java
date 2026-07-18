@@ -39,4 +39,17 @@ public class TestTruncateMysql extends TestTruncate {
         assertNotSame(query, cloned);
         assertEquals(query.getSql(), cloned.getSql());
     }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.MYSQL)
+    void testTruncateMultipleMysql() {
+        var query = new Truncate(MYSQL);
+        query.table("table1")
+            .table("table2");
+        try {
+            query.getSql();
+            fail();
+        } catch (rife.database.exceptions.UnsupportedSqlFeatureException e) {
+            assertEquals("MULTIPLE TABLE TRUNCATE", e.getFeature());
+        }
+    }
 }

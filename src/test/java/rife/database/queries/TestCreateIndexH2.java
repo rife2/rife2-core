@@ -148,4 +148,26 @@ public class TestCreateIndexH2 extends TestCreateIndex {
         assertNotSame(query, cloned);
         assertEquals(query.getSql(), cloned.getSql());
     }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.H2)
+    void testCreateBeanColumnsH2() {
+        var query = new CreateIndex(H2);
+        query.name("idx_test")
+            .table("tablename")
+            .columns(TestAlterTable.MappedBean.class, "firstName");
+        assertEquals("CREATE INDEX idx_test ON tablename (first_name)", query.getSql());
+    }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.H2)
+    void testDropMultipleH2() {
+        var query = new DropIndex(H2);
+        query.name("idx_one")
+            .name("idx_two");
+        try {
+            query.getSql();
+            fail();
+        } catch (rife.database.exceptions.UnsupportedSqlFeatureException e) {
+            assertEquals("MULTIPLE INDEX DROP", e.getFeature());
+        }
+    }
 }

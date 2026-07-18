@@ -39,4 +39,17 @@ public class TestTruncateH2 extends TestTruncate {
         assertNotSame(query, cloned);
         assertEquals(query.getSql(), cloned.getSql());
     }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.H2)
+    void testTruncateMultipleH2() {
+        var query = new Truncate(H2);
+        query.table("table1")
+            .table("table2");
+        try {
+            query.getSql();
+            fail();
+        } catch (rife.database.exceptions.UnsupportedSqlFeatureException e) {
+            assertEquals("MULTIPLE TABLE TRUNCATE", e.getFeature());
+        }
+    }
 }

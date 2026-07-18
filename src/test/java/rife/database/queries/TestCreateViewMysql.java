@@ -137,4 +137,19 @@ public class TestCreateViewMysql extends TestCreateView {
         query.view("viewname");
         assertEquals("DROP VIEW viewname", query.getSql());
     }
+
+    @DatasourceEnabledIf(TestDatasourceIdentifier.MYSQL)
+    void testDropMultipleMysql() {
+        var query = new DropView(MYSQL);
+        query.view("view1")
+            .view("view2");
+        assertEquals("DROP VIEW view1, view2", query.getSql());
+        var view1 = new CreateView(MYSQL);
+        view1.view("view1")
+            .as(new Select(MYSQL).from("tablename").field("propstring"));
+        var view2 = new CreateView(MYSQL);
+        view2.view("view2")
+            .as(new Select(MYSQL).from("tablename").field("propint"));
+        execute(setupTable(MYSQL), query, view1, view2);
+    }
 }

@@ -60,6 +60,10 @@ public class RifeConfig {
         return instance().engine;
     }
 
+    public static MigrationsConfig migrations() {
+        return instance().migrations;
+    }
+
     public static ResourcesConfig resources() {
         return instance().resources;
     }
@@ -85,6 +89,7 @@ public class RifeConfig {
     public final DatabaseConfig database = new DatabaseConfig();
     public final CmfConfig cmf = new CmfConfig();
     public final EngineConfig engine = new EngineConfig();
+    public final MigrationsConfig migrations = new MigrationsConfig();
     public final ResourcesConfig resources = new ResourcesConfig();
     public final SchedulerConfig scheduler = new SchedulerConfig();
     public final TemplateConfig template = new TemplateConfig();
@@ -885,6 +890,23 @@ public class RifeConfig {
 
         public static String getMimeType(String extension) {
             return DEFAULT_MIME_MAPPING.get(extension);
+        }
+    }
+
+    public class MigrationsConfig {
+        private String stateResource_ = DEFAULT_STATE_RESOURCE;
+
+        public static final String DEFAULT_STATE_RESOURCE = "rife/migrations/version";
+
+        public String getStateResource() {
+            return stateResource_;
+        }
+
+        public MigrationsConfig setStateResource(String name) {
+            if (null == name) throw new IllegalArgumentException("name can't be null.");
+            if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
+            stateResource_ = name;
+            return this;
         }
     }
 

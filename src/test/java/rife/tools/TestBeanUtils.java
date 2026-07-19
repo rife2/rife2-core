@@ -6,6 +6,7 @@ package rife.tools;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import rife.config.RifeConfig;
 import rife.tools.exceptions.BeanUtilsException;
@@ -3559,5 +3560,139 @@ public class TestBeanUtils {
         assertEquals("23 Jan 2023 13:45:23", BeanUtils.formatPropertyValue(LocalDateTime.of(2023, Month.JANUARY, 23, 13, 45, 23, 142000000), new ConstrainedProperty("property").format(format)));
         assertEquals("23 Jan 2023 00:00:00", BeanUtils.formatPropertyValue(LocalDate.of(2023, Month.JANUARY, 23), new ConstrainedProperty("property").format(format)));
         assertEquals("1 Jan 1970 13:45:23", BeanUtils.formatPropertyValue(LocalTime.of(13, 45, 23, 142000000), new ConstrainedProperty("property").format(format)));
+    }
+
+    @Nested
+    class TestOptionalGetters {
+        public static class BeanOptional {
+            private Optional<String> present = Optional.of("hello");
+
+            public Optional<String> getPropertyOptionalPresent() { return present; }
+            public void setPropertyOptionalPresent(Optional<String> v) { this.present = v; }
+
+            public Optional<String> getPropertyOptionalEmpty() { return Optional.empty(); }
+            public void setPropertyOptionalEmpty(Optional<String> v) {}
+
+            public Optional<Integer> getPropertyOptionalInt() { return Optional.of(42); }
+            public void setPropertyOptionalInt(Optional<Integer> v) {}
+
+            public String getPropertyRegular() { return "regular"; }
+            public void setPropertyRegular(String v) {}
+        }
+
+        public static class BeanOptionalOnlyGetter {
+            public Optional<String> getPropertyOnlyGetter() { return Optional.of("only"); }
+        }
+
+        @Test
+        void testGetPropertyValueOptionalPresent() {
+            try {
+                var bean = new BeanOptional();
+                Object value = BeanUtils.getPropertyValue(bean, "propertyOptionalPresent");
+                assertEquals("hello", value);
+                assertFalse(value instanceof Optional);
+            } catch (BeanUtilsException e) {
+                fail(ExceptionUtils.getExceptionStackTrace(e));
+            }
+        }
+
+        @Test
+        void testGetPropertyValueOptionalEmpty() {
+            try {
+                var bean = new BeanOptional();
+                Object value = BeanUtils.getPropertyValue(bean, "propertyOptionalEmpty");
+                assertNull(value);
+            } catch (BeanUtilsException e) {
+                fail(ExceptionUtils.getExceptionStackTrace(e));
+            }
+        }
+
+        @Test
+        void testGetPropertyTypeOptional() {
+            try {
+                assertSame(String.class, BeanUtils.getPropertyType(BeanOptional.class, "propertyOptionalPresent"));
+                assertSame(String.class, BeanUtils.getPropertyType(BeanOptional.class, "propertyOptionalEmpty"));
+                assertSame(Integer.class, BeanUtils.getPropertyType(BeanOptional.class, "propertyOptionalInt"));
+                assertSame(String.class, BeanUtils.getPropertyType(BeanOptional.class, "propertyRegular"));
+            } catch (BeanUtilsException e) {
+                fail(ExceptionUtils.getExceptionStackTrace(e));
+            }
+        }
+
+        @Test
+        void testGetPropertyTypesOptional() {
+            try {
+                var types = BeanUtils.getPropertyTypes(BeanOptional.class, null, null, null);
+                assertSame(String.class, types.get("propertyOptionalPresent"));
+                assertSame(String.class, types.get("propertyOptionalEmpty"));
+                assertSame(Integer.class, types.get("propertyOptionalInt"));
+                assertSame(String.class, types.get("propertyRegular"));
+            } catch (BeanUtilsException e) {
+                fail(ExceptionUtils.getExceptionStackTrace(e));
+            }
+        }
+
+        @Test
+        void testGetPropertyValuesOptional() {
+            try {
+                var bean = new BeanOptional();
+                var values = BeanUtils.getPropertyValues(bean, null, null, null);
+                assertEquals("hello", values.get("propertyOptionalPresent"));
+                assertNull(values.get("propertyOptionalEmpty"));
+                assertEquals(42, values.get("propertyOptionalInt"));
+                assertEquals("regular", values.get("propertyRegular"));
+            } catch (BeanUtilsException e) {
+                fail(ExceptionUtils.getExceptionStackTrace(e));
+            }
+        }
+
+        @Test
+        void testProcessPropertyValuesOptional() {
+            try {
+                var bean = new BeanOptional();
+                var seen = new HashMap<String, Object>();
+                BeanUtils.processPropertyValues(bean, null, null, null, (name, descriptor, value, constrainedProperty) -> {
+                    seen.put(name, value);
+                });
+                assertEquals("hello", seen.get("propertyOptionalPresent"));
+                assertNull(seen.get("propertyOptionalEmpty"));
+                assertEquals(42, seen.get("propertyOptionalInt"));
+            } catch (BeanUtilsException e) {
+                fail(ExceptionUtils.getExceptionStackTrace(e));
+            }
+        }
+
+        @Test
+        void testFormatPropertyValueOptional() {
+            assertEquals("hello", BeanUtils.formatPropertyValue(Optional.of("hello"), null));
+            assertNull(BeanUtils.formatPropertyValue(Optional.empty(), null));
+            assertEquals("regular", BeanUtils.formatPropertyValue("regular", null));
+        }
+
+        @Test
+        void testPropertyNamesOptional() {
+            try {
+                Set<String> names = BeanUtils.getPropertyNames(BeanOptional.class, null, null, null);
+                assertTrue(names.contains("propertyOptionalPresent"));
+                assertTrue(names.contains("propertyOptionalEmpty"));
+                assertTrue(names.contains("propertyOptionalInt"));
+                assertTrue(names.contains("propertyRegular"));
+            } catch (BeanUtilsException e) {
+                fail(ExceptionUtils.getExceptionStackTrace(e));
+            }
+        }
+
+        @Test
+        void testPropertyTypesGettersOptionalOnly() {
+            try {
+                var types = BeanUtils.getPropertyTypes(BeanUtils.Accessors.GETTERS, BeanOptionalOnlyGetter.class, null, null, null);
+                assertEquals(1, types.size());
+                assertSame(String.class, types.get("propertyOnlyGetter"));
+                var values = BeanUtils.getPropertyValues(BeanUtils.Accessors.GETTERS, new BeanOptionalOnlyGetter(), null, null, null);
+                assertEquals("only", values.get("propertyOnlyGetter"));
+            } catch (BeanUtilsException e) {
+                fail(ExceptionUtils.getExceptionStackTrace(e));
+            }
+        }
     }
 }

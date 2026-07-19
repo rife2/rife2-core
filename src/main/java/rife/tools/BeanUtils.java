@@ -4,6 +4,7 @@
  */
 package rife.tools;
 
+import java.lang.reflect.ParameterizedType;
 import java.sql.Time;
 import java.time.*;
 import java.util.*;
@@ -52,6 +53,42 @@ public final class BeanUtils {
 
     private BeanUtils() {
         // no-op
+    }
+
+    private static boolean isOptionalGetter(PropertyDescriptor descriptor) {
+        var read = descriptor.getReadMethod();
+        return read!= null && read.getReturnType() == Optional.class;
+    }
+
+    private static Object unwrapOptional(Object value) {
+        if (value instanceof Optional<?> opt) {
+            return opt.orElse(null);
+        }
+        return value;
+    }
+
+    private static Class<?> getOptionalValueType(PropertyDescriptor descriptor) {
+        var read = descriptor.getReadMethod();
+        if (read!= null) {
+            var generic = read.getGenericReturnType();
+            if (generic instanceof ParameterizedType pt) {
+                var arg = pt.getActualTypeArguments()[0];
+                if (arg instanceof Class<?> c) return c;
+                if (arg instanceof ParameterizedType pt2 && pt2.getRawType() instanceof Class<?> rc) return rc;
+            }
+        }
+        return Object.class;
+    }
+
+    private static Class<?> getEffectivePropertyType(PropertyDescriptor descriptor) {
+        if (isOptionalGetter(descriptor)) {
+            return getOptionalValueType(descriptor);
+        }
+        var read = descriptor.getReadMethod();
+        if (read!= null) return read.getReturnType();
+        var write = descriptor.getWriteMethod();
+        if (write!= null) return write.getParameterTypes()[0];
+        return descriptor.getPropertyType();
     }
 
     private static final ConcurrentHashMap<Class<?>, BeanInfo> BEAN_INFO_CACHE = new ConcurrentHashMap<>();
@@ -289,8 +326,10 @@ public final class BeanUtils {
                     constrained_property = constrained.getConstrainedProperty(descriptor.getName());
                 }
 
-                // handle the property value
-                processor.gotProperty(name, descriptor, property_read_method.invoke(bean, (Object[]) null), constrained_property);
+                // handle the property value - unwrap Optional getter
+                var raw = property_read_method.invoke(bean, (Object[]) null);
+                var value = unwrapOptional(raw);
+                processor.gotProperty(name, descriptor, value, constrained_property);
             }
 
             return true;
@@ -380,7 +419,8 @@ public final class BeanUtils {
                     }
 
                     try {
-                        return property_read_method.invoke(bean, (Object[]) null);
+                        var raw = property_read_method.invoke(bean, (Object[]) null);
+                        return unwrapOptional(raw);
                     } catch (IllegalAccessException e) {
                         throw new BeanUtilsException("No permission to invoke the '" + property_read_method.getName() + "' method on the bean.", bean_class, e);
                     } catch (IllegalArgumentException e) {
@@ -471,7 +511,6 @@ public final class BeanUtils {
         var bean_properties = bean_info.getPropertyDescriptors();
         if (bean_properties.length > 0) {
             String property_name = null;
-            Method property_read_method = null;
 
             // iterate over the properties of the bean
             for (var bean_property : bean_properties) {
@@ -479,9 +518,7 @@ public final class BeanUtils {
 
                 // process the property if it was valid
                 if (property_name.equals(name)) {
-                    // obtain the value of the property
-                    property_read_method = bean_property.getReadMethod();
-                    return property_read_method.getReturnType();
+                    return getEffectivePropertyType(bean_property);
                 }
             }
         }
@@ -538,6 +575,11 @@ public final class BeanUtils {
      * @since 1.0
      */
     public static String formatPropertyValue(Object propertyValue, ConstrainedProperty constrainedProperty) {
+        propertyValue = unwrapOptional(propertyValue);
+        if (propertyValue == null) {
+            return null;
+        }
+
         if (propertyValue instanceof String) {
             return (String) propertyValue;
         }
@@ -622,18 +664,7 @@ public final class BeanUtils {
         final var property_types = new LinkedHashMap<String, Class>();
 
         processProperties(accessors, beanClass, includedProperties, excludedProperties, prefix, (name, descriptor) -> {
-            Class property_class = null;
-
-            // obtain and store the property type
-            var property_read_method = descriptor.getReadMethod();
-            if (property_read_method != null) {
-                property_class = property_read_method.getReturnType();
-            } else {
-                var property_write_method = descriptor.getWriteMethod();
-                property_class = property_write_method.getParameterTypes()[0];
-            }
-
-            property_types.put(name, property_class);
+            property_types.put(name, getEffectivePropertyType(descriptor));
 
             return true;
         });

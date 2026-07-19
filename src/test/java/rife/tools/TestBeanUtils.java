@@ -105,7 +105,7 @@ public class TestBeanUtils {
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyString", new String[]{"one", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyString(), "one");
+        assertEquals("one", bean.getPropertyString());
     }
 
     @Test
@@ -115,9 +115,9 @@ public class TestBeanUtils {
         Map<String, PropertyDescriptor> bean_properties = BeanUtils.getUppercasedBeanProperties(BeanImpl2.class);
 
         bean = new BeanImpl2();
-        assertEquals(bean.getPropertyReadonly(), 23L);
+        assertEquals(23L, bean.getPropertyReadonly());
         BeanUtils.setUppercasedBeanProperty("propertyReadonly", new String[]{"42131"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyReadonly(), 23L);
+        assertEquals(23L, bean.getPropertyReadonly());
     }
 
     @Test
@@ -128,15 +128,15 @@ public class TestBeanUtils {
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyString", new String[]{"one", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyString(), "one");
+        assertEquals("one", bean.getPropertyString());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyInt", new String[]{"438", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyInt(), 438);
+        assertEquals(438, bean.getPropertyInt());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyChar", new String[]{"E", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyChar(), 'E');
+        assertEquals('E', bean.getPropertyChar());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyBoolean", new String[]{"true", "two"}, null, bean_properties, bean, new BeanImpl2());
@@ -144,67 +144,67 @@ public class TestBeanUtils {
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyByte", new String[]{"27", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyByte(), 27);
+        assertEquals(27, bean.getPropertyByte());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyDouble", new String[]{"80756.6287", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyDouble(), 80756.6287d);
+        assertEquals(80756.6287d, bean.getPropertyDouble());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyFloat", new String[]{"435.557", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyFloat(), 435.557f);
+        assertEquals(435.557f, bean.getPropertyFloat());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyLong", new String[]{"122875", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyLong(), 122875);
+        assertEquals(122875, bean.getPropertyLong());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyShort", new String[]{"3285", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyShort(), 3285);
+        assertEquals(3285, bean.getPropertyShort());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyBigDecimal", new String[]{"983743.343", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyBigDecimal(), new BigDecimal("983743.343"));
+        assertEquals(new BigDecimal("983743.343"), bean.getPropertyBigDecimal());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyIntegerObject", new String[]{"438", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyIntegerObject(), 438);
+        assertEquals(438, bean.getPropertyIntegerObject());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyCharacterObject", new String[]{"E", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyCharacterObject(), 'E');
+        assertEquals('E', bean.getPropertyCharacterObject());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyBooleanObject", new String[]{"true", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyBooleanObject(), Boolean.TRUE);
+        assertEquals(Boolean.TRUE, bean.getPropertyBooleanObject());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyByteObject", new String[]{"27", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyByteObject(), (byte) 27);
+        assertEquals((byte) 27, bean.getPropertyByteObject());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyDoubleObject", new String[]{"80756.6287", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyDoubleObject(), 80756.6287d);
+        assertEquals(80756.6287d, bean.getPropertyDoubleObject());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyFloatObject", new String[]{"435.557", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyFloatObject(), 435.557f);
+        assertEquals(435.557f, bean.getPropertyFloatObject());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyLongObject", new String[]{"122875", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyLongObject(), 122875);
+        assertEquals(122875, bean.getPropertyLongObject());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyShortObject", new String[]{"3285", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyShortObject(), (short) 3285);
+        assertEquals((short) 3285, bean.getPropertyShortObject());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyStringBuffer", new String[]{"one1", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyStringBuffer().toString(), "one1");
+        assertEquals("one1", bean.getPropertyStringBuffer().toString());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyStringBuilder", new String[]{"one2", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertEquals(bean.getPropertyStringBuilder().toString(), "one2");
+        assertEquals("one2", bean.getPropertyStringBuilder().toString());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyDate", new String[]{"2006-08-04 10:45", "two"}, null, bean_properties, bean, new BeanImpl2());
@@ -229,83 +229,83 @@ public class TestBeanUtils {
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyStringArray", new String[]{"one", "two"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyStringArray(), new String[]{"one", "two"});
+        assertArrayEquals(new String[]{"one", "two"}, bean.getPropertyStringArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyIntArray", new String[]{"438", "98455", "711"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyIntArray(), new int[]{438, 98455, 711});
+        assertArrayEquals(new int[]{438, 98455, 711}, bean.getPropertyIntArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyCharArray", new String[]{"E", "a", "x"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyCharArray(), new char[]{'E', 'a', 'x'});
+        assertArrayEquals(new char[]{'E', 'a', 'x'}, bean.getPropertyCharArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyBooleanArray", new String[]{"true", "0", "t", "1"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyBooleanArray(), new boolean[]{true, false, true, true});
+        assertArrayEquals(new boolean[]{true, false, true, true}, bean.getPropertyBooleanArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyByteArray", new String[]{"27", "78"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyByteArray(), new byte[]{27, 78});
+        assertArrayEquals(new byte[]{27, 78}, bean.getPropertyByteArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyDoubleArray", new String[]{"80756.6287", "3214.75", "85796.6237"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyDoubleArray(), new double[]{80756.6287d, 3214.75d, 85796.6237d});
+        assertArrayEquals(new double[]{80756.6287d, 3214.75d, 85796.6237d}, bean.getPropertyDoubleArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyFloatArray", new String[]{"435.557", "589.5"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyFloatArray(), new float[]{435.557f, 589.5f});
+        assertArrayEquals(new float[]{435.557f, 589.5f}, bean.getPropertyFloatArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyLongArray", new String[]{"122875", "8526780", "3826589"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyLongArray(), new long[]{122875, 8526780, 3826589});
+        assertArrayEquals(new long[]{122875, 8526780, 3826589}, bean.getPropertyLongArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyShortArray", new String[]{"3285", "58"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyShortArray(), new short[]{3285, 58});
+        assertArrayEquals(new short[]{3285, 58}, bean.getPropertyShortArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyIntegerObjectArray", new String[]{"438", "7865", "475"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyIntegerObjectArray(), new Integer[]{438, 7865, 475});
+        assertArrayEquals(new Integer[]{438, 7865, 475}, bean.getPropertyIntegerObjectArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyCharacterObjectArray", new String[]{"E", "z"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyCharacterObjectArray(), new Character[]{'E', 'z'});
+        assertArrayEquals(new Character[]{'E', 'z'}, bean.getPropertyCharacterObjectArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyBooleanObjectArray", new String[]{"fslse", "1", "true"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyBooleanObjectArray(), new Boolean[]{false, true, true});
+        assertArrayEquals(new Boolean[]{false, true, true}, bean.getPropertyBooleanObjectArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyByteObjectArray", new String[]{"27", "78"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyByteObjectArray(), new Byte[]{(byte) 27, (byte) 78});
+        assertArrayEquals(new Byte[]{(byte) 27, (byte) 78}, bean.getPropertyByteObjectArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyDoubleObjectArray", new String[]{"80756.6287", "5876.14", "3268.57"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyDoubleObjectArray(), new Double[]{80756.6287d, 5876.14d, 3268.57d});
+        assertArrayEquals(new Double[]{80756.6287d, 5876.14d, 3268.57d}, bean.getPropertyDoubleObjectArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyFloatObjectArray", new String[]{"435.557", "7865.66"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyFloatObjectArray(), new Float[]{435.557f, 7865.66f});
+        assertArrayEquals(new Float[]{435.557f, 7865.66f}, bean.getPropertyFloatObjectArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyLongObjectArray", new String[]{"122875", "5687621", "66578"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyLongObjectArray(), new Long[]{122875L, 5687621L, 66578L});
+        assertArrayEquals(new Long[]{122875L, 5687621L, 66578L}, bean.getPropertyLongObjectArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyShortObjectArray", new String[]{"3285", "6588"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyShortObjectArray(), new Short[]{(short) 3285, (short) 6588});
+        assertArrayEquals(new Short[]{(short) 3285, (short) 6588}, bean.getPropertyShortObjectArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyBigDecimalArray", new String[]{"32859837434343983.83749837498373434", "65884343.343"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(bean.getPropertyBigDecimalArray(), new BigDecimal[]{new BigDecimal("32859837434343983.83749837498373434"), new BigDecimal("65884343343E-3")});
+        assertArrayEquals(new BigDecimal[]{new BigDecimal("32859837434343983.83749837498373434"), new BigDecimal("65884343343E-3")}, bean.getPropertyBigDecimalArray());
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyStringBufferArray", new String[]{"one1", "two2"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(ArrayUtils.createStringArray(bean.getPropertyStringBufferArray()), new String[]{"one1", "two2"});
+        assertArrayEquals(new String[]{"one1", "two2"}, ArrayUtils.createStringArray(bean.getPropertyStringBufferArray()));
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyStringBuilderArray", new String[]{"three3", "four4"}, null, bean_properties, bean, new BeanImpl2());
-        assertArrayEquals(ArrayUtils.createStringArray(bean.getPropertyStringBuilderArray()), new String[]{"three3", "four4"});
+        assertArrayEquals(new String[]{"three3", "four4"}, ArrayUtils.createStringArray(bean.getPropertyStringBuilderArray()));
 
         bean = new BeanImpl2();
         BeanUtils.setUppercasedBeanProperty("propertyDateArray", new String[]{"2006-08-04 10:45", "2006-07-08 11:05"}, null, bean_properties, bean, new BeanImpl2());
@@ -356,55 +356,55 @@ public class TestBeanUtils {
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyInt", new String[]{"$438", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyInt(), 438);
+        assertEquals(438, bean.getPropertyInt());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyByte", new String[]{"2,700%", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyByte(), 27);
+        assertEquals(27, bean.getPropertyByte());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyDouble", new String[]{"80,756.6287", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyDouble(), 80756.6287d);
+        assertEquals(80756.6287d, bean.getPropertyDouble());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyFloat", new String[]{"435,557", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyFloat(), 435.557f);
+        assertEquals(435.557f, bean.getPropertyFloat());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyLong", new String[]{"$122,875.00", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyLong(), 122875);
+        assertEquals(122875, bean.getPropertyLong());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyShort", new String[]{"¤3285", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyShort(), 3285);
+        assertEquals(3285, bean.getPropertyShort());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyBigDecimal", new String[]{"4353344987349830948394893,55709384093", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyBigDecimal(), new BigDecimal("435334498734983094839489355709384093E-11"));
+        assertEquals(new BigDecimal("435334498734983094839489355709384093E-11"), bean.getPropertyBigDecimal());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyIntegerObject", new String[]{"$438", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyIntegerObject(), 438);
+        assertEquals(438, bean.getPropertyIntegerObject());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyByteObject", new String[]{"2,700%", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyByteObject(), (byte) 27);
+        assertEquals((byte) 27, bean.getPropertyByteObject());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyDoubleObject", new String[]{"80,756.6287", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyDoubleObject(), 80756.6287d);
+        assertEquals(80756.6287d, bean.getPropertyDoubleObject());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyFloatObject", new String[]{"435,557", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyFloatObject(), 435.557f);
+        assertEquals(435.557f, bean.getPropertyFloatObject());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyLongObject", new String[]{"$122,875.00", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyLongObject(), 122875);
+        assertEquals(122875, bean.getPropertyLongObject());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyShortObject", new String[]{"¤3285", "two"}, null, bean_properties, bean, new BeanImpl3());
-        assertEquals(bean.getPropertyShortObject(), (short) 3285);
+        assertEquals((short) 3285, bean.getPropertyShortObject());
 
         bean = new BeanImpl3();
         BeanImpl3.SerializableType serializable = new BeanImpl3.SerializableType(5686, "Testing");
@@ -433,55 +433,55 @@ public class TestBeanUtils {
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyIntArray", new String[]{"$438", "$98455", "$711"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyIntArray(), new int[]{438, 98455, 711});
+        assertArrayEquals(new int[]{438, 98455, 711}, bean.getPropertyIntArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyByteArray", new String[]{"2,700%", "7,800%"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyByteArray(), new byte[]{27, 78});
+        assertArrayEquals(new byte[]{27, 78}, bean.getPropertyByteArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyDoubleArray", new String[]{"80,756.6287", "3,214.75", "85,796.6237"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyDoubleArray(), new double[]{80756.6287d, 3214.75d, 85796.6237d});
+        assertArrayEquals(new double[]{80756.6287d, 3214.75d, 85796.6237d}, bean.getPropertyDoubleArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyFloatArray", new String[]{"435,557", "589,5"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyFloatArray(), new float[]{435.557f, 589.5f});
+        assertArrayEquals(new float[]{435.557f, 589.5f}, bean.getPropertyFloatArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyLongArray", new String[]{"$122,875.00", "$8,526,780.00", "$3,826,589.00"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyLongArray(), new long[]{122875, 8526780, 3826589});
+        assertArrayEquals(new long[]{122875, 8526780, 3826589}, bean.getPropertyLongArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyShortArray", new String[]{"¤3285", "¤58"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyShortArray(), new short[]{3285, 58});
+        assertArrayEquals(new short[]{3285, 58}, bean.getPropertyShortArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyIntegerObjectArray", new String[]{"$438", "$7865", "$475"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyIntegerObjectArray(), new Integer[]{438, 7865, 475});
+        assertArrayEquals(new Integer[]{438, 7865, 475}, bean.getPropertyIntegerObjectArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyByteObjectArray", new String[]{"2,700%", "7,800%"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyByteObjectArray(), new Byte[]{(byte) 27, (byte) 78});
+        assertArrayEquals(new Byte[]{(byte) 27, (byte) 78}, bean.getPropertyByteObjectArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyDoubleObjectArray", new String[]{"80,756.6287", "5,876.14", "3,268.57"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyDoubleObjectArray(), new Double[]{80756.6287d, 5876.14d, 3268.57d});
+        assertArrayEquals(new Double[]{80756.6287d, 5876.14d, 3268.57d}, bean.getPropertyDoubleObjectArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyFloatObjectArray", new String[]{"435,557", "7865,66"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyFloatObjectArray(), new Float[]{435.557f, 7865.66f});
+        assertArrayEquals(new Float[]{435.557f, 7865.66f}, bean.getPropertyFloatObjectArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyLongObjectArray", new String[]{"$122,875.00", "$5,687,621.00", "$66,578.00"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyLongObjectArray(), new Long[]{122875L, 5687621L, 66578L});
+        assertArrayEquals(new Long[]{122875L, 5687621L, 66578L}, bean.getPropertyLongObjectArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyShortObjectArray", new String[]{"¤3285", "¤6588"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyShortObjectArray(), new Short[]{(short) 3285, (short) 6588});
+        assertArrayEquals(new Short[]{(short) 3285, (short) 6588}, bean.getPropertyShortObjectArray());
 
         bean = new BeanImpl3();
         BeanUtils.setUppercasedBeanProperty("propertyBigDecimalArray", new String[]{"97687687998978673545669789,0000000000001", "34353"}, null, bean_properties, bean, new BeanImpl3());
-        assertArrayEquals(bean.getPropertyBigDecimalArray(), new BigDecimal[]{new BigDecimal("976876879989786735456697890000000000001E-13"), new BigDecimal("3.4353E4")});
+        assertArrayEquals(new BigDecimal[]{new BigDecimal("976876879989786735456697890000000000001E-13"), new BigDecimal("3.4353E4")}, bean.getPropertyBigDecimalArray());
 
         bean = new BeanImpl3();
         BeanImpl3.SerializableType serializable1 = new BeanImpl3.SerializableType(5682, "AnotherTest");
@@ -512,7 +512,7 @@ public class TestBeanUtils {
     void testPropertyNames() {
         try {
             Set<String> property_names = BeanUtils.getPropertyNames(BeanImpl.class, null, null, null);
-            assertEquals(property_names.size(), 20);
+            assertEquals(20, property_names.size());
             assertTrue(property_names.contains("propertyString"));
             assertTrue(property_names.contains("propertyStringBuffer"));
             assertTrue(property_names.contains("propertyDate"));
@@ -542,7 +542,7 @@ public class TestBeanUtils {
     void testPropertyNamesGetters() {
         try {
             Set<String> property_names = BeanUtils.getPropertyNames(BeanUtils.Accessors.GETTERS, BeanImpl.class, null, null, null);
-            assertEquals(property_names.size(), 21);
+            assertEquals(21, property_names.size());
             assertTrue(property_names.contains("propertyReadonly"));
             assertTrue(property_names.contains("propertyString"));
             assertTrue(property_names.contains("propertyStringBuffer"));
@@ -573,7 +573,7 @@ public class TestBeanUtils {
     void testPropertyNamesSetters() {
         try {
             Set<String> property_names = BeanUtils.getPropertyNames(BeanUtils.Accessors.SETTERS, BeanImpl.class, null, null, null);
-            assertEquals(property_names.size(), 21);
+            assertEquals(21, property_names.size());
             assertTrue(property_names.contains("propertyWriteOnly"));
             assertTrue(property_names.contains("propertyString"));
             assertTrue(property_names.contains("propertyStringBuffer"));
@@ -604,7 +604,7 @@ public class TestBeanUtils {
     void testPropertyNamesPrefix() {
         try {
             Set<String> property_names = BeanUtils.getPropertyNames(BeanImpl.class, null, null, "PREFIX:");
-            assertEquals(property_names.size(), 20);
+            assertEquals(20, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyString"));
             assertTrue(property_names.contains("PREFIX:propertyStringBuffer"));
             assertTrue(property_names.contains("PREFIX:propertyDate"));
@@ -634,7 +634,7 @@ public class TestBeanUtils {
     void testPropertyNamesPrefixGetters() {
         try {
             Set<String> property_names = BeanUtils.getPropertyNames(BeanUtils.Accessors.GETTERS, BeanImpl.class, null, null, "PREFIX:");
-            assertEquals(property_names.size(), 21);
+            assertEquals(21, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyReadonly"));
             assertTrue(property_names.contains("PREFIX:propertyString"));
             assertTrue(property_names.contains("PREFIX:propertyStringBuffer"));
@@ -665,7 +665,7 @@ public class TestBeanUtils {
     void testPropertyNamesPrefixSetters() {
         try {
             Set<String> property_names = BeanUtils.getPropertyNames(BeanUtils.Accessors.SETTERS, BeanImpl.class, null, null, "PREFIX:");
-            assertEquals(property_names.size(), 21);
+            assertEquals(21, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyWriteOnly"));
             assertTrue(property_names.contains("PREFIX:propertyString"));
             assertTrue(property_names.contains("PREFIX:propertyStringBuffer"));
@@ -702,7 +702,7 @@ public class TestBeanUtils {
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 null,
                 null);
-            assertEquals(property_names.size(), 9);
+            assertEquals(9, property_names.size());
             assertTrue(property_names.contains("propertyStringBuffer"));
             assertTrue(property_names.contains("propertyCalendar"));
             assertTrue(property_names.contains("propertySqlDate"));
@@ -727,7 +727,7 @@ public class TestBeanUtils {
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 null,
                 null);
-            assertEquals(property_names.size(), 10);
+            assertEquals(10, property_names.size());
             assertTrue(property_names.contains("propertyReadonly"));
             assertTrue(property_names.contains("propertyStringBuffer"));
             assertTrue(property_names.contains("propertyCalendar"));
@@ -753,7 +753,7 @@ public class TestBeanUtils {
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 null,
                 null);
-            assertEquals(property_names.size(), 10);
+            assertEquals(10, property_names.size());
             assertTrue(property_names.contains("propertyWriteOnly"));
             assertTrue(property_names.contains("propertyStringBuffer"));
             assertTrue(property_names.contains("propertyCalendar"));
@@ -779,7 +779,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 null,
                 "PREFIX:");
-            assertEquals(property_names.size(), 9);
+            assertEquals(9, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyStringBuffer"));
             assertTrue(property_names.contains("PREFIX:propertyCalendar"));
             assertTrue(property_names.contains("PREFIX:propertySqlDate"));
@@ -804,7 +804,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 null,
                 "PREFIX:");
-            assertEquals(property_names.size(), 10);
+            assertEquals(10, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyReadonly"));
             assertTrue(property_names.contains("PREFIX:propertyStringBuffer"));
             assertTrue(property_names.contains("PREFIX:propertyCalendar"));
@@ -830,7 +830,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 null,
                 "PREFIX:");
-            assertEquals(property_names.size(), 10);
+            assertEquals(10, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyWriteOnly"));
             assertTrue(property_names.contains("PREFIX:propertyStringBuffer"));
             assertTrue(property_names.contains("PREFIX:propertyCalendar"));
@@ -854,7 +854,7 @@ public class TestBeanUtils {
                 new String[]{"propertyStringBuffer", "propertyCalendar", "propertySqlDate", "propertyLocalDate",
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 null);
-            assertEquals(property_names.size(), 12);
+            assertEquals(12, property_names.size());
             assertTrue(property_names.contains("propertyString"));
             assertTrue(property_names.contains("propertyDate"));
             assertTrue(property_names.contains("propertyTime"));
@@ -880,7 +880,7 @@ public class TestBeanUtils {
                 new String[]{"propertyStringBuffer", "propertyCalendar", "propertySqlDate", "propertyLocalDate",
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 null);
-            assertEquals(property_names.size(), 13);
+            assertEquals(13, property_names.size());
             assertTrue(property_names.contains("propertyReadonly"));
             assertTrue(property_names.contains("propertyString"));
             assertTrue(property_names.contains("propertyDate"));
@@ -907,7 +907,7 @@ public class TestBeanUtils {
                 new String[]{"propertyStringBuffer", "propertyCalendar", "propertySqlDate", "propertyLocalDate",
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 null);
-            assertEquals(property_names.size(), 13);
+            assertEquals(13, property_names.size());
             assertTrue(property_names.contains("propertyWriteOnly"));
             assertTrue(property_names.contains("propertyString"));
             assertTrue(property_names.contains("propertyDate"));
@@ -934,7 +934,7 @@ public class TestBeanUtils {
                 new String[]{"PREFIX:propertyStringBuffer", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate",
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 "PREFIX:");
-            assertEquals(property_names.size(), 12);
+            assertEquals(12, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyString"));
             assertTrue(property_names.contains("PREFIX:propertyDate"));
             assertTrue(property_names.contains("PREFIX:propertyTime"));
@@ -960,7 +960,7 @@ public class TestBeanUtils {
                 new String[]{"PREFIX:propertyStringBuffer", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate",
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 "PREFIX:");
-            assertEquals(property_names.size(), 13);
+            assertEquals(13, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyReadonly"));
             assertTrue(property_names.contains("PREFIX:propertyString"));
             assertTrue(property_names.contains("PREFIX:propertyDate"));
@@ -987,7 +987,7 @@ public class TestBeanUtils {
                 new String[]{"PREFIX:propertyStringBuffer", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate",
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 "PREFIX:");
-            assertEquals(property_names.size(), 13);
+            assertEquals(13, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyWriteOnly"));
             assertTrue(property_names.contains("PREFIX:propertyString"));
             assertTrue(property_names.contains("PREFIX:propertyDate"));
@@ -1016,7 +1016,7 @@ public class TestBeanUtils {
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 new String[]{"propertySqlDate", "propertyLocalDate", "propertyByte", "propertyShort"},
                 null);
-            assertEquals(property_names.size(), 5);
+            assertEquals(5, property_names.size());
             assertTrue(property_names.contains("propertyStringBuffer"));
             assertTrue(property_names.contains("propertyCalendar"));
             assertTrue(property_names.contains("propertyInstant"));
@@ -1037,7 +1037,7 @@ public class TestBeanUtils {
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 new String[]{"propertySqlDate", "propertyLocalDate", "propertyByte", "propertyShort"},
                 null);
-            assertEquals(property_names.size(), 6);
+            assertEquals(6, property_names.size());
             assertTrue(property_names.contains("propertyReadonly"));
             assertTrue(property_names.contains("propertyStringBuffer"));
             assertTrue(property_names.contains("propertyCalendar"));
@@ -1059,7 +1059,7 @@ public class TestBeanUtils {
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 new String[]{"propertySqlDate", "propertyLocalDate", "propertyByte", "propertyShort"},
                 null);
-            assertEquals(property_names.size(), 6);
+            assertEquals(6, property_names.size());
             assertTrue(property_names.contains("propertyWriteOnly"));
             assertTrue(property_names.contains("propertyStringBuffer"));
             assertTrue(property_names.contains("propertyCalendar"));
@@ -1081,7 +1081,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 new String[]{"PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyByte", "PREFIX:propertyShort"},
                 "PREFIX:");
-            assertEquals(property_names.size(), 5);
+            assertEquals(5, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyStringBuffer"));
             assertTrue(property_names.contains("PREFIX:propertyCalendar"));
             assertTrue(property_names.contains("PREFIX:propertyInstant"));
@@ -1102,7 +1102,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 new String[]{"PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyByte", "PREFIX:propertyShort"},
                 "PREFIX:");
-            assertEquals(property_names.size(), 6);
+            assertEquals(6, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyReadonly"));
             assertTrue(property_names.contains("PREFIX:propertyStringBuffer"));
             assertTrue(property_names.contains("PREFIX:propertyCalendar"));
@@ -1124,7 +1124,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 new String[]{"PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyByte", "PREFIX:propertyShort"},
                 "PREFIX:");
-            assertEquals(property_names.size(), 6);
+            assertEquals(6, property_names.size());
             assertTrue(property_names.contains("PREFIX:propertyWriteOnly"));
             assertTrue(property_names.contains("PREFIX:propertyStringBuffer"));
             assertTrue(property_names.contains("PREFIX:propertyCalendar"));
@@ -1149,7 +1149,7 @@ public class TestBeanUtils {
     void testCountProperties() {
         try {
             int count = BeanUtils.countProperties(BeanImpl.class, null, null, null);
-            assertEquals(count, 20);
+            assertEquals(20, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1159,7 +1159,7 @@ public class TestBeanUtils {
     void testCountPropertiesGetters() {
         try {
             int count = BeanUtils.countProperties(BeanUtils.Accessors.GETTERS, BeanImpl.class, null, null, null);
-            assertEquals(count, 21);
+            assertEquals(21, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1169,7 +1169,7 @@ public class TestBeanUtils {
     void testCountPropertiesSetters() {
         try {
             int count = BeanUtils.countProperties(BeanUtils.Accessors.SETTERS, BeanImpl.class, null, null, null);
-            assertEquals(count, 21);
+            assertEquals(21, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1179,7 +1179,7 @@ public class TestBeanUtils {
     void testCountPropertiesPrefix() {
         try {
             int count = BeanUtils.countProperties(BeanImpl.class, null, null, "PREFIX:");
-            assertEquals(count, 20);
+            assertEquals(20, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1189,7 +1189,7 @@ public class TestBeanUtils {
     void testCountPropertiesPrefixGetters() {
         try {
             int count = BeanUtils.countProperties(BeanUtils.Accessors.GETTERS, BeanImpl.class, null, null, "PREFIX:");
-            assertEquals(count, 21);
+            assertEquals(21, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1199,7 +1199,7 @@ public class TestBeanUtils {
     void testCountPropertiesPrefixSetters() {
         try {
             int count = BeanUtils.countProperties(BeanUtils.Accessors.SETTERS, BeanImpl.class, null, null, "PREFIX:");
-            assertEquals(count, 21);
+            assertEquals(21, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1303,7 +1303,7 @@ public class TestBeanUtils {
                 new String[]{"propertyStringBuffer", "propertyCalendar", "propertySqlDate", "propertyLocalDate",
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 null);
-            assertEquals(count, 12);
+            assertEquals(12, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1317,7 +1317,7 @@ public class TestBeanUtils {
                 new String[]{"propertyStringBuffer", "propertyCalendar", "propertySqlDate", "propertyLocalDate",
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 null);
-            assertEquals(count, 13);
+            assertEquals(13, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1331,7 +1331,7 @@ public class TestBeanUtils {
                 new String[]{"propertyStringBuffer", "propertyCalendar", "propertySqlDate", "propertyLocalDate",
                     "propertyChar", "propertyByte", "propertyDouble", "propertyShort"},
                 null);
-            assertEquals(count, 13);
+            assertEquals(13, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1345,7 +1345,7 @@ public class TestBeanUtils {
                 new String[]{"PREFIX:propertyStringBuffer", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate",
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 "PREFIX:");
-            assertEquals(count, 12);
+            assertEquals(12, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1359,7 +1359,7 @@ public class TestBeanUtils {
                 new String[]{"PREFIX:propertyStringBuffer", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate",
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 "PREFIX:");
-            assertEquals(count, 13);
+            assertEquals(13, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1373,7 +1373,7 @@ public class TestBeanUtils {
                 new String[]{"PREFIX:propertyStringBuffer", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate",
                     "PREFIX:propertyChar", "PREFIX:propertyByte", "PREFIX:propertyDouble", "PREFIX:propertyShort"},
                 "PREFIX:");
-            assertEquals(count, 13);
+            assertEquals(13, count);
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1502,35 +1502,35 @@ public class TestBeanUtils {
     @Test
     void testPropertyType() {
         try {
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyString"), String.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyStringBuffer"), StringBuffer.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyDate"), java.util.Date.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyCalendar"), java.util.Calendar.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertySqlDate"), java.sql.Date.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyTime"), java.sql.Time.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyInstant"), Instant.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyLocalDate"), LocalDate.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyLocalTime"), LocalTime.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyChar"), char.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyBoolean"), boolean.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyByte"), byte.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyDouble"), double.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyFloat"), float.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyInt"), int.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyLong"), long.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyShort"), short.class);
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "propertyBigDecimal"), BigDecimal.class);
+            assertSame(String.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyString"));
+            assertSame(StringBuffer.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyStringBuffer"));
+            assertSame(Date.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyDate"));
+            assertSame(Calendar.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyCalendar"));
+            assertSame(java.sql.Date.class, BeanUtils.getPropertyType(BeanImpl.class, "propertySqlDate"));
+            assertSame(java.sql.Time.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyTime"));
+            assertSame(java.sql.Timestamp.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyTimestamp"));
+            assertSame(Instant.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyInstant"));
+            assertSame(LocalDateTime.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyLocalDateTime"));
+            assertSame(LocalDate.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyLocalDate"));
+            assertSame(LocalTime.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyLocalTime"));
+            assertSame(char.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyChar"));
+            assertSame(boolean.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyBoolean"));
+            assertSame(byte.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyByte"));
+            assertSame(double.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyDouble"));
+            assertSame(float.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyFloat"));
+            assertSame(int.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyInt"));
+            assertSame(long.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyLong"));
+            assertSame(short.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyShort"));
+            assertSame(BigDecimal.class, BeanUtils.getPropertyType(BeanImpl.class, "propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
 
         try {
-            assertSame(BeanUtils.getPropertyType(BeanImpl.class, "unknown"), String.class);
+            assertSame(String.class, BeanUtils.getPropertyType(BeanImpl.class, "unknown"));
             fail();
         } catch (BeanUtilsException e) {
-            assertSame(e.getBeanClass(), BeanImpl.class);
+            assertSame(BeanImpl.class, e.getBeanClass());
         }
     }
 
@@ -1547,7 +1547,7 @@ public class TestBeanUtils {
     void testPropertyTypes() {
         try {
             var property_types = BeanUtils.getPropertyTypes(BeanImpl.class, null, null, null);
-            assertEquals(property_types.size(), 20);
+            assertEquals(20, property_types.size());
             assertTrue(property_types.containsKey("propertyString"));
             assertTrue(property_types.containsKey("propertyStringBuffer"));
             assertTrue(property_types.containsKey("propertyDate"));
@@ -1568,26 +1568,26 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("propertyLong"));
             assertTrue(property_types.containsKey("propertyShort"));
             assertTrue(property_types.containsKey("propertyBigDecimal"));
-            assertSame(property_types.get("propertyString"), String.class);
-            assertSame(property_types.get("propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertyCalendar"), java.util.Calendar.class);
-            assertSame(property_types.get("propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("propertyChar"), char.class);
-            assertSame(property_types.get("propertyBoolean"), boolean.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyDouble"), double.class);
-            assertSame(property_types.get("propertyFloat"), float.class);
-            assertSame(property_types.get("propertyInt"), int.class);
-            assertSame(property_types.get("propertyLong"), long.class);
-            assertSame(property_types.get("propertyShort"), short.class);
-            assertSame(property_types.get("propertyBigDecimal"), BigDecimal.class);
+            assertSame(String.class, property_types.get("propertyString"));
+            assertSame(StringBuffer.class, property_types.get("propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(Calendar.class, property_types.get("propertyCalendar"));
+            assertSame(java.sql.Date.class, property_types.get("propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("propertyLocalDateTime"));
+            assertSame(LocalDate.class, property_types.get("propertyLocalDate"));
+            assertSame(LocalTime.class, property_types.get("propertyLocalTime"));
+            assertSame(char.class, property_types.get("propertyChar"));
+            assertSame(boolean.class, property_types.get("propertyBoolean"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(double.class, property_types.get("propertyDouble"));
+            assertSame(float.class, property_types.get("propertyFloat"));
+            assertSame(int.class, property_types.get("propertyInt"));
+            assertSame(long.class, property_types.get("propertyLong"));
+            assertSame(short.class, property_types.get("propertyShort"));
+            assertSame(BigDecimal.class, property_types.get("propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1597,7 +1597,7 @@ public class TestBeanUtils {
     void testPropertyTypesGetters() {
         try {
             var property_types = BeanUtils.getPropertyTypes(BeanUtils.Accessors.GETTERS, BeanImpl.class, null, null, null);
-            assertEquals(property_types.size(), 21);
+            assertEquals(21, property_types.size());
             assertTrue(property_types.containsKey("propertyReadonly"));
             assertTrue(property_types.containsKey("propertyString"));
             assertTrue(property_types.containsKey("propertyStringBuffer"));
@@ -1619,27 +1619,27 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("propertyLong"));
             assertTrue(property_types.containsKey("propertyShort"));
             assertTrue(property_types.containsKey("propertyBigDecimal"));
-            assertSame(property_types.get("propertyReadonly"), int.class);
-            assertSame(property_types.get("propertyString"), String.class);
-            assertSame(property_types.get("propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertyCalendar"), java.util.Calendar.class);
-            assertSame(property_types.get("propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("propertyChar"), char.class);
-            assertSame(property_types.get("propertyBoolean"), boolean.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyDouble"), double.class);
-            assertSame(property_types.get("propertyFloat"), float.class);
-            assertSame(property_types.get("propertyInt"), int.class);
-            assertSame(property_types.get("propertyLong"), long.class);
-            assertSame(property_types.get("propertyShort"), short.class);
-            assertSame(property_types.get("propertyBigDecimal"), BigDecimal.class);
+            assertSame(int.class, property_types.get("propertyReadonly"));
+            assertSame(String.class, property_types.get("propertyString"));
+            assertSame(StringBuffer.class, property_types.get("propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(Calendar.class, property_types.get("propertyCalendar"));
+            assertSame(java.sql.Date.class, property_types.get("propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("propertyLocalDateTime"));
+            assertSame(LocalDate.class, property_types.get("propertyLocalDate"));
+            assertSame(LocalTime.class, property_types.get("propertyLocalTime"));
+            assertSame(char.class, property_types.get("propertyChar"));
+            assertSame(boolean.class, property_types.get("propertyBoolean"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(double.class, property_types.get("propertyDouble"));
+            assertSame(float.class, property_types.get("propertyFloat"));
+            assertSame(int.class, property_types.get("propertyInt"));
+            assertSame(long.class, property_types.get("propertyLong"));
+            assertSame(short.class, property_types.get("propertyShort"));
+            assertSame(BigDecimal.class, property_types.get("propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1649,7 +1649,7 @@ public class TestBeanUtils {
     void testPropertyTypesSetters() {
         try {
             var property_types = BeanUtils.getPropertyTypes(BeanUtils.Accessors.SETTERS, BeanImpl.class, null, null, null);
-            assertEquals(property_types.size(), 21);
+            assertEquals(21, property_types.size());
             assertTrue(property_types.containsKey("propertyWriteOnly"));
             assertTrue(property_types.containsKey("propertyString"));
             assertTrue(property_types.containsKey("propertyStringBuffer"));
@@ -1671,27 +1671,27 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("propertyLong"));
             assertTrue(property_types.containsKey("propertyShort"));
             assertTrue(property_types.containsKey("propertyBigDecimal"));
-            assertSame(property_types.get("propertyWriteOnly"), long.class);
-            assertSame(property_types.get("propertyString"), String.class);
-            assertSame(property_types.get("propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertyCalendar"), java.util.Calendar.class);
-            assertSame(property_types.get("propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("propertyChar"), char.class);
-            assertSame(property_types.get("propertyBoolean"), boolean.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyDouble"), double.class);
-            assertSame(property_types.get("propertyFloat"), float.class);
-            assertSame(property_types.get("propertyInt"), int.class);
-            assertSame(property_types.get("propertyLong"), long.class);
-            assertSame(property_types.get("propertyShort"), short.class);
-            assertSame(property_types.get("propertyBigDecimal"), BigDecimal.class);
+            assertSame(long.class, property_types.get("propertyWriteOnly"));
+            assertSame(String.class, property_types.get("propertyString"));
+            assertSame(StringBuffer.class, property_types.get("propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(Calendar.class, property_types.get("propertyCalendar"));
+            assertSame(java.sql.Date.class, property_types.get("propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("propertyLocalDateTime"));
+            assertSame(LocalDate.class, property_types.get("propertyLocalDate"));
+            assertSame(LocalTime.class, property_types.get("propertyLocalTime"));
+            assertSame(char.class, property_types.get("propertyChar"));
+            assertSame(boolean.class, property_types.get("propertyBoolean"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(double.class, property_types.get("propertyDouble"));
+            assertSame(float.class, property_types.get("propertyFloat"));
+            assertSame(int.class, property_types.get("propertyInt"));
+            assertSame(long.class, property_types.get("propertyLong"));
+            assertSame(short.class, property_types.get("propertyShort"));
+            assertSame(BigDecimal.class, property_types.get("propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1701,7 +1701,7 @@ public class TestBeanUtils {
     void testPropertyTypesPrefix() {
         try {
             var property_types = BeanUtils.getPropertyTypes(BeanImpl.class, null, null, "PREFIX:");
-            assertEquals(property_types.size(), 20);
+            assertEquals(20, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyString"));
             assertTrue(property_types.containsKey("PREFIX:propertyStringBuffer"));
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
@@ -1722,26 +1722,26 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("PREFIX:propertyLong"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
             assertTrue(property_types.containsKey("PREFIX:propertyBigDecimal"));
-            assertSame(property_types.get("PREFIX:propertyString"), String.class);
-            assertSame(property_types.get("PREFIX:propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertyCalendar"), java.util.Calendar.class);
-            assertSame(property_types.get("PREFIX:propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("PREFIX:propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("PREFIX:propertyChar"), char.class);
-            assertSame(property_types.get("PREFIX:propertyBoolean"), boolean.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyDouble"), double.class);
-            assertSame(property_types.get("PREFIX:propertyFloat"), float.class);
-            assertSame(property_types.get("PREFIX:propertyInt"), int.class);
-            assertSame(property_types.get("PREFIX:propertyLong"), long.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
-            assertSame(property_types.get("PREFIX:propertyBigDecimal"), BigDecimal.class);
+            assertSame(String.class, property_types.get("PREFIX:propertyString"));
+            assertSame(StringBuffer.class, property_types.get("PREFIX:propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(Calendar.class, property_types.get("PREFIX:propertyCalendar"));
+            assertSame(java.sql.Date.class, property_types.get("PREFIX:propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("PREFIX:propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("PREFIX:propertyLocalDateTime"));
+            assertSame(LocalDate.class, property_types.get("PREFIX:propertyLocalDate"));
+            assertSame(LocalTime.class, property_types.get("PREFIX:propertyLocalTime"));
+            assertSame(char.class, property_types.get("PREFIX:propertyChar"));
+            assertSame(boolean.class, property_types.get("PREFIX:propertyBoolean"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(double.class, property_types.get("PREFIX:propertyDouble"));
+            assertSame(float.class, property_types.get("PREFIX:propertyFloat"));
+            assertSame(int.class, property_types.get("PREFIX:propertyInt"));
+            assertSame(long.class, property_types.get("PREFIX:propertyLong"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
+            assertSame(BigDecimal.class, property_types.get("PREFIX:propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1751,7 +1751,7 @@ public class TestBeanUtils {
     void testPropertyTypesPrefixGetters() {
         try {
             var property_types = BeanUtils.getPropertyTypes(BeanUtils.Accessors.GETTERS, BeanImpl.class, null, null, "PREFIX:");
-            assertEquals(property_types.size(), 21);
+            assertEquals(21, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyReadonly"));
             assertTrue(property_types.containsKey("PREFIX:propertyString"));
             assertTrue(property_types.containsKey("PREFIX:propertyStringBuffer"));
@@ -1773,27 +1773,27 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("PREFIX:propertyLong"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
             assertTrue(property_types.containsKey("PREFIX:propertyBigDecimal"));
-            assertSame(property_types.get("PREFIX:propertyReadonly"), int.class);
-            assertSame(property_types.get("PREFIX:propertyString"), String.class);
-            assertSame(property_types.get("PREFIX:propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertyCalendar"), java.util.Calendar.class);
-            assertSame(property_types.get("PREFIX:propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("PREFIX:propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("PREFIX:propertyChar"), char.class);
-            assertSame(property_types.get("PREFIX:propertyBoolean"), boolean.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyDouble"), double.class);
-            assertSame(property_types.get("PREFIX:propertyFloat"), float.class);
-            assertSame(property_types.get("PREFIX:propertyInt"), int.class);
-            assertSame(property_types.get("PREFIX:propertyLong"), long.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
-            assertSame(property_types.get("PREFIX:propertyBigDecimal"), BigDecimal.class);
+            assertSame(int.class, property_types.get("PREFIX:propertyReadonly"));
+            assertSame(String.class, property_types.get("PREFIX:propertyString"));
+            assertSame(StringBuffer.class, property_types.get("PREFIX:propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(Calendar.class, property_types.get("PREFIX:propertyCalendar"));
+            assertSame(java.sql.Date.class, property_types.get("PREFIX:propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("PREFIX:propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("PREFIX:propertyLocalDateTime"));
+            assertSame(LocalDate.class, property_types.get("PREFIX:propertyLocalDate"));
+            assertSame(LocalTime.class, property_types.get("PREFIX:propertyLocalTime"));
+            assertSame(char.class, property_types.get("PREFIX:propertyChar"));
+            assertSame(boolean.class, property_types.get("PREFIX:propertyBoolean"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(double.class, property_types.get("PREFIX:propertyDouble"));
+            assertSame(float.class, property_types.get("PREFIX:propertyFloat"));
+            assertSame(int.class, property_types.get("PREFIX:propertyInt"));
+            assertSame(long.class, property_types.get("PREFIX:propertyLong"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
+            assertSame(BigDecimal.class, property_types.get("PREFIX:propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1803,7 +1803,7 @@ public class TestBeanUtils {
     void testPropertyTypesPrefixSetters() {
         try {
             var property_types = BeanUtils.getPropertyTypes(BeanUtils.Accessors.SETTERS, BeanImpl.class, null, null, "PREFIX:");
-            assertEquals(property_types.size(), 21);
+            assertEquals(21, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyWriteOnly"));
             assertTrue(property_types.containsKey("PREFIX:propertyString"));
             assertTrue(property_types.containsKey("PREFIX:propertyStringBuffer"));
@@ -1825,27 +1825,27 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("PREFIX:propertyLong"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
             assertTrue(property_types.containsKey("PREFIX:propertyBigDecimal"));
-            assertSame(property_types.get("PREFIX:propertyWriteOnly"), long.class);
-            assertSame(property_types.get("PREFIX:propertyString"), String.class);
-            assertSame(property_types.get("PREFIX:propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertyCalendar"), java.util.Calendar.class);
-            assertSame(property_types.get("PREFIX:propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("PREFIX:propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("PREFIX:propertyChar"), char.class);
-            assertSame(property_types.get("PREFIX:propertyBoolean"), boolean.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyDouble"), double.class);
-            assertSame(property_types.get("PREFIX:propertyFloat"), float.class);
-            assertSame(property_types.get("PREFIX:propertyInt"), int.class);
-            assertSame(property_types.get("PREFIX:propertyLong"), long.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
-            assertSame(property_types.get("PREFIX:propertyBigDecimal"), BigDecimal.class);
+            assertSame(long.class, property_types.get("PREFIX:propertyWriteOnly"));
+            assertSame(String.class, property_types.get("PREFIX:propertyString"));
+            assertSame(StringBuffer.class, property_types.get("PREFIX:propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(Calendar.class, property_types.get("PREFIX:propertyCalendar"));
+            assertSame(java.sql.Date.class, property_types.get("PREFIX:propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("PREFIX:propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("PREFIX:propertyLocalDateTime"));
+            assertSame(LocalDate.class, property_types.get("PREFIX:propertyLocalDate"));
+            assertSame(LocalTime.class, property_types.get("PREFIX:propertyLocalTime"));
+            assertSame(char.class, property_types.get("PREFIX:propertyChar"));
+            assertSame(boolean.class, property_types.get("PREFIX:propertyBoolean"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(double.class, property_types.get("PREFIX:propertyDouble"));
+            assertSame(float.class, property_types.get("PREFIX:propertyFloat"));
+            assertSame(int.class, property_types.get("PREFIX:propertyInt"));
+            assertSame(long.class, property_types.get("PREFIX:propertyLong"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
+            assertSame(BigDecimal.class, property_types.get("PREFIX:propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1861,7 +1861,7 @@ public class TestBeanUtils {
                     "propertyByte", "propertyFloat", "propertyShort"},
                 null,
                 null);
-            assertEquals(property_types.size(), 9);
+            assertEquals(9, property_types.size());
             assertTrue(property_types.containsKey("propertyString"));
             assertTrue(property_types.containsKey("propertyDate"));
             assertTrue(property_types.containsKey("propertySqlDate"));
@@ -1871,15 +1871,15 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("propertyByte"));
             assertTrue(property_types.containsKey("propertyFloat"));
             assertTrue(property_types.containsKey("propertyShort"));
-            assertSame(property_types.get("propertyString"), String.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyFloat"), float.class);
-            assertSame(property_types.get("propertyShort"), short.class);
+            assertSame(String.class, property_types.get("propertyString"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(java.sql.Date.class, property_types.get("propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(LocalDate.class, property_types.get("propertyLocalDate"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(float.class, property_types.get("propertyFloat"));
+            assertSame(short.class, property_types.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1895,7 +1895,7 @@ public class TestBeanUtils {
                     "propertyByte", "propertyFloat", "propertyShort"},
                 null,
                 null);
-            assertEquals(property_types.size(), 10);
+            assertEquals(10, property_types.size());
             assertTrue(property_types.containsKey("propertyReadonly"));
             assertTrue(property_types.containsKey("propertyString"));
             assertTrue(property_types.containsKey("propertyDate"));
@@ -1906,16 +1906,16 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("propertyByte"));
             assertTrue(property_types.containsKey("propertyFloat"));
             assertTrue(property_types.containsKey("propertyShort"));
-            assertSame(property_types.get("propertyReadonly"), int.class);
-            assertSame(property_types.get("propertyString"), String.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyFloat"), float.class);
-            assertSame(property_types.get("propertyShort"), short.class);
+            assertSame(int.class, property_types.get("propertyReadonly"));
+            assertSame(String.class, property_types.get("propertyString"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(java.sql.Date.class, property_types.get("propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(LocalDate.class, property_types.get("propertyLocalDate"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(float.class, property_types.get("propertyFloat"));
+            assertSame(short.class, property_types.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1931,7 +1931,7 @@ public class TestBeanUtils {
                     "propertyByte", "propertyFloat", "propertyShort"},
                 null,
                 null);
-            assertEquals(property_types.size(), 10);
+            assertEquals(10, property_types.size());
             assertTrue(property_types.containsKey("propertyWriteOnly"));
             assertTrue(property_types.containsKey("propertyString"));
             assertTrue(property_types.containsKey("propertyDate"));
@@ -1942,16 +1942,16 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("propertyByte"));
             assertTrue(property_types.containsKey("propertyFloat"));
             assertTrue(property_types.containsKey("propertyShort"));
-            assertSame(property_types.get("propertyWriteOnly"), long.class);
-            assertSame(property_types.get("propertyString"), String.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyFloat"), float.class);
-            assertSame(property_types.get("propertyShort"), short.class);
+            assertSame(long.class, property_types.get("propertyWriteOnly"));
+            assertSame(String.class, property_types.get("propertyString"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(java.sql.Date.class, property_types.get("propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(LocalDate.class, property_types.get("propertyLocalDate"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(float.class, property_types.get("propertyFloat"));
+            assertSame(short.class, property_types.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -1967,7 +1967,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 null,
                 "PREFIX:");
-            assertEquals(property_types.size(), 9);
+            assertEquals(9, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyString"));
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
             assertTrue(property_types.containsKey("PREFIX:propertySqlDate"));
@@ -1977,15 +1977,15 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("PREFIX:propertyByte"));
             assertTrue(property_types.containsKey("PREFIX:propertyFloat"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
-            assertSame(property_types.get("PREFIX:propertyString"), String.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyFloat"), float.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
+            assertSame(String.class, property_types.get("PREFIX:propertyString"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(java.sql.Date.class, property_types.get("PREFIX:propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(LocalDate.class, property_types.get("PREFIX:propertyLocalDate"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(float.class, property_types.get("PREFIX:propertyFloat"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2001,7 +2001,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 null,
                 "PREFIX:");
-            assertEquals(property_types.size(), 10);
+            assertEquals(10, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyReadonly"));
             assertTrue(property_types.containsKey("PREFIX:propertyString"));
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
@@ -2012,16 +2012,16 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("PREFIX:propertyByte"));
             assertTrue(property_types.containsKey("PREFIX:propertyFloat"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
-            assertSame(property_types.get("PREFIX:propertyReadonly"), int.class);
-            assertSame(property_types.get("PREFIX:propertyString"), String.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyFloat"), float.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
+            assertSame(int.class, property_types.get("PREFIX:propertyReadonly"));
+            assertSame(String.class, property_types.get("PREFIX:propertyString"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(java.sql.Date.class, property_types.get("PREFIX:propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(LocalDate.class, property_types.get("PREFIX:propertyLocalDate"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(float.class, property_types.get("PREFIX:propertyFloat"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2037,7 +2037,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 null,
                 "PREFIX:");
-            assertEquals(property_types.size(), 10);
+            assertEquals(10, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyWriteOnly"));
             assertTrue(property_types.containsKey("PREFIX:propertyString"));
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
@@ -2048,16 +2048,16 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("PREFIX:propertyByte"));
             assertTrue(property_types.containsKey("PREFIX:propertyFloat"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
-            assertSame(property_types.get("PREFIX:propertyWriteOnly"), long.class);
-            assertSame(property_types.get("PREFIX:propertyString"), String.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertySqlDate"), java.sql.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDate"), LocalDate.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyFloat"), float.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
+            assertSame(long.class, property_types.get("PREFIX:propertyWriteOnly"));
+            assertSame(String.class, property_types.get("PREFIX:propertyString"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(java.sql.Date.class, property_types.get("PREFIX:propertySqlDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(LocalDate.class, property_types.get("PREFIX:propertyLocalDate"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(float.class, property_types.get("PREFIX:propertyFloat"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2070,7 +2070,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_types.size(), 13);
+            assertEquals(13, property_types.size());
             assertTrue(property_types.containsKey("propertyStringBuffer"));
             assertTrue(property_types.containsKey("propertyDate"));
             assertTrue(property_types.containsKey("propertyTime"));
@@ -2084,19 +2084,19 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("propertyInt"));
             assertTrue(property_types.containsKey("propertyLong"));
             assertTrue(property_types.containsKey("propertyShort"));
-            assertSame(property_types.get("propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("propertyChar"), char.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyDouble"), double.class);
-            assertSame(property_types.get("propertyInt"), int.class);
-            assertSame(property_types.get("propertyLong"), long.class);
-            assertSame(property_types.get("propertyShort"), short.class);
+            assertSame(StringBuffer.class, property_types.get("propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("propertyLocalDateTime"));
+            assertSame(LocalTime.class, property_types.get("propertyLocalTime"));
+            assertSame(char.class, property_types.get("propertyChar"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(double.class, property_types.get("propertyDouble"));
+            assertSame(int.class, property_types.get("propertyInt"));
+            assertSame(long.class, property_types.get("propertyLong"));
+            assertSame(short.class, property_types.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2109,7 +2109,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_types.size(), 14);
+            assertEquals(14, property_types.size());
             assertTrue(property_types.containsKey("propertyReadonly"));
             assertTrue(property_types.containsKey("propertyStringBuffer"));
             assertTrue(property_types.containsKey("propertyDate"));
@@ -2124,20 +2124,20 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("propertyInt"));
             assertTrue(property_types.containsKey("propertyLong"));
             assertTrue(property_types.containsKey("propertyShort"));
-            assertSame(property_types.get("propertyReadonly"), int.class);
-            assertSame(property_types.get("propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("propertyChar"), char.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyDouble"), double.class);
-            assertSame(property_types.get("propertyInt"), int.class);
-            assertSame(property_types.get("propertyLong"), long.class);
-            assertSame(property_types.get("propertyShort"), short.class);
+            assertSame(int.class, property_types.get("propertyReadonly"));
+            assertSame(StringBuffer.class, property_types.get("propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("propertyLocalDateTime"));
+            assertSame(LocalTime.class, property_types.get("propertyLocalTime"));
+            assertSame(char.class, property_types.get("propertyChar"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(double.class, property_types.get("propertyDouble"));
+            assertSame(int.class, property_types.get("propertyInt"));
+            assertSame(long.class, property_types.get("propertyLong"));
+            assertSame(short.class, property_types.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2150,7 +2150,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_types.size(), 14);
+            assertEquals(14, property_types.size());
             assertTrue(property_types.containsKey("propertyWriteOnly"));
             assertTrue(property_types.containsKey("propertyStringBuffer"));
             assertTrue(property_types.containsKey("propertyDate"));
@@ -2165,20 +2165,20 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("propertyInt"));
             assertTrue(property_types.containsKey("propertyLong"));
             assertTrue(property_types.containsKey("propertyShort"));
-            assertSame(property_types.get("propertyWriteOnly"), long.class);
-            assertSame(property_types.get("propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("propertyChar"), char.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyDouble"), double.class);
-            assertSame(property_types.get("propertyInt"), int.class);
-            assertSame(property_types.get("propertyLong"), long.class);
-            assertSame(property_types.get("propertyShort"), short.class);
+            assertSame(long.class, property_types.get("propertyWriteOnly"));
+            assertSame(StringBuffer.class, property_types.get("propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("propertyLocalDateTime"));
+            assertSame(LocalTime.class, property_types.get("propertyLocalTime"));
+            assertSame(char.class, property_types.get("propertyChar"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(double.class, property_types.get("propertyDouble"));
+            assertSame(int.class, property_types.get("propertyInt"));
+            assertSame(long.class, property_types.get("propertyLong"));
+            assertSame(short.class, property_types.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2191,7 +2191,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_types.size(), 13);
+            assertEquals(13, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyStringBuffer"));
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
             assertTrue(property_types.containsKey("PREFIX:propertyTime"));
@@ -2205,19 +2205,19 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("PREFIX:propertyInt"));
             assertTrue(property_types.containsKey("PREFIX:propertyLong"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
-            assertSame(property_types.get("PREFIX:propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("PREFIX:propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("PREFIX:propertyChar"), char.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyDouble"), double.class);
-            assertSame(property_types.get("PREFIX:propertyInt"), int.class);
-            assertSame(property_types.get("PREFIX:propertyLong"), long.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
+            assertSame(StringBuffer.class, property_types.get("PREFIX:propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("PREFIX:propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("PREFIX:propertyLocalDateTime"));
+            assertSame(LocalTime.class, property_types.get("PREFIX:propertyLocalTime"));
+            assertSame(char.class, property_types.get("PREFIX:propertyChar"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(double.class, property_types.get("PREFIX:propertyDouble"));
+            assertSame(int.class, property_types.get("PREFIX:propertyInt"));
+            assertSame(long.class, property_types.get("PREFIX:propertyLong"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2230,7 +2230,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_types.size(), 14);
+            assertEquals(14, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyReadonly"));
             assertTrue(property_types.containsKey("PREFIX:propertyStringBuffer"));
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
@@ -2245,20 +2245,20 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("PREFIX:propertyInt"));
             assertTrue(property_types.containsKey("PREFIX:propertyLong"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
-            assertSame(property_types.get("PREFIX:propertyReadonly"), int.class);
-            assertSame(property_types.get("PREFIX:propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("PREFIX:propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("PREFIX:propertyChar"), char.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyDouble"), double.class);
-            assertSame(property_types.get("PREFIX:propertyInt"), int.class);
-            assertSame(property_types.get("PREFIX:propertyLong"), long.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
+            assertSame(int.class, property_types.get("PREFIX:propertyReadonly"));
+            assertSame(StringBuffer.class, property_types.get("PREFIX:propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("PREFIX:propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("PREFIX:propertyLocalDateTime"));
+            assertSame(LocalTime.class, property_types.get("PREFIX:propertyLocalTime"));
+            assertSame(char.class, property_types.get("PREFIX:propertyChar"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(double.class, property_types.get("PREFIX:propertyDouble"));
+            assertSame(int.class, property_types.get("PREFIX:propertyInt"));
+            assertSame(long.class, property_types.get("PREFIX:propertyLong"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2271,7 +2271,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_types.size(), 14);
+            assertEquals(14, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyWriteOnly"));
             assertTrue(property_types.containsKey("PREFIX:propertyStringBuffer"));
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
@@ -2286,20 +2286,20 @@ public class TestBeanUtils {
             assertTrue(property_types.containsKey("PREFIX:propertyInt"));
             assertTrue(property_types.containsKey("PREFIX:propertyLong"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
-            assertSame(property_types.get("PREFIX:propertyWriteOnly"), long.class);
-            assertSame(property_types.get("PREFIX:propertyStringBuffer"), StringBuffer.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyTimestamp"), java.sql.Timestamp.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyLocalDateTime"), LocalDateTime.class);
-            assertSame(property_types.get("PREFIX:propertyLocalTime"), LocalTime.class);
-            assertSame(property_types.get("PREFIX:propertyChar"), char.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyDouble"), double.class);
-            assertSame(property_types.get("PREFIX:propertyInt"), int.class);
-            assertSame(property_types.get("PREFIX:propertyLong"), long.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
+            assertSame(long.class, property_types.get("PREFIX:propertyWriteOnly"));
+            assertSame(StringBuffer.class, property_types.get("PREFIX:propertyStringBuffer"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(java.sql.Timestamp.class, property_types.get("PREFIX:propertyTimestamp"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(LocalDateTime.class, property_types.get("PREFIX:propertyLocalDateTime"));
+            assertSame(LocalTime.class, property_types.get("PREFIX:propertyLocalTime"));
+            assertSame(char.class, property_types.get("PREFIX:propertyChar"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(double.class, property_types.get("PREFIX:propertyDouble"));
+            assertSame(int.class, property_types.get("PREFIX:propertyInt"));
+            assertSame(long.class, property_types.get("PREFIX:propertyLong"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2313,17 +2313,17 @@ public class TestBeanUtils {
                     "propertyInstant", "propertyLocalDate", "propertyByte", "propertyFloat", "propertyShort"},
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_types.size(), 5);
+            assertEquals(5, property_types.size());
             assertTrue(property_types.containsKey("propertyDate"));
             assertTrue(property_types.containsKey("propertyTime"));
             assertTrue(property_types.containsKey("propertyInstant"));
             assertTrue(property_types.containsKey("propertyByte"));
             assertTrue(property_types.containsKey("propertyShort"));
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyShort"), short.class);
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(short.class, property_types.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2337,19 +2337,19 @@ public class TestBeanUtils {
                     "propertyInstant", "propertyLocalDate", "propertyByte", "propertyFloat", "propertyShort"},
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_types.size(), 6);
+            assertEquals(6, property_types.size());
             assertTrue(property_types.containsKey("propertyReadonly"));
             assertTrue(property_types.containsKey("propertyDate"));
             assertTrue(property_types.containsKey("propertyTime"));
             assertTrue(property_types.containsKey("propertyInstant"));
             assertTrue(property_types.containsKey("propertyByte"));
             assertTrue(property_types.containsKey("propertyShort"));
-            assertSame(property_types.get("propertyReadonly"), int.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyShort"), short.class);
+            assertSame(int.class, property_types.get("propertyReadonly"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(short.class, property_types.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2363,19 +2363,19 @@ public class TestBeanUtils {
                     "propertyInstant", "propertyLocalDate", "propertyByte", "propertyFloat", "propertyShort"},
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_types.size(), 6);
+            assertEquals(6, property_types.size());
             assertTrue(property_types.containsKey("propertyWriteOnly"));
             assertTrue(property_types.containsKey("propertyDate"));
             assertTrue(property_types.containsKey("propertyTime"));
             assertTrue(property_types.containsKey("propertyInstant"));
             assertTrue(property_types.containsKey("propertyByte"));
             assertTrue(property_types.containsKey("propertyShort"));
-            assertSame(property_types.get("propertyWriteOnly"), long.class);
-            assertSame(property_types.get("propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("propertyInstant"), Instant.class);
-            assertSame(property_types.get("propertyByte"), byte.class);
-            assertSame(property_types.get("propertyShort"), short.class);
+            assertSame(long.class, property_types.get("propertyWriteOnly"));
+            assertSame(Date.class, property_types.get("propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("propertyTime"));
+            assertSame(Instant.class, property_types.get("propertyInstant"));
+            assertSame(byte.class, property_types.get("propertyByte"));
+            assertSame(short.class, property_types.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2389,17 +2389,17 @@ public class TestBeanUtils {
                     "PREFIX:propertyInstant", "PREFIX:propertyLocalDate", "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_types.size(), 5);
+            assertEquals(5, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
             assertTrue(property_types.containsKey("PREFIX:propertyTime"));
             assertTrue(property_types.containsKey("PREFIX:propertyInstant"));
             assertTrue(property_types.containsKey("PREFIX:propertyByte"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2413,19 +2413,19 @@ public class TestBeanUtils {
                     "PREFIX:propertyInstant", "PREFIX:propertyLocalDate", "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_types.size(), 6);
+            assertEquals(6, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyReadonly"));
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
             assertTrue(property_types.containsKey("PREFIX:propertyTime"));
             assertTrue(property_types.containsKey("PREFIX:propertyInstant"));
             assertTrue(property_types.containsKey("PREFIX:propertyByte"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
-            assertSame(property_types.get("PREFIX:propertyReadonly"), int.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
+            assertSame(int.class, property_types.get("PREFIX:propertyReadonly"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2439,19 +2439,19 @@ public class TestBeanUtils {
                     "PREFIX:propertyInstant", "PREFIX:propertyLocalDate", "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_types.size(), 6);
+            assertEquals(6, property_types.size());
             assertTrue(property_types.containsKey("PREFIX:propertyWriteOnly"));
             assertTrue(property_types.containsKey("PREFIX:propertyDate"));
             assertTrue(property_types.containsKey("PREFIX:propertyTime"));
             assertTrue(property_types.containsKey("PREFIX:propertyInstant"));
             assertTrue(property_types.containsKey("PREFIX:propertyByte"));
             assertTrue(property_types.containsKey("PREFIX:propertyShort"));
-            assertSame(property_types.get("PREFIX:propertyWriteOnly"), long.class);
-            assertSame(property_types.get("PREFIX:propertyDate"), java.util.Date.class);
-            assertSame(property_types.get("PREFIX:propertyTime"), java.sql.Time.class);
-            assertSame(property_types.get("PREFIX:propertyInstant"), Instant.class);
-            assertSame(property_types.get("PREFIX:propertyByte"), byte.class);
-            assertSame(property_types.get("PREFIX:propertyShort"), short.class);
+            assertSame(long.class, property_types.get("PREFIX:propertyWriteOnly"));
+            assertSame(Date.class, property_types.get("PREFIX:propertyDate"));
+            assertSame(java.sql.Time.class, property_types.get("PREFIX:propertyTime"));
+            assertSame(Instant.class, property_types.get("PREFIX:propertyInstant"));
+            assertSame(byte.class, property_types.get("PREFIX:propertyByte"));
+            assertSame(short.class, property_types.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2501,8 +2501,8 @@ public class TestBeanUtils {
         Object bean = getPopulatedBean();
         try {
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyString"), "thisisastring");
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals("thisisastring", BeanUtils.getPropertyValue(bean, "propertyString"));
+            assertEquals("butthisisastringbuffer", BeanUtils.getPropertyValue(bean, "propertyStringBuffer").toString());
             assertEquals(BeanUtils.getPropertyValue(bean, "propertyDate"), Convert.toDate(cal));
             assertEquals(BeanUtils.getPropertyValue(bean, "propertyCalendar"), cal);
             assertEquals(BeanUtils.getPropertyValue(bean, "propertySqlDate"), Convert.toSqlDate(cal));
@@ -2512,15 +2512,15 @@ public class TestBeanUtils {
             assertEquals(BeanUtils.getPropertyValue(bean, "propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(BeanUtils.getPropertyValue(bean, "propertyLocalDate"), Convert.toLocalDate(cal));
             assertEquals(BeanUtils.getPropertyValue(bean, "propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyChar"), 'g');
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyBoolean"), Boolean.FALSE);
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyByte"), (byte) 53);
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyDouble"), 84578.42d);
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyFloat"), 35523.967f);
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyInt"), 978);
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyLong"), 87346L);
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyShort"), (short) 31);
-            assertEquals(BeanUtils.getPropertyValue(bean, "propertyBigDecimal"), new BigDecimal("8347365990.387437894678"));
+            assertEquals('g', BeanUtils.getPropertyValue(bean, "propertyChar"));
+            assertEquals(Boolean.FALSE, BeanUtils.getPropertyValue(bean, "propertyBoolean"));
+            assertEquals((byte) 53, BeanUtils.getPropertyValue(bean, "propertyByte"));
+            assertEquals(84578.42d, BeanUtils.getPropertyValue(bean, "propertyDouble"));
+            assertEquals(35523.967f, BeanUtils.getPropertyValue(bean, "propertyFloat"));
+            assertEquals(978, BeanUtils.getPropertyValue(bean, "propertyInt"));
+            assertEquals(87346L, BeanUtils.getPropertyValue(bean, "propertyLong"));
+            assertEquals((short) 31, BeanUtils.getPropertyValue(bean, "propertyShort"));
+            assertEquals(new BigDecimal("8347365990.387437894678"), BeanUtils.getPropertyValue(bean, "propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2610,7 +2610,7 @@ public class TestBeanUtils {
     void testGetPropertyValues() {
         try {
             var property_values = BeanUtils.getPropertyValues(getPopulatedBean(), null, null, null);
-            assertEquals(property_values.size(), 20);
+            assertEquals(20, property_values.size());
             assertTrue(property_values.containsKey("propertyString"));
             assertTrue(property_values.containsKey("propertyStringBuffer"));
             assertTrue(property_values.containsKey("propertyDate"));
@@ -2633,8 +2633,8 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyBigDecimal"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyString"), "thisisastring");
-            assertEquals(property_values.get("propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals("thisisastring", property_values.get("propertyString"));
+            assertEquals("butthisisastringbuffer", property_values.get("propertyStringBuffer").toString());
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertyCalendar"), cal);
             assertEquals(property_values.get("propertySqlDate"), Convert.toSqlDate(cal));
@@ -2644,15 +2644,15 @@ public class TestBeanUtils {
             assertEquals(property_values.get("propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("propertyLocalDate"), Convert.toLocalDate(cal));
             assertEquals(property_values.get("propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("propertyChar"), 'g');
-            assertEquals(property_values.get("propertyBoolean"), Boolean.FALSE);
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("propertyInt"), 978);
-            assertEquals(property_values.get("propertyLong"), 87346L);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
-            assertEquals(property_values.get("propertyBigDecimal"), new BigDecimal("8347365990.387437894678"));
+            assertEquals('g', property_values.get("propertyChar"));
+            assertEquals(Boolean.FALSE, property_values.get("propertyBoolean"));
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals(84578.42d, property_values.get("propertyDouble"));
+            assertEquals(35523.967f, property_values.get("propertyFloat"));
+            assertEquals(978, property_values.get("propertyInt"));
+            assertEquals(87346L, property_values.get("propertyLong"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
+            assertEquals(new BigDecimal("8347365990.387437894678"), property_values.get("propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2662,7 +2662,7 @@ public class TestBeanUtils {
     void testGetPropertyValuesGetters() {
         try {
             var property_values = BeanUtils.getPropertyValues(BeanUtils.Accessors.GETTERS, getPopulatedBean(), null, null, null);
-            assertEquals(property_values.size(), 21);
+            assertEquals(21, property_values.size());
             assertTrue(property_values.containsKey("propertyReadonly"));
             assertTrue(property_values.containsKey("propertyString"));
             assertTrue(property_values.containsKey("propertyStringBuffer"));
@@ -2686,9 +2686,9 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyBigDecimal"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyReadonly"), 23);
-            assertEquals(property_values.get("propertyString"), "thisisastring");
-            assertEquals(property_values.get("propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals(23, property_values.get("propertyReadonly"));
+            assertEquals("thisisastring", property_values.get("propertyString"));
+            assertEquals("butthisisastringbuffer", property_values.get("propertyStringBuffer").toString());
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertyCalendar"), cal);
             assertEquals(property_values.get("propertySqlDate"), Convert.toSqlDate(cal));
@@ -2698,15 +2698,15 @@ public class TestBeanUtils {
             assertEquals(property_values.get("propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("propertyLocalDate"), Convert.toLocalDate(cal));
             assertEquals(property_values.get("propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("propertyChar"), 'g');
-            assertEquals(property_values.get("propertyBoolean"), Boolean.FALSE);
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("propertyInt"), 978);
-            assertEquals(property_values.get("propertyLong"), 87346L);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
-            assertEquals(property_values.get("propertyBigDecimal"), new BigDecimal("8347365990.387437894678"));
+            assertEquals('g', property_values.get("propertyChar"));
+            assertEquals(Boolean.FALSE, property_values.get("propertyBoolean"));
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals(84578.42d, property_values.get("propertyDouble"));
+            assertEquals(35523.967f, property_values.get("propertyFloat"));
+            assertEquals(978, property_values.get("propertyInt"));
+            assertEquals(87346L, property_values.get("propertyLong"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
+            assertEquals(new BigDecimal("8347365990.387437894678"), property_values.get("propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2716,7 +2716,7 @@ public class TestBeanUtils {
     void testGetPropertyValuesSetters() {
         try {
             var property_values = BeanUtils.getPropertyValues(BeanUtils.Accessors.SETTERS, getPopulatedBean(), null, null, null);
-            assertEquals(property_values.size(), 20);
+            assertEquals(20, property_values.size());
             assertTrue(property_values.containsKey("propertyString"));
             assertTrue(property_values.containsKey("propertyStringBuffer"));
             assertTrue(property_values.containsKey("propertyDate"));
@@ -2739,8 +2739,8 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyBigDecimal"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyString"), "thisisastring");
-            assertEquals(property_values.get("propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals("thisisastring", property_values.get("propertyString"));
+            assertEquals("butthisisastringbuffer", property_values.get("propertyStringBuffer").toString());
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertyCalendar"), cal);
             assertEquals(property_values.get("propertySqlDate"), Convert.toSqlDate(cal));
@@ -2750,15 +2750,15 @@ public class TestBeanUtils {
             assertEquals(property_values.get("propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("propertyLocalDate"), Convert.toLocalDate(cal));
             assertEquals(property_values.get("propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("propertyChar"), 'g');
-            assertEquals(property_values.get("propertyBoolean"), Boolean.FALSE);
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("propertyInt"), 978);
-            assertEquals(property_values.get("propertyLong"), 87346L);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
-            assertEquals(property_values.get("propertyBigDecimal"), new BigDecimal("8347365990.387437894678"));
+            assertEquals('g', property_values.get("propertyChar"));
+            assertEquals(Boolean.FALSE, property_values.get("propertyBoolean"));
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals(84578.42d, property_values.get("propertyDouble"));
+            assertEquals(35523.967f, property_values.get("propertyFloat"));
+            assertEquals(978, property_values.get("propertyInt"));
+            assertEquals(87346L, property_values.get("propertyLong"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
+            assertEquals(new BigDecimal("8347365990.387437894678"), property_values.get("propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2768,7 +2768,7 @@ public class TestBeanUtils {
     void testGetPropertyValuesPrefix() {
         try {
             var property_values = BeanUtils.getPropertyValues(getPopulatedBean(), null, null, "PREFIX:");
-            assertEquals(property_values.size(), 20);
+            assertEquals(20, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyString"));
             assertTrue(property_values.containsKey("PREFIX:propertyStringBuffer"));
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
@@ -2791,8 +2791,8 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyBigDecimal"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyString"), "thisisastring");
-            assertEquals(property_values.get("PREFIX:propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals("thisisastring", property_values.get("PREFIX:propertyString"));
+            assertEquals("butthisisastringbuffer", property_values.get("PREFIX:propertyStringBuffer").toString());
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertyCalendar"), cal);
             assertEquals(property_values.get("PREFIX:propertySqlDate"), Convert.toSqlDate(cal));
@@ -2802,15 +2802,15 @@ public class TestBeanUtils {
             assertEquals(property_values.get("PREFIX:propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalDate"), Convert.toLocalDate(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("PREFIX:propertyChar"), 'g');
-            assertEquals(property_values.get("PREFIX:propertyBoolean"), Boolean.FALSE);
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("PREFIX:propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("PREFIX:propertyInt"), 978);
-            assertEquals(property_values.get("PREFIX:propertyLong"), 87346L);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
-            assertEquals(property_values.get("PREFIX:propertyBigDecimal"), new BigDecimal("8347365990.387437894678"));
+            assertEquals('g', property_values.get("PREFIX:propertyChar"));
+            assertEquals(Boolean.FALSE, property_values.get("PREFIX:propertyBoolean"));
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals(84578.42d, property_values.get("PREFIX:propertyDouble"));
+            assertEquals(35523.967f, property_values.get("PREFIX:propertyFloat"));
+            assertEquals(978, property_values.get("PREFIX:propertyInt"));
+            assertEquals(87346L, property_values.get("PREFIX:propertyLong"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
+            assertEquals(new BigDecimal("8347365990.387437894678"), property_values.get("PREFIX:propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2820,7 +2820,7 @@ public class TestBeanUtils {
     void testGetPropertyValuesPrefixGetters() {
         try {
             var property_values = BeanUtils.getPropertyValues(BeanUtils.Accessors.GETTERS, getPopulatedBean(), null, null, "PREFIX:");
-            assertEquals(property_values.size(), 21);
+            assertEquals(21, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyReadonly"));
             assertTrue(property_values.containsKey("PREFIX:propertyString"));
             assertTrue(property_values.containsKey("PREFIX:propertyStringBuffer"));
@@ -2844,9 +2844,9 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyBigDecimal"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyReadonly"), 23);
-            assertEquals(property_values.get("PREFIX:propertyString"), "thisisastring");
-            assertEquals(property_values.get("PREFIX:propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals(23, property_values.get("PREFIX:propertyReadonly"));
+            assertEquals("thisisastring", property_values.get("PREFIX:propertyString"));
+            assertEquals("butthisisastringbuffer", property_values.get("PREFIX:propertyStringBuffer").toString());
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertyCalendar"), cal);
             assertEquals(property_values.get("PREFIX:propertySqlDate"), Convert.toSqlDate(cal));
@@ -2856,15 +2856,15 @@ public class TestBeanUtils {
             assertEquals(property_values.get("PREFIX:propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalDate"), Convert.toLocalDate(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("PREFIX:propertyChar"), 'g');
-            assertEquals(property_values.get("PREFIX:propertyBoolean"), Boolean.FALSE);
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("PREFIX:propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("PREFIX:propertyInt"), 978);
-            assertEquals(property_values.get("PREFIX:propertyLong"), 87346L);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
-            assertEquals(property_values.get("PREFIX:propertyBigDecimal"), new BigDecimal("8347365990.387437894678"));
+            assertEquals('g', property_values.get("PREFIX:propertyChar"));
+            assertEquals(Boolean.FALSE, property_values.get("PREFIX:propertyBoolean"));
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals(84578.42d, property_values.get("PREFIX:propertyDouble"));
+            assertEquals(35523.967f, property_values.get("PREFIX:propertyFloat"));
+            assertEquals(978, property_values.get("PREFIX:propertyInt"));
+            assertEquals(87346L, property_values.get("PREFIX:propertyLong"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
+            assertEquals(new BigDecimal("8347365990.387437894678"), property_values.get("PREFIX:propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2874,7 +2874,7 @@ public class TestBeanUtils {
     void testGetPropertyValuesPrefixSetters() {
         try {
             var property_values = BeanUtils.getPropertyValues(BeanUtils.Accessors.SETTERS, getPopulatedBean(), null, null, "PREFIX:");
-            assertEquals(property_values.size(), 20);
+            assertEquals(20, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyString"));
             assertTrue(property_values.containsKey("PREFIX:propertyStringBuffer"));
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
@@ -2897,8 +2897,8 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyBigDecimal"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyString"), "thisisastring");
-            assertEquals(property_values.get("PREFIX:propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals("thisisastring", property_values.get("PREFIX:propertyString"));
+            assertEquals("butthisisastringbuffer", property_values.get("PREFIX:propertyStringBuffer").toString());
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertyCalendar"), cal);
             assertEquals(property_values.get("PREFIX:propertySqlDate"), Convert.toSqlDate(cal));
@@ -2908,15 +2908,15 @@ public class TestBeanUtils {
             assertEquals(property_values.get("PREFIX:propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalDate"), Convert.toLocalDate(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("PREFIX:propertyChar"), 'g');
-            assertEquals(property_values.get("PREFIX:propertyBoolean"), Boolean.FALSE);
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("PREFIX:propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("PREFIX:propertyInt"), 978);
-            assertEquals(property_values.get("PREFIX:propertyLong"), 87346L);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
-            assertEquals(property_values.get("PREFIX:propertyBigDecimal"), new BigDecimal("8347365990.387437894678"));
+            assertEquals('g', property_values.get("PREFIX:propertyChar"));
+            assertEquals(Boolean.FALSE, property_values.get("PREFIX:propertyBoolean"));
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals(84578.42d, property_values.get("PREFIX:propertyDouble"));
+            assertEquals(35523.967f, property_values.get("PREFIX:propertyFloat"));
+            assertEquals(978, property_values.get("PREFIX:propertyInt"));
+            assertEquals(87346L, property_values.get("PREFIX:propertyLong"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
+            assertEquals(new BigDecimal("8347365990.387437894678"), property_values.get("PREFIX:propertyBigDecimal"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2930,7 +2930,7 @@ public class TestBeanUtils {
                     "propertyInstant", "propertyLocalDate", "propertyTime", "propertyByte", "propertyFloat", "propertyShort"},
                 null,
                 null);
-            assertEquals(property_values.size(), 9);
+            assertEquals(9, property_values.size());
             assertTrue(property_values.containsKey("propertyString"));
             assertTrue(property_values.containsKey("propertyDate"));
             assertTrue(property_values.containsKey("propertySqlDate"));
@@ -2942,15 +2942,15 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyString"), "thisisastring");
+            assertEquals("thisisastring", property_values.get("propertyString"));
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertySqlDate"), Convert.toSqlDate(cal));
             assertEquals(property_values.get("propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("propertyLocalDate"), Convert.toLocalDate(cal));
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals(35523.967f, property_values.get("propertyFloat"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -2964,7 +2964,7 @@ public class TestBeanUtils {
                     "propertyInstant", "propertyLocalDate", "propertyTime", "propertyByte", "propertyFloat", "propertyShort"},
                 null,
                 null);
-            assertEquals(property_values.size(), 10);
+            assertEquals(10, property_values.size());
             assertTrue(property_values.containsKey("propertyReadonly"));
             assertTrue(property_values.containsKey("propertyString"));
             assertTrue(property_values.containsKey("propertyDate"));
@@ -2977,16 +2977,16 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyReadonly"), 23);
-            assertEquals(property_values.get("propertyString"), "thisisastring");
+            assertEquals(23, property_values.get("propertyReadonly"));
+            assertEquals("thisisastring", property_values.get("propertyString"));
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertySqlDate"), Convert.toSqlDate(cal));
             assertEquals(property_values.get("propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("propertyLocalDate"), Convert.toLocalDate(cal));
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals(35523.967f, property_values.get("propertyFloat"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3000,7 +3000,7 @@ public class TestBeanUtils {
                     "propertyInstant", "propertyLocalDate", "propertyTime", "propertyByte", "propertyFloat", "propertyShort"},
                 null,
                 null);
-            assertEquals(property_values.size(), 9);
+            assertEquals(9, property_values.size());
             assertTrue(property_values.containsKey("propertyString"));
             assertTrue(property_values.containsKey("propertyDate"));
             assertTrue(property_values.containsKey("propertySqlDate"));
@@ -3012,15 +3012,15 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyString"), "thisisastring");
+            assertEquals("thisisastring", property_values.get("propertyString"));
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertySqlDate"), Convert.toSqlDate(cal));
             assertEquals(property_values.get("propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("propertyLocalDate"), Convert.toLocalDate(cal));
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals(35523.967f, property_values.get("propertyFloat"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3034,7 +3034,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyInstant", "PREFIX:propertyLocalDate", "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 null,
                 "PREFIX:");
-            assertEquals(property_values.size(), 9);
+            assertEquals(9, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyString"));
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
             assertTrue(property_values.containsKey("PREFIX:propertySqlDate"));
@@ -3046,15 +3046,15 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyString"), "thisisastring");
+            assertEquals("thisisastring", property_values.get("PREFIX:propertyString"));
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertySqlDate"), Convert.toSqlDate(cal));
             assertEquals(property_values.get("PREFIX:propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("PREFIX:propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalDate"), Convert.toLocalDate(cal));
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals(35523.967f, property_values.get("PREFIX:propertyFloat"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3068,7 +3068,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyInstant", "PREFIX:propertyLocalDate", "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 null,
                 "PREFIX:");
-            assertEquals(property_values.size(), 10);
+            assertEquals(10, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyReadonly"));
             assertTrue(property_values.containsKey("PREFIX:propertyString"));
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
@@ -3081,16 +3081,16 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyReadonly"), 23);
-            assertEquals(property_values.get("PREFIX:propertyString"), "thisisastring");
+            assertEquals(23, property_values.get("PREFIX:propertyReadonly"));
+            assertEquals("thisisastring", property_values.get("PREFIX:propertyString"));
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertySqlDate"), Convert.toSqlDate(cal));
             assertEquals(property_values.get("PREFIX:propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("PREFIX:propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalDate"), Convert.toLocalDate(cal));
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals(35523.967f, property_values.get("PREFIX:propertyFloat"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3104,7 +3104,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyInstant", "PREFIX:propertyLocalDate", "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 null,
                 "PREFIX:");
-            assertEquals(property_values.size(), 9);
+            assertEquals(9, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyString"));
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
             assertTrue(property_values.containsKey("PREFIX:propertySqlDate"));
@@ -3116,15 +3116,15 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyString"), "thisisastring");
+            assertEquals("thisisastring", property_values.get("PREFIX:propertyString"));
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertySqlDate"), Convert.toSqlDate(cal));
             assertEquals(property_values.get("PREFIX:propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("PREFIX:propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalDate"), Convert.toLocalDate(cal));
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyFloat"), 35523.967f);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals(35523.967f, property_values.get("PREFIX:propertyFloat"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3137,7 +3137,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_values.size(), 13);
+            assertEquals(13, property_values.size());
             assertTrue(property_values.containsKey("propertyStringBuffer"));
             assertTrue(property_values.containsKey("propertyDate"));
             assertTrue(property_values.containsKey("propertyTime"));
@@ -3153,19 +3153,19 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals("butthisisastringbuffer", property_values.get("propertyStringBuffer").toString());
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("propertyTimestamp"), Convert.toSqlTimestamp(cal));
             assertEquals(property_values.get("propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("propertyChar"), 'g');
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("propertyInt"), 978);
-            assertEquals(property_values.get("propertyLong"), 87346L);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
+            assertEquals('g', property_values.get("propertyChar"));
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals(84578.42d, property_values.get("propertyDouble"));
+            assertEquals(978, property_values.get("propertyInt"));
+            assertEquals(87346L, property_values.get("propertyLong"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3178,7 +3178,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_values.size(), 14);
+            assertEquals(14, property_values.size());
             assertTrue(property_values.containsKey("propertyReadonly"));
             assertTrue(property_values.containsKey("propertyStringBuffer"));
             assertTrue(property_values.containsKey("propertyDate"));
@@ -3195,20 +3195,20 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyReadonly"), 23);
-            assertEquals(property_values.get("propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals(23, property_values.get("propertyReadonly"));
+            assertEquals("butthisisastringbuffer", property_values.get("propertyStringBuffer").toString());
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("propertyTimestamp"), Convert.toSqlTimestamp(cal));
             assertEquals(property_values.get("propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("propertyChar"), 'g');
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("propertyInt"), 978);
-            assertEquals(property_values.get("propertyLong"), 87346L);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
+            assertEquals('g', property_values.get("propertyChar"));
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals(84578.42d, property_values.get("propertyDouble"));
+            assertEquals(978, property_values.get("propertyInt"));
+            assertEquals(87346L, property_values.get("propertyLong"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3221,7 +3221,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_values.size(), 13);
+            assertEquals(13, property_values.size());
             assertTrue(property_values.containsKey("propertyStringBuffer"));
             assertTrue(property_values.containsKey("propertyDate"));
             assertTrue(property_values.containsKey("propertyTime"));
@@ -3237,19 +3237,19 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals("butthisisastringbuffer", property_values.get("propertyStringBuffer").toString());
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("propertyTimestamp"), Convert.toSqlTimestamp(cal));
             assertEquals(property_values.get("propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("propertyChar"), 'g');
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("propertyInt"), 978);
-            assertEquals(property_values.get("propertyLong"), 87346L);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
+            assertEquals('g', property_values.get("propertyChar"));
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals(84578.42d, property_values.get("propertyDouble"));
+            assertEquals(978, property_values.get("propertyInt"));
+            assertEquals(87346L, property_values.get("propertyLong"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3262,7 +3262,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_values.size(), 13);
+            assertEquals(13, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyStringBuffer"));
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
             assertTrue(property_values.containsKey("PREFIX:propertyTime"));
@@ -3278,19 +3278,19 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals("butthisisastringbuffer", property_values.get("PREFIX:propertyStringBuffer").toString());
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("PREFIX:propertyTimestamp"), Convert.toSqlTimestamp(cal));
             assertEquals(property_values.get("PREFIX:propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("PREFIX:propertyChar"), 'g');
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("PREFIX:propertyInt"), 978);
-            assertEquals(property_values.get("PREFIX:propertyLong"), 87346L);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
+            assertEquals('g', property_values.get("PREFIX:propertyChar"));
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals(84578.42d, property_values.get("PREFIX:propertyDouble"));
+            assertEquals(978, property_values.get("PREFIX:propertyInt"));
+            assertEquals(87346L, property_values.get("PREFIX:propertyLong"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3303,7 +3303,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_values.size(), 14);
+            assertEquals(14, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyReadonly"));
             assertTrue(property_values.containsKey("PREFIX:propertyStringBuffer"));
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
@@ -3320,20 +3320,20 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyReadonly"), 23);
-            assertEquals(property_values.get("PREFIX:propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals(23, property_values.get("PREFIX:propertyReadonly"));
+            assertEquals("butthisisastringbuffer", property_values.get("PREFIX:propertyStringBuffer").toString());
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("PREFIX:propertyTimestamp"), Convert.toSqlTimestamp(cal));
             assertEquals(property_values.get("PREFIX:propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("PREFIX:propertyChar"), 'g');
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("PREFIX:propertyInt"), 978);
-            assertEquals(property_values.get("PREFIX:propertyLong"), 87346L);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
+            assertEquals('g', property_values.get("PREFIX:propertyChar"));
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals(84578.42d, property_values.get("PREFIX:propertyDouble"));
+            assertEquals(978, property_values.get("PREFIX:propertyInt"));
+            assertEquals(87346L, property_values.get("PREFIX:propertyLong"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3346,7 +3346,7 @@ public class TestBeanUtils {
                 null,
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_values.size(), 13);
+            assertEquals(13, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyStringBuffer"));
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
             assertTrue(property_values.containsKey("PREFIX:propertyTime"));
@@ -3362,19 +3362,19 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyStringBuffer").toString(), "butthisisastringbuffer");
+            assertEquals("butthisisastringbuffer", property_values.get("PREFIX:propertyStringBuffer").toString());
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("PREFIX:propertyTimestamp"), Convert.toSqlTimestamp(cal));
             assertEquals(property_values.get("PREFIX:propertyInstant"), Convert.toInstant(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalDateTime"), Convert.toLocalDateTime(cal));
             assertEquals(property_values.get("PREFIX:propertyLocalTime"), Convert.toLocalTime(cal));
-            assertEquals(property_values.get("PREFIX:propertyChar"), 'g');
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyDouble"), 84578.42d);
-            assertEquals(property_values.get("PREFIX:propertyInt"), 978);
-            assertEquals(property_values.get("PREFIX:propertyLong"), 87346L);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
+            assertEquals('g', property_values.get("PREFIX:propertyChar"));
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals(84578.42d, property_values.get("PREFIX:propertyDouble"));
+            assertEquals(978, property_values.get("PREFIX:propertyInt"));
+            assertEquals(87346L, property_values.get("PREFIX:propertyLong"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3388,7 +3388,7 @@ public class TestBeanUtils {
                     "propertyInstant", "propertyLocalDate", "propertyTime", "propertyByte", "propertyFloat", "propertyShort"},
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_values.size(), 5);
+            assertEquals(5, property_values.size());
             assertTrue(property_values.containsKey("propertyDate"));
             assertTrue(property_values.containsKey("propertyTime"));
             assertTrue(property_values.containsKey("propertyInstant"));
@@ -3399,8 +3399,8 @@ public class TestBeanUtils {
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("propertyInstant"), Convert.toInstant(cal));
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3414,7 +3414,7 @@ public class TestBeanUtils {
                     "propertyInstant", "propertyLocalDate", "propertyTime", "propertyByte", "propertyFloat", "propertyShort"},
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_values.size(), 6);
+            assertEquals(6, property_values.size());
             assertTrue(property_values.containsKey("propertyReadonly"));
             assertTrue(property_values.containsKey("propertyDate"));
             assertTrue(property_values.containsKey("propertyTime"));
@@ -3423,12 +3423,12 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("propertyReadonly"), 23);
+            assertEquals(23, property_values.get("propertyReadonly"));
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("propertyInstant"), Convert.toInstant(cal));
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3442,7 +3442,7 @@ public class TestBeanUtils {
                     "propertyInstant", "propertyLocalDate", "propertyTime", "propertyByte", "propertyFloat", "propertyShort"},
                 new String[]{"propertyString", "propertyCalendar", "propertySqlDate", "propertyLocalDate", "propertyBoolean", "propertyFloat", "propertyBigDecimal"},
                 null);
-            assertEquals(property_values.size(), 5);
+            assertEquals(5, property_values.size());
             assertTrue(property_values.containsKey("propertyDate"));
             assertTrue(property_values.containsKey("propertyTime"));
             assertTrue(property_values.containsKey("propertyInstant"));
@@ -3453,8 +3453,8 @@ public class TestBeanUtils {
             assertEquals(property_values.get("propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("propertyInstant"), Convert.toInstant(cal));
-            assertEquals(property_values.get("propertyByte"), (byte) 53);
-            assertEquals(property_values.get("propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("propertyByte"));
+            assertEquals((short) 31, property_values.get("propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3468,7 +3468,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyInstant", "PREFIX:propertyLocalDate", "PREFIX:propertySqlDate", "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_values.size(), 5);
+            assertEquals(5, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
             assertTrue(property_values.containsKey("PREFIX:propertyTime"));
             assertTrue(property_values.containsKey("PREFIX:propertyInstant"));
@@ -3479,8 +3479,8 @@ public class TestBeanUtils {
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("PREFIX:propertyInstant"), Convert.toInstant(cal));
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3494,7 +3494,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyInstant", "PREFIX:propertyLocalDate", "PREFIX:propertySqlDate", "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_values.size(), 6);
+            assertEquals(6, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyReadonly"));
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
             assertTrue(property_values.containsKey("PREFIX:propertyTime"));
@@ -3503,12 +3503,12 @@ public class TestBeanUtils {
             assertTrue(property_values.containsKey("PREFIX:propertyShort"));
 
             var cal = RifeConfig.tools().getCalendarInstance(2002, Calendar.DECEMBER, 26, 22, 52, 31, 153);
-            assertEquals(property_values.get("PREFIX:propertyReadonly"), 23);
+            assertEquals(23, property_values.get("PREFIX:propertyReadonly"));
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("PREFIX:propertyInstant"), Convert.toInstant(cal));
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3522,7 +3522,7 @@ public class TestBeanUtils {
                     "PREFIX:propertyInstant", "PREFIX:propertyLocalDate", "PREFIX:propertySqlDate", "PREFIX:propertyTime", "PREFIX:propertyByte", "PREFIX:propertyFloat", "PREFIX:propertyShort"},
                 new String[]{"PREFIX:propertyString", "PREFIX:propertyCalendar", "PREFIX:propertySqlDate", "PREFIX:propertyLocalDate", "PREFIX:propertyBoolean", "PREFIX:propertyFloat", "PREFIX:propertyBigDecimal"},
                 "PREFIX:");
-            assertEquals(property_values.size(), 5);
+            assertEquals(5, property_values.size());
             assertTrue(property_values.containsKey("PREFIX:propertyDate"));
             assertTrue(property_values.containsKey("PREFIX:propertyTime"));
             assertTrue(property_values.containsKey("PREFIX:propertyInstant"));
@@ -3533,8 +3533,8 @@ public class TestBeanUtils {
             assertEquals(property_values.get("PREFIX:propertyDate"), Convert.toDate(cal));
             assertEquals(property_values.get("PREFIX:propertyTime"), Convert.toSqlTime(cal));
             assertEquals(property_values.get("PREFIX:propertyInstant"), Convert.toInstant(cal));
-            assertEquals(property_values.get("PREFIX:propertyByte"), (byte) 53);
-            assertEquals(property_values.get("PREFIX:propertyShort"), (short) 31);
+            assertEquals((byte) 53, property_values.get("PREFIX:propertyByte"));
+            assertEquals((short) 31, property_values.get("PREFIX:propertyShort"));
         } catch (BeanUtilsException e) {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         }
@@ -3651,9 +3651,7 @@ public class TestBeanUtils {
             try {
                 var bean = new BeanOptional();
                 var seen = new HashMap<String, Object>();
-                BeanUtils.processPropertyValues(bean, null, null, null, (name, descriptor, value, constrainedProperty) -> {
-                    seen.put(name, value);
-                });
+                BeanUtils.processPropertyValues(bean, null, null, null, (name, descriptor, value, constrainedProperty) -> seen.put(name, value));
                 assertEquals("hello", seen.get("propertyOptionalPresent"));
                 assertNull(seen.get("propertyOptionalEmpty"));
                 assertEquals(42, seen.get("propertyOptionalInt"));

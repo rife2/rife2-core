@@ -55,9 +55,11 @@ public final class BeanUtils {
         // no-op
     }
 
+    private static final ConcurrentHashMap<Class<?>, BeanInfo> BEAN_INFO_CACHE = new ConcurrentHashMap<>();
+
     private static boolean isOptionalGetter(PropertyDescriptor descriptor) {
         var read = descriptor.getReadMethod();
-        return read!= null && read.getReturnType() == Optional.class;
+        return read != null && read.getReturnType() == Optional.class;
     }
 
     private static Object unwrapOptional(Object value) {
@@ -69,7 +71,7 @@ public final class BeanUtils {
 
     private static Class<?> getOptionalValueType(PropertyDescriptor descriptor) {
         var read = descriptor.getReadMethod();
-        if (read!= null) {
+        if (read != null) {
             var generic = read.getGenericReturnType();
             if (generic instanceof ParameterizedType pt) {
                 var arg = pt.getActualTypeArguments()[0];
@@ -85,13 +87,11 @@ public final class BeanUtils {
             return getOptionalValueType(descriptor);
         }
         var read = descriptor.getReadMethod();
-        if (read!= null) return read.getReturnType();
+        if (read != null) return read.getReturnType();
         var write = descriptor.getWriteMethod();
-        if (write!= null) return write.getParameterTypes()[0];
+        if (write != null) return write.getParameterTypes()[0];
         return descriptor.getPropertyType();
     }
-
-    private static final ConcurrentHashMap<Class<?>, BeanInfo> BEAN_INFO_CACHE = new ConcurrentHashMap<>();
 
     /**
      * Gets the BeanInfo for the specified beanClass.

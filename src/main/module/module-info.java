@@ -12,6 +12,8 @@ module rife.core {
     exports rife.config.exceptions;
     exports rife.database;
     exports rife.database.exceptions;
+    exports rife.database.migrations;
+    exports rife.database.migrations.exceptions;
     exports rife.database.queries;
     exports rife.database.querymanagers.generic;
     exports rife.database.querymanagers.generic.exceptions;

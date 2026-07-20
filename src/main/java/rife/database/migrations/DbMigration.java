@@ -47,6 +47,7 @@ import java.util.List;
 public abstract class DbMigration {
     private Datasource datasource_ = null;
     private List<Object> steps_ = null;
+    private boolean defaultDownReached_ = false;
 
     /**
      * Declares the steps that perform this migration.
@@ -63,6 +64,7 @@ public abstract class DbMigration {
      * @since 1.10
      */
     public void down() {
+        defaultDownReached_ = true;
     }
 
     /**
@@ -73,11 +75,22 @@ public abstract class DbMigration {
      * @since 1.10
      */
     public boolean isReversible() {
+        // the override of down is detected by probing whether the default
+        // implementation is reached, detecting it with reflection would
+        // require GraalVM native image registration of every migration
+        // subclass
+        defaultDownReached_ = false;
+        var previous_steps = steps_;
+        steps_ = new ArrayList<>();
         try {
-            return getClass().getMethod("down").getDeclaringClass() != DbMigration.class;
-        } catch (NoSuchMethodException e) {
-            return false;
+            down();
+        } catch (Throwable e) {
+            // an implementation that fails while its steps are being
+            // collected is an implementation nonetheless
+        } finally {
+            steps_ = previous_steps;
         }
+        return !defaultDownReached_;
     }
 
     /**

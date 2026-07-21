@@ -24,7 +24,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestDbMigrations {
-    public static class CreateUsers extends DbMigration {
+    public static class CreateUsers extends ReversibleDbMigration {
         public void up() {
             add(createTable("migrate_users")
                 .column("id", int.class, CreateTable.NOTNULL)
@@ -38,7 +38,7 @@ public class TestDbMigrations {
         }
     }
 
-    public static class AddEmail extends DbMigration {
+    public static class AddEmail extends ReversibleDbMigration {
         public void up() {
             add(alterTable("migrate_users").addColumn("email", String.class, 50));
             add(insert("migrate_users").field("id", 1).field("login", "gbevin").field("email", "gbevin@uwyn.com"));
@@ -120,12 +120,6 @@ public class TestDbMigrations {
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage().contains("state"));
         }
-    }
-
-    @Test
-    void testReversibility() {
-        assertTrue(new CreateUsers().isReversible());
-        assertFalse(new Irreversible().isReversible());
     }
 
     @ParameterizedTest
@@ -478,7 +472,7 @@ public class TestDbMigrations {
         var migrations = new DbMigrations(datasource)
             .state(resources, "test/migrations/version")
             .add(1, new CreateUsers())
-            .add(2, new DbMigration() {
+            .add(2, new ReversibleDbMigration() {
                 public void up() {
                     add(alterTable("migrate_users").addColumn("email", String.class, 50));
                 }
@@ -727,7 +721,7 @@ public class TestDbMigrations {
             .add(1, new CreateUsers());
         var second = new DbMigrations(datasource)
             .state(resources, "test/migrations/second")
-            .add(1, new DbMigration() {
+            .add(1, new ReversibleDbMigration() {
                 public void up() {
                     add(createTable("migrate_other").column("id", int.class));
                 }
@@ -763,7 +757,7 @@ public class TestDbMigrations {
         var order = new java.util.ArrayList<String>();
         var migrations = new DbMigrations(datasource)
             .state(resources, "test/migrations/version")
-            .add(1, new DbMigration() {
+            .add(1, new ReversibleDbMigration() {
                 public void up() {
                     add(manager -> order.add("up 1"));
                 }
@@ -772,7 +766,7 @@ public class TestDbMigrations {
                     add(manager -> order.add("down 1"));
                 }
             })
-            .add(2, new DbMigration() {
+            .add(2, new ReversibleDbMigration() {
                 public void up() {
                     add(manager -> order.add("up 2"));
                 }
@@ -789,21 +783,99 @@ public class TestDbMigrations {
         assertEquals(List.of("up 1", "up 2", "down 2", "down 1"), order);
     }
 
-    public static abstract class ReversibleBase extends DbMigration {
+    public static abstract class ReversibleBase extends ReversibleDbMigration {
         public void down() {
             add(dropTable("whatever"));
         }
     }
 
+    public static class CountingDown extends ReversibleDbMigration {
+        public int downInvocations = 0;
+
+        public void up() {
+            add(createTable("migrate_users")
+                .column("id", int.class, CreateTable.NOTNULL)
+                .primaryKey("id"));
+        }
+
+        public void down() {
+            ++downInvocations;
+            add(dropTable("migrate_users"));
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testReversibilityCheckDoesntInvokeDown(Datasource datasource) {
+        var resources = new MemoryResources();
+        var migration = new CountingDown();
+        var migrations = new DbMigrations(datasource)
+            .state(resources, "test/migrations/version")
+            .add(1, migration);
+
+        try {
+            assertEquals(1, migrations.migrate());
+
+            // the rollback declares the down steps exactly once, nothing
+            // else invokes down
+            assertEquals(0, migrations.rollback());
+            assertEquals(1, migration.downInvocations);
+            assertEquals(0, migrations.currentVersion());
+        } finally {
+            cleanup(datasource);
+        }
+    }
+
+    public static class FailingDown extends ReversibleDbMigration {
+        public void up() {
+        }
+
+        public void down() {
+            throw new RuntimeException("boom while declaring");
+        }
+    }
+
+    @Test
+    void testReversibilityWithFailingDown() {
+        // a down that fails while declaring its steps doesn't affect the
+        // reversibility check, the failure surfaces when the rollback
+        // declares the steps for execution
+        var migration = new FailingDown();
+        var migrations = new DbMigrations(TestDatasources.H2)
+            .state(new MemoryResources(), "test/migrations/version")
+            .add(1, migration);
+        assertEquals(1, migrations.migrate());
+        try {
+            migrations.rollback();
+            fail("expected the failing down to surface");
+        } catch (RuntimeException e) {
+            assertEquals("boom while declaring", e.getMessage());
+        }
+        assertEquals(1, migrations.currentVersion());
+    }
+
     @Test
     void testReversibilityThroughInheritance() {
+        // a down that is inherited from an intermediate class works, and
+        // one that chains to super.down() declares the steps of the whole
+        // chain in order
         var inherited = new ReversibleBase() {
             public void up() {
             }
         };
-        // a down that is inherited from an intermediate class still makes
-        // the migration reversible
-        assertTrue(inherited.isReversible());
+        assertEquals(1, inherited.collectDownSteps(TestDatasources.H2).size());
+
+        var chained = new ReversibleBase() {
+            public void up() {
+            }
+
+            public void down() {
+                super.down();
+                add(dropTable("something_else"));
+            }
+        };
+        var steps = chained.collectDownSteps(TestDatasources.H2);
+        assertEquals(2, steps.size());
     }
 
     @ParameterizedTest
@@ -850,7 +922,7 @@ public class TestDbMigrations {
         var resources = new MemoryResources();
         var migrations = new DbMigrations(datasource)
             .state(resources, "test/migrations/version")
-            .add(1, new DbMigration() {
+            .add(1, new ReversibleDbMigration() {
                 public void up() {
                     add(createSequence("migrate_seq"));
                 }

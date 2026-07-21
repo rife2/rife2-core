@@ -202,7 +202,7 @@ public class DbMigrations {
         var version = currentVersion;
         for (var entry : migrations_.entrySet()) {
             if (entry.getKey() > currentVersion && entry.getKey() <= toVersion) {
-                executeMigration(entry.getKey(), entry.getValue(), true, null);
+                executeMigration(entry.getKey(), entry.getValue().collectUpSteps(datasource_), null);
                 version = entry.getKey();
             }
         }
@@ -248,11 +248,10 @@ public class DbMigrations {
         java.util.Collections.reverse(descending);
         for (var version : descending) {
             if (version <= currentVersion && version > toVersion) {
-                var migration = migrations_.get(version);
-                if (!migration.isReversible()) {
+                if (!(migrations_.get(version) instanceof ReversibleDbMigration reversible)) {
                     throw new IrreversibleMigrationException(version);
                 }
-                executeMigration(version, migration, false, null);
+                executeMigration(version, reversible.collectDownSteps(datasource_), null);
             }
         }
         return toVersion;
@@ -410,7 +409,7 @@ public class DbMigrations {
         var version = current;
         for (var entry : migrations_.entrySet()) {
             if (entry.getKey() > current && entry.getKey() <= toVersion) {
-                executeMigration(entry.getKey(), entry.getValue(), true, entry.getKey());
+                executeMigration(entry.getKey(), entry.getValue().collectUpSteps(datasource_), entry.getKey());
                 version = entry.getKey();
             }
         }
@@ -460,12 +459,11 @@ public class DbMigrations {
         java.util.Collections.reverse(descending);
         for (var version : descending) {
             if (version <= current && version > toVersion) {
-                var migration = migrations_.get(version);
-                if (!migration.isReversible()) {
+                if (!(migrations_.get(version) instanceof ReversibleDbMigration reversible)) {
                     throw new IrreversibleMigrationException(version);
                 }
                 var resulting = Math.max(highestRegisteredBelow(version), toVersion);
-                executeMigration(version, migration, false, resulting);
+                executeMigration(version, reversible.collectDownSteps(datasource_), resulting);
             }
         }
         return toVersion;
@@ -497,8 +495,7 @@ public class DbMigrations {
         return result;
     }
 
-    private void executeMigration(int version, DbMigration migration, boolean up, Integer recordVersion) {
-        var steps = up ? migration.collectUpSteps(datasource_) : migration.collectDownSteps(datasource_);
+    private void executeMigration(int version, List<Object> steps, Integer recordVersion) {
         manager_.inTransaction(() -> {
             for (var step : steps) {
                 if (step instanceof Query query) {

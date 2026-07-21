@@ -64,7 +64,7 @@ public class TestDbMigrationsScenarios {
         var resources = new MemoryResources();
         var migrations = new DbMigrations(datasource)
             .state(resources, "scenarios/blog")
-            .add(1, new DbMigration() {
+            .add(1, new ReversibleDbMigration() {
                 public void up() {
                     add(createTable("blog_users")
                         .column("id", int.class, CreateTable.NOTNULL)
@@ -76,7 +76,7 @@ public class TestDbMigrationsScenarios {
                     add(dropTable("blog_users"));
                 }
             })
-            .add(2, new DbMigration() {
+            .add(2, new ReversibleDbMigration() {
                 public void up() {
                     add(createTable("blog_posts")
                         .column("id", int.class, CreateTable.NOTNULL)
@@ -90,7 +90,7 @@ public class TestDbMigrationsScenarios {
                     add(dropTable("blog_posts"));
                 }
             })
-            .add(3, new DbMigration() {
+            .add(3, new ReversibleDbMigration() {
                 public void up() {
                     // the flag is added and every existing post is
                     // backfilled as published
@@ -102,7 +102,7 @@ public class TestDbMigrationsScenarios {
                     add(alterTable("blog_posts").dropColumn("published"));
                 }
             })
-            .add(4, new DbMigration() {
+            .add(4, new ReversibleDbMigration() {
                 public void up() {
                     add(createIndex("idx_blog_posts_author").table("blog_posts").column("author_id"));
                 }
@@ -111,7 +111,7 @@ public class TestDbMigrationsScenarios {
                     add(dropIndex("idx_blog_posts_author").table("blog_posts"));
                 }
             })
-            .add(5, new DbMigration() {
+            .add(5, new ReversibleDbMigration() {
                 public void up() {
                     add(alterTable("blog_posts").renameColumn("title", "headline"));
                 }
@@ -162,7 +162,7 @@ public class TestDbMigrationsScenarios {
         var resources = new MemoryResources();
         var migrations = new DbMigrations(datasource)
             .state(resources, "scenarios/releases")
-            .add(1, new DbMigration() {
+            .add(1, new ReversibleDbMigration() {
                 public void up() {
                     add(createTable("rel_accounts")
                         .column("id", int.class, CreateTable.NOTNULL)
@@ -174,7 +174,7 @@ public class TestDbMigrationsScenarios {
                     add(dropTable("rel_accounts"));
                 }
             })
-            .add(2, new DbMigration() {
+            .add(2, new ReversibleDbMigration() {
                 public void up() {
                     add(alterTable("rel_accounts").addColumn("balance", int.class));
                     add(update("rel_accounts").field("balance", 0));
@@ -184,7 +184,7 @@ public class TestDbMigrationsScenarios {
                     add(alterTable("rel_accounts").dropColumn("balance"));
                 }
             })
-            .add(3, new DbMigration() {
+            .add(3, new ReversibleDbMigration() {
                 public void up() {
                     add(createTable("rel_audit")
                         .column("id", int.class, CreateTable.NOTNULL)
@@ -323,7 +323,7 @@ public class TestDbMigrationsScenarios {
         var resources = new MemoryResources();
         var migrations = new DbMigrations(datasource)
             .state(resources, "scenarios/shop")
-            .add(1, new DbMigration() {
+            .add(1, new ReversibleDbMigration() {
                 public void up() {
                     // the table is derived from the constrained bean, the
                     // mapped column names and the identifier included
@@ -334,7 +334,7 @@ public class TestDbMigrationsScenarios {
                     add(dropTable(table));
                 }
             })
-            .add(2, new DbMigration() {
+            .add(2, new ReversibleDbMigration() {
                 public void up() {
                     // the bean gained a property, its column definition
                     // comes from the bean metadata
@@ -706,7 +706,7 @@ public class TestDbMigrationsScenarios {
                         .primaryKey("id"));
                 }
             })
-            .add(2, new DbMigration() {
+            .add(2, new ReversibleDbMigration() {
                 public void up() {
                     // the table is retired, not destroyed
                     add(alterTable("arch_events").renameTo("arch_events_archived"));

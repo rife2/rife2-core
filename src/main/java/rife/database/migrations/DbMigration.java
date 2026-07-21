@@ -26,20 +26,22 @@ import java.util.List;
 /**
  * A single declarative database migration.
  * <p>
- * A migration declares an ordered series of steps in {@link #up} and
- * optionally the reverse series in {@link #down}, by calling one of the
- * {@code add} methods. The steps are query builders, literal SQL
- * statements, or {@link DbMigrationAction} instances for data transforms
- * that need Java logic. A migration never executes anything itself, the
- * steps are collected and executed by {@link DbMigrations}.
+ * A migration declares an ordered series of steps in {@link #up} by
+ * calling one of the {@code add} methods. The steps are query builders,
+ * literal SQL statements, or {@link DbMigrationAction} instances for data
+ * transforms that need Java logic. A migration never executes anything
+ * itself, the steps are collected and executed by {@link DbMigrations}.
  * <p>
  * The protected factory methods create query builders that are bound to
  * the datasource that is being migrated. Creating a builder doesn't add
  * a step, every step is explicitly added with {@code add}.
  * <p>
- * A migration that doesn't implement {@link #down} is irreversible,
- * rolling it back raises
+ * A migration that extends this class directly is irreversible, rolling
+ * it back raises
  * {@link rife.database.migrations.exceptions.IrreversibleMigrationException}.
+ * A migration that can be reversed extends
+ * {@link ReversibleDbMigration} instead and also declares the reverse
+ * steps in its {@code down} method.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
  * @since 1.10
@@ -47,7 +49,6 @@ import java.util.List;
 public abstract class DbMigration {
     private Datasource datasource_ = null;
     private List<Object> steps_ = null;
-    private boolean defaultDownReached_ = false;
 
     /**
      * Declares the steps that perform this migration.
@@ -56,42 +57,6 @@ public abstract class DbMigration {
      */
     public abstract void up();
 
-    /**
-     * Declares the steps that reverse this migration.
-     * <p>
-     * A migration that doesn't override this method is irreversible.
-     *
-     * @since 1.10
-     */
-    public void down() {
-        defaultDownReached_ = true;
-    }
-
-    /**
-     * Indicates whether this migration can be rolled back.
-     *
-     * @return {@code true} when the migration implements {@link #down};
-     * or {@code false} otherwise
-     * @since 1.10
-     */
-    public boolean isReversible() {
-        // the override of down is detected by probing whether the default
-        // implementation is reached, detecting it with reflection would
-        // require GraalVM native image registration of every migration
-        // subclass
-        defaultDownReached_ = false;
-        var previous_steps = steps_;
-        steps_ = new ArrayList<>();
-        try {
-            down();
-        } catch (Throwable e) {
-            // an implementation that fails while its steps are being
-            // collected is an implementation nonetheless
-        } finally {
-            steps_ = previous_steps;
-        }
-        return !defaultDownReached_;
-    }
 
     /**
      * Adds a query builder step to this migration.
@@ -313,22 +278,14 @@ public abstract class DbMigration {
     }
 
     List<Object> collectUpSteps(Datasource datasource) {
-        return collectSteps(datasource, true);
+        return collectSteps(datasource, this::up);
     }
 
-    List<Object> collectDownSteps(Datasource datasource) {
-        return collectSteps(datasource, false);
-    }
-
-    private List<Object> collectSteps(Datasource datasource, boolean up) {
+    List<Object> collectSteps(Datasource datasource, Runnable declaration) {
         datasource_ = datasource;
         steps_ = new ArrayList<>();
         try {
-            if (up) {
-                up();
-            } else {
-                down();
-            }
+            declaration.run();
             return steps_;
         } finally {
             datasource_ = null;

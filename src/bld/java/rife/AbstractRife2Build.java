@@ -119,9 +119,16 @@ public class AbstractRife2Build extends Project {
     final TestsBadgeOperation testsBadgeOperation = new TestsBadgeOperation();
     public void test()
     throws Exception {
-        testsBadgeOperation.executeOnce(() -> testsBadgeOperation
-            .url(property("testsBadgeUrl"))
-            .apiKey(property("testsBadgeApiKey"))
-            .fromProject(this));
+        testsBadgeOperation.executeOnce(() -> {
+            testsBadgeOperation
+                .url(property("testsBadgeUrl"))
+                .apiKey(property("testsBadgeApiKey"))
+                .fromProject(this);
+            // the XML report is written after the project defaults have been
+            // established, it's what the reporter operation consumes when the
+            // tests fail
+            testsBadgeOperation.testToolOptions()
+                .reportsDir(new File(buildDirectory(), "test-results/test"));
+        });
     }
 }

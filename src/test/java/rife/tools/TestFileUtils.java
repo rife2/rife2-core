@@ -726,7 +726,7 @@ public class TestFileUtils {
 
     @Test
     public void testCombineToAbsolutePathsNull() {
-        var result = FileUtils.combineToAbsolutePaths(null);
+        var result = FileUtils.combineToAbsolutePaths((List<File>[]) null);
         assertEquals(Collections.emptyList(), result);
     }
 

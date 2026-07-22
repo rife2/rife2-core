@@ -5,11 +5,10 @@
 package rife.database;
 
 import org.junit.jupiter.api.extension.*;
+import org.junit.platform.commons.support.AnnotationSupport;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Optional;
-
-import static org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.helpers.AnnotationHelper.findAnnotation;
 
 public class DatasourceEnabledIfExtension implements ExecutionCondition {
 
@@ -20,12 +19,12 @@ public class DatasourceEnabledIfExtension implements ExecutionCondition {
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
         Optional<AnnotatedElement> element = context.getElement();
         if (element.isPresent()) {
-            DatasourceEnabledIf enabled = findAnnotation(element.get(), DatasourceEnabledIf.class);
-            if (enabled != null) {
-                if (TestDatasources.ACTIVE_DATASOURCES.containsKey(enabled.value())) {
+            Optional<DatasourceEnabledIf> enabled = AnnotationSupport.findAnnotation(element.get(), DatasourceEnabledIf.class);
+            if (enabled.isPresent()) {
+                if (TestDatasources.ACTIVE_DATASOURCES.containsKey(enabled.get().value())) {
                     return ConditionEvaluationResult.enabled("Datasource is active");
                 } else {
-                    return ConditionEvaluationResult. disabled("Datasource is inactive");
+                    return ConditionEvaluationResult.disabled("Datasource is inactive");
                 }
             }
         }

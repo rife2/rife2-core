@@ -484,6 +484,9 @@ public class RifeConfig {
         private Set<String> passThroughSuffixes = DEFAULT_PASS_THROUGH_SUFFIXES;
         private Charset requestEncoding_ = DEFAULT_REQUEST_ENCODING;
         private Charset responseEncoding_ = DEFAULT_RESPONSE_ENCODING;
+        private String csrfCookieName_ = DEFAULT_CSRF_COOKIE_NAME;
+        private String csrfParameterName_ = DEFAULT_CSRF_PARAMETER_NAME;
+        private String csrfHeaderName_ = DEFAULT_CSRF_HEADER_NAME;
 
         /**
          * The default duration is 20 minutes.
@@ -516,6 +519,9 @@ public class RifeConfig {
         public static final boolean DEFAULT_FILE_UPLOAD_SIZE_CHECK = true;
         public static final boolean DEFAULT_FILE_UPLOAD_SIZE_EXCEPTION = false;
         public static final boolean DEFAULT_GLOBAL_NO_CACHE_HEADERS = false;
+        public static final String DEFAULT_CSRF_COOKIE_NAME = "csrfToken";
+        public static final String DEFAULT_CSRF_PARAMETER_NAME = "csrfToken";
+        public static final String DEFAULT_CSRF_HEADER_NAME = "X-CSRF-Token";
         public static final boolean DEFAULT_GZIP_COMPRESSION = true;
         public static final Collection<String> DEFAULT_GZIP_COMPRESSION_TYPES = List.of(
             "text/html",
@@ -576,6 +582,54 @@ public class RifeConfig {
             if (null == type) throw new IllegalArgumentException("type can't be null.");
             if (type.isEmpty()) throw new IllegalArgumentException("type can't be empty.");
             defaultContentType_ = type;
+            return this;
+        }
+
+        /**
+         * The name of the cookie that holds the CSRF token.
+         *
+         * @since 1.10
+         */
+        public String getCsrfCookieName() {
+            return csrfCookieName_;
+        }
+
+        public EngineConfig setCsrfCookieName(String name) {
+            if (null == name) throw new IllegalArgumentException("name can't be null.");
+            if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
+            csrfCookieName_ = name;
+            return this;
+        }
+
+        /**
+         * The name of the request parameter that submits the CSRF token.
+         *
+         * @since 1.10
+         */
+        public String getCsrfParameterName() {
+            return csrfParameterName_;
+        }
+
+        public EngineConfig setCsrfParameterName(String name) {
+            if (null == name) throw new IllegalArgumentException("name can't be null.");
+            if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
+            csrfParameterName_ = name;
+            return this;
+        }
+
+        /**
+         * The name of the request header that submits the CSRF token.
+         *
+         * @since 1.10
+         */
+        public String getCsrfHeaderName() {
+            return csrfHeaderName_;
+        }
+
+        public EngineConfig setCsrfHeaderName(String name) {
+            if (null == name) throw new IllegalArgumentException("name can't be null.");
+            if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
+            csrfHeaderName_ = name;
             return this;
         }
 

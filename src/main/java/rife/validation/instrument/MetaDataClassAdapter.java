@@ -31,7 +31,11 @@ class MetaDataClassAdapter extends ClassVisitor implements Opcodes {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if (baseInternalName_ != null) {
             if (name.equals("<init>")) {
-                return new MetaDataDefaultConstructorAdapter(baseInternalName_, metaDataInternalName_, super.visitMethod(access, name, desc, signature, exceptions));
+                return new MetaDataDefaultConstructorAdapter(
+                    baseInternalName_,
+                    metaDataInternalName_,
+                    MetaDataBeanAware.class.isAssignableFrom(metaData_),
+                    super.visitMethod(access, name, desc, signature, exceptions));
             } else if (name.equals("clone")) {
                 return new MetaDataCloneableAdapter(baseInternalName_, metaDataInternalName_, super.visitMethod(access, name, desc, signature, exceptions));
             }
@@ -115,24 +119,22 @@ class MetaDataClassAdapter extends ClassVisitor implements Opcodes {
 
                         // implement the interface method to delegate the call to the synthetic member variable
                         var method_descriptor = Type.getMethodDescriptor(method);
-                        var method_param_count = method.getParameterTypes().length;
-
                         var mv = cv.visitMethod(ACC_PUBLIC | ACC_SYNTHETIC, method.getName(), method_descriptor, null, exceptions_types);
                         mv.visitCode();
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn(GETFIELD, baseInternalName_, DELEGATE_VAR_NAME, "L" + metaDataInternalName_ + ";");
 
                         // handle the method parameters correctly
-                        var param_count = 1;
+                        var local_index = 1;
                         for (var param : method.getParameterTypes()) {
                             switch (Type.getType(param).getSort()) {
-                                case Type.INT, Type.BOOLEAN, Type.CHAR, Type.BYTE, Type.SHORT -> mv.visitVarInsn(ILOAD, param_count);
-                                case Type.LONG -> mv.visitVarInsn(LLOAD, param_count);
-                                case Type.FLOAT -> mv.visitVarInsn(FLOAD, param_count);
-                                case Type.DOUBLE -> mv.visitVarInsn(DLOAD, param_count);
-                                default -> mv.visitVarInsn(ALOAD, param_count);
+                                case Type.INT, Type.BOOLEAN, Type.CHAR, Type.BYTE, Type.SHORT -> mv.visitVarInsn(ILOAD, local_index);
+                                case Type.LONG -> mv.visitVarInsn(LLOAD, local_index);
+                                case Type.FLOAT -> mv.visitVarInsn(FLOAD, local_index);
+                                case Type.DOUBLE -> mv.visitVarInsn(DLOAD, local_index);
+                                default -> mv.visitVarInsn(ALOAD, local_index);
                             }
-                            param_count++;
+                            local_index += Type.getType(param).getSize();
                         }
 
                         mv.visitMethodInsn(INVOKEVIRTUAL, metaDataInternalName_, method.getName(), method_descriptor, false);
@@ -145,7 +147,8 @@ class MetaDataClassAdapter extends ClassVisitor implements Opcodes {
                             case Type.DOUBLE -> mv.visitInsn(DRETURN);
                             default -> mv.visitInsn(ARETURN);
                         }
-                        mv.visitMaxs(method_param_count + 1, method_param_count + 2);
+                        // ClassWriter.COMPUTE_MAXS computes both values; these arguments are placeholders.
+                        mv.visitMaxs(0, 0);
                         mv.visitEnd();
                     }
 
@@ -186,9 +189,6 @@ class MetaDataClassAdapter extends ClassVisitor implements Opcodes {
                     mv.visitMethodInsn(INVOKEVIRTUAL, metaDataInternalName_, "setMetaDataBean", "(Ljava/lang/Object;)V", false);
                     mv.visitVarInsn(ALOAD, 1);
                     mv.visitInsn(ARETURN);
-                    var l0 = new Label();
-                    mv.visitLabel(l0);
-                    mv.visitJumpInsn(GOTO, l0);
                     mv.visitMaxs(2, 3);
                     mv.visitEnd();
                 }

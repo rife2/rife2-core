@@ -89,8 +89,7 @@ public class SignatureWriter extends SignatureVisitor {
       hasFormals = true;
       stringBuilder.append('<');
     }
-    stringBuilder.append(name);
-    stringBuilder.append(':');
+    stringBuilder.append(name).append(':');
   }
 
   @Override
@@ -148,9 +147,7 @@ public class SignatureWriter extends SignatureVisitor {
 
   @Override
   public void visitTypeVariable(final String name) {
-    stringBuilder.append('T');
-    stringBuilder.append(name);
-    stringBuilder.append(';');
+    stringBuilder.append('T').append(name).append(';');
   }
 
   @Override
@@ -161,8 +158,7 @@ public class SignatureWriter extends SignatureVisitor {
 
   @Override
   public void visitClassType(final String name) {
-    stringBuilder.append('L');
-    stringBuilder.append(name);
+    stringBuilder.append('L').append(name);
     // Pushes 'false' on the stack, meaning that this type does not have type arguments (as far as
     // we can tell at this point).
     argumentStack <<= 1;
@@ -171,8 +167,7 @@ public class SignatureWriter extends SignatureVisitor {
   @Override
   public void visitInnerClassType(final String name) {
     endArguments();
-    stringBuilder.append('.');
-    stringBuilder.append(name);
+    stringBuilder.append('.').append(name);
     // Pushes 'false' on the stack, meaning that this type does not have type arguments (as far as
     // we can tell at this point).
     argumentStack <<= 1;

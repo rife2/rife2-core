@@ -46,13 +46,29 @@ public abstract class LazyLoadAccessorsBytecodeTransformer {
      * @since 1.0
      */
     public static byte[] addLazyLoadToBytes(byte[] origBytes) {
+        return addLazyLoadToBytes(origBytes, LazyLoadAccessorsBytecodeTransformer.class.getClassLoader());
+    }
+
+    /**
+     * Performs the actual modification of the bean class's bytecode.
+     *
+     * @param origBytes  the bytes of the bean class that should be modified
+     * @param classLoader the class loader to use when computing stack map frames
+     * @return the modified bytes
+     * @since 1.10
+     */
+    public static byte[] addLazyLoadToBytes(byte[] origBytes, ClassLoader classLoader) {
         // obtain all the methods that should be instrumented to add lazy loading
         var cr = new ClassReader(origBytes);
 
         var method_collector = new LazyLoadMethodCollector();
         cr.accept(method_collector, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 
-        var cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        var cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES) {
+            protected ClassLoader getClassLoader() {
+                return classLoader != null ? classLoader : super.getClassLoader();
+            }
+        };
         ClassVisitor meta_data_adapter = new LazyLoadClassAdapter(method_collector.getMethods(), cw);
         cr.accept(meta_data_adapter, ClassReader.SKIP_FRAMES);
 

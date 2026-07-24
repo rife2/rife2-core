@@ -410,6 +410,23 @@ public class TestJson {
     }
 
     @Test
+    void testBeanSerialization() {
+        record Note(String level, String message) {}
+        // a bean or record serializes directly
+        assertEquals("{\"level\":\"info\",\"message\":\"hi\"}", Json.toString(new Note("info", "hi")));
+        // and so do beans nested inside a collection, a map and an array
+        assertEquals("[{\"level\":\"info\",\"message\":\"a\"}]",
+            Json.toString(List.of(new Note("info", "a"))));
+        assertEquals("{\"n\":{\"level\":\"info\",\"message\":\"a\"}}",
+            Json.toString(java.util.Map.of("n", new Note("info", "a"))));
+        assertEquals("[{\"level\":\"info\",\"message\":\"a\"}]",
+            Json.toString(new Note[]{new Note("info", "a")}));
+        // an object with no serializable properties yields an empty object,
+        // the same as an empty record would
+        assertEquals("{}", Json.toString(new Object()));
+    }
+
+    @Test
     void testNativeArraySerialization() {
         assertEquals("[1,2,3]", Json.toString(new int[]{1, 2, 3}));
         assertEquals("[9223372036854775807]", Json.toString(new long[]{Long.MAX_VALUE}));
@@ -433,8 +450,6 @@ public class TestJson {
             () -> Json.toString(new double[]{Double.NEGATIVE_INFINITY}));
         assertThrows(IllegalArgumentException.class,
             () -> new JsonObject().set("bad", Double.POSITIVE_INFINITY).toString());
-        assertThrows(IllegalArgumentException.class,
-            () -> new JsonObject().set("bad", new Object()).toString());
     }
 
     @Test

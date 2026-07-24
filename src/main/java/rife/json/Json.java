@@ -213,10 +213,10 @@ public final class Json {
     /**
      * Serializes any JSON value into its compact string representation.
      * <p>
-     * Accepts the same values as JSON object members and JSON array
-     * elements: strings, numbers, booleans, {@code null}, maps,
-     * collections, arrays, dates, temporals, enums, {@link JsonObject}
-     * and {@link JsonArray}. Use {@link #from} to convert beans first.
+     * Accepts strings, numbers, booleans, {@code null}, maps, collections,
+     * arrays, dates, temporals, enums, {@link JsonObject}, {@link JsonArray},
+     * and beans or records, including beans nested inside maps, collections
+     * and arrays, which are converted with {@link #from} automatically.
      *
      * @param value the value to serialize
      * @return the JSON string
@@ -670,8 +670,10 @@ public final class Json {
         } else if (value.getClass().isArray()) {
             writeNativeArray(value, out, indent);
         } else {
-            throw new IllegalArgumentException("Unsupported JSON value type " + value.getClass().getName() +
-                                               ", use Json.from() to convert beans");
+            // a bean or record: convert it (and any beans nested in its graph)
+            // to a JSON object and write that, so an object graph, including
+            // beans inside maps, collections and arrays, serializes end to end
+            write(fromBean(value, null, new IdentityHashMap<>()), out, indent);
         }
     }
 

@@ -7,9 +7,13 @@ package rife.database.querymanagers.generic;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import rife.database.Datasource;
+import rife.database.DbPreparedStatement;
+import rife.database.DbPreparedStatementHandler;
 import rife.database.TestDatasources;
 import rife.validation.ConstrainedProperty;
 import rife.validation.MetaData;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -200,6 +204,51 @@ public class TestGenericQueryManagerColumnMapping {
         } finally {
             main_manager.remove();
             friend_manager.remove();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParametersUseColumnMapping(Datasource datasource) {
+        var manager = GenericQueryManagerFactory.instance(datasource, MappedIdBean.class);
+        manager.install();
+        try {
+            var bean1 = new MappedIdBean();
+            var bean2 = new MappedIdBean();
+
+            bean1.setFirstName("Erik");
+            bean2.setFirstName("Geert");
+
+            manager.save(bean1);
+            manager.save(bean2);
+
+            // the where clause uses the mapped column, the parameter
+            // keeps the property name
+            var query = manager.getRestoreQuery()
+                .whereParametersExcluded(MappedIdBean.class, new String[]{"userId"});
+
+            assertTrue(query.getSql().endsWith("WHERE first_name = ?"));
+            assertEquals(List.of("firstName"), query.getParameters().getOrderedNames());
+
+            var list = manager.restore(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("firstName", "Geert");
+                }
+            });
+
+            assertEquals(1, list.size());
+            assertEquals(bean2.getUserId(), list.get(0).getUserId());
+
+            var count_query = manager.getCountQuery()
+                .whereParameter("first_name", "firstName", "=");
+
+            assertEquals(1, manager.count(count_query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("firstName", "Erik");
+                }
+            }));
+        } finally {
+            manager.remove();
         }
     }
 }

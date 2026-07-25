@@ -7,6 +7,8 @@ package rife.database.querymanagers.generic;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import rife.database.Datasource;
+import rife.database.DbPreparedStatement;
+import rife.database.DbPreparedStatementHandler;
 import rife.database.TestDatasources;
 import rife.database.exceptions.UnsupportedSqlFeatureException;
 import rife.database.queries.Select;
@@ -17,6 +19,7 @@ import rife.tools.Convert;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -645,6 +648,189 @@ public class TestCountQuery {
                 .whereSubselect(select);
 
             assertEquals(3, manager_.count(query));
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameter(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("common");
+            bean2.setTestString("common");
+            bean3.setTestString("different");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var query = manager_.getCountQuery()
+                .whereParameter("testString", "=");
+
+            assertEquals("SELECT count(*) FROM SimpleBean WHERE testString = ?", query.getSql());
+            assertEquals(List.of("testString"), query.getParameters().getOrderedNames());
+
+            assertEquals(2, manager_.count(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "common");
+                }
+            }));
+
+            assertEquals(1, manager_.count(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "different");
+                }
+            }));
+
+            assertEquals(0, manager_.count(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "absent");
+                }
+            }));
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterAutoAnd(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("common");
+            bean1.setLinkBean(1);
+            bean2.setTestString("common");
+            bean2.setLinkBean(2);
+            bean3.setTestString("different");
+            bean3.setLinkBean(2);
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var query = manager_.getCountQuery()
+                .where("linkBean", "=", 2)
+                .whereParameter("testString", "=");
+
+            assertEquals("SELECT count(*) FROM SimpleBean WHERE linkBean = 2 AND testString = ?", query.getSql());
+
+            assertEquals(1, manager_.count(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "common");
+                }
+            }));
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterAndOr(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("This is bean1");
+            bean2.setTestString("This is bean2");
+            bean3.setTestString("This is bean3");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var query = manager_.getCountQuery()
+                .whereParameter("testString", "one", "=")
+                .whereParameterOr("testString", "other", "=");
+
+            assertEquals("SELECT count(*) FROM SimpleBean WHERE testString = ? OR testString = ?", query.getSql());
+            assertEquals(List.of("one", "other"), query.getParameters().getOrderedNames());
+
+            assertEquals(2, manager_.count(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement
+                        .setString("one", "This is bean1")
+                        .setString("other", "This is bean3");
+                }
+            }));
+
+            var initial_and = manager_.getCountQuery();
+            assertThrows(IllegalArgumentException.class, () -> initial_and.whereParameterAnd("testString", "="));
+
+            var initial_or = manager_.getCountQuery();
+            assertThrows(IllegalArgumentException.class, () -> initial_or.whereParameterOr("testString", "="));
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParametersBean(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+
+            bean1.setTestString("This is bean1");
+            bean2.setTestString("This is bean2");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+
+            var query = manager_.getCountQuery()
+                .whereParametersExcluded(SimpleBean.class, new String[]{"id", "linkBean", "uuid", "enum"});
+
+            assertEquals("SELECT count(*) FROM SimpleBean WHERE testString = ?", query.getSql());
+
+            assertEquals(1, manager_.count(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "This is bean2");
+                }
+            }));
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterCloneAndClear(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            bean1.setTestString("This is bean1");
+            manager_.save(bean1);
+
+            var query = manager_.getCountQuery()
+                .whereParameter("testString", "=");
+            var query_clone = query.clone();
+
+            assertEquals("SELECT count(*) FROM SimpleBean WHERE testString = ?", query_clone.getSql());
+            assertEquals(List.of("testString"), query_clone.getParameters().getOrderedNames());
+
+            assertEquals(1, manager_.count(query_clone, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "This is bean1");
+                }
+            }));
+
+            query.clear();
+
+            assertEquals("SELECT count(*) FROM SimpleBean", query.getSql());
+            assertNull(query.getParameters());
         } finally {
             tearDown();
         }

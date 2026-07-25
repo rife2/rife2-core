@@ -274,6 +274,11 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
         return _count(query.getDelegate());
     }
 
+    public int count(CountQuery query, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return _count(query.getDelegate(), handler);
+    }
+
     public BeanType restore(int objectId)
     throws DatabaseException {
         return _restore(getInternalRestoreByIdQuery(), objectId);
@@ -299,9 +304,19 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
         return _restore(query.getDelegate());
     }
 
+    public List<BeanType> restore(RestoreQuery query, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return _restore(query.getDelegate(), handler);
+    }
+
     public boolean restore(RestoreQuery query, DbRowProcessor rowProcessor)
     throws DatabaseException {
         return _restore(query.getDelegate(), rowProcessor);
+    }
+
+    public boolean restore(RestoreQuery query, DbRowProcessor rowProcessor, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return _restore(query.getDelegate(), rowProcessor, handler);
     }
 
     public boolean restore(RestoreQuery query, BeanFetcher<BeanType> beanFetcher)
@@ -309,9 +324,19 @@ public class generic<BeanType> extends AbstractGenericQueryManager<BeanType> imp
         return _restore(query.getDelegate(), beanFetcher);
     }
 
+    public boolean restore(RestoreQuery query, BeanFetcher<BeanType> beanFetcher, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return _restore(query.getDelegate(), beanFetcher, handler);
+    }
+
     public BeanType restoreFirst(RestoreQuery query)
     throws DatabaseException {
         return _restoreFirst(query.getDelegate());
+    }
+
+    public BeanType restoreFirst(RestoreQuery query, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return _restoreFirst(query.getDelegate(), handler);
     }
 
     public void remove()

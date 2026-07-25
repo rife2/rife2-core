@@ -934,9 +934,14 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
 
     protected BeanType _restoreFirst(Select restore)
     throws DatabaseException {
+        return _restoreFirst(restore, null);
+    }
+
+    protected BeanType _restoreFirst(Select restore, PreparedStatementHandler handler)
+    throws DatabaseException {
         assert restore != null;
 
-        var result = executeFetchFirstBean(restore, baseClass_);
+        var result = executeFetchFirstBean(restore, baseClass_, handler);
         if (!processFetchedBean(result)) {
             return null;
         }
@@ -946,6 +951,11 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
 
     protected List<BeanType> _restore(Select restore)
     throws DatabaseException {
+        return _restore(restore, (PreparedStatementHandler) null);
+    }
+
+    protected List<BeanType> _restore(Select restore, PreparedStatementHandler handler)
+    throws DatabaseException {
         assert restore != null;
 
         var bean_fetcher = new DbBeanFetcher<>(getDatasource(), baseClass_, true) {
@@ -954,19 +964,29 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
             }
         };
 
-        executeFetchAll(restore, bean_fetcher, null);
+        executeFetchAll(restore, bean_fetcher, handler);
 
         return bean_fetcher.getCollectedInstances();
     }
 
     protected boolean _restore(Select restore, DbRowProcessor rowProcessor)
     throws DatabaseException {
+        return _restore(restore, rowProcessor, null);
+    }
+
+    protected boolean _restore(Select restore, DbRowProcessor rowProcessor, PreparedStatementHandler handler)
+    throws DatabaseException {
         assert restore != null;
 
-        return executeFetchAll(restore, rowProcessor);
+        return executeFetchAll(restore, rowProcessor, handler);
     }
 
     protected boolean _restore(Select restore, BeanFetcher<BeanType> beanFetcher)
+    throws DatabaseException {
+        return _restore(restore, beanFetcher, null);
+    }
+
+    protected boolean _restore(Select restore, BeanFetcher<BeanType> beanFetcher, PreparedStatementHandler handler)
     throws DatabaseException {
         assert restore != null;
 
@@ -978,7 +998,7 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
             }
         };
 
-        return executeFetchAll(restore, bean_fetcher);
+        return executeFetchAll(restore, bean_fetcher, handler);
     }
 
 
@@ -1083,7 +1103,12 @@ public abstract class AbstractGenericQueryManager<BeanType> extends DbQueryManag
 
     protected int _count(Select count)
     throws DatabaseException {
-        return executeGetFirstInt(count);
+        return _count(count, null);
+    }
+
+    protected int _count(Select count, PreparedStatementHandler handler)
+    throws DatabaseException {
+        return executeGetFirstInt(count, handler);
     }
 
     protected void install_(final CreateSequence createSequence, final CreateTable createTable)

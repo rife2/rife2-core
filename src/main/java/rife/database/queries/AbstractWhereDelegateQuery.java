@@ -7,6 +7,7 @@ package rife.database.queries;
 
 import rife.database.Datasource;
 import rife.database.exceptions.DbQueryException;
+import rife.validation.ConstrainedUtils;
 
 import java.util.List;
 
@@ -276,6 +277,74 @@ public abstract class AbstractWhereDelegateQuery<QueryType extends AbstractWhere
 
     public QueryType whereOr(String field, String operator, short value) {
         delegate_.whereOr(field, operator, value);
+
+        return (QueryType) this;
+    }
+
+    public QueryType whereParameter(String field, String operator) {
+        if (!delegate_.getWhere().isEmpty()) {
+            delegate_.whereParameterAnd(field, operator);
+        } else {
+            delegate_.whereParameter(field, operator);
+        }
+
+        return (QueryType) this;
+    }
+
+    public QueryType whereParameter(String field, String alias, String operator) {
+        if (!delegate_.getWhere().isEmpty()) {
+            delegate_.whereParameterAnd(field, alias, operator);
+        } else {
+            delegate_.whereParameter(field, alias, operator);
+        }
+
+        return (QueryType) this;
+    }
+
+    public QueryType whereParameterAnd(String field, String operator) {
+        delegate_.whereParameterAnd(field, operator);
+
+        return (QueryType) this;
+    }
+
+    public QueryType whereParameterAnd(String field, String alias, String operator) {
+        delegate_.whereParameterAnd(field, alias, operator);
+
+        return (QueryType) this;
+    }
+
+    public QueryType whereParameterOr(String field, String operator) {
+        delegate_.whereParameterOr(field, operator);
+
+        return (QueryType) this;
+    }
+
+    public QueryType whereParameterOr(String field, String alias, String operator) {
+        delegate_.whereParameterOr(field, alias, operator);
+
+        return (QueryType) this;
+    }
+
+    public QueryType whereParameters(Class beanClass)
+    throws DbQueryException {
+        return whereParametersExcluded(beanClass, null);
+    }
+
+    public QueryType whereParametersExcluded(Class beanClass, String[] excludedFields)
+    throws DbQueryException {
+        if (null == beanClass) throw new IllegalArgumentException("beanClass can't be null.");
+
+        var constrained = ConstrainedUtils.getConstrainedInstance(beanClass);
+        var property_names = QueryHelper.getBeanPropertyNames(beanClass, excludedFields);
+        for (var property_name : property_names) {
+            if (!ConstrainedUtils.persistConstrainedProperty(constrained, property_name, null)) {
+                continue;
+            }
+
+            // the parameter keeps the property name so that beans can
+            // provide its value, the column uses the mapped column name
+            whereParameter(QueryHelper.getColumnName(constrained, property_name), property_name, "=");
+        }
 
         return (QueryType) this;
     }

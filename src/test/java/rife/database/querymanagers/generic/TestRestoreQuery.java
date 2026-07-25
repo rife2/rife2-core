@@ -7,6 +7,9 @@ package rife.database.querymanagers.generic;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import rife.database.Datasource;
+import rife.database.DbPreparedStatement;
+import rife.database.DbPreparedStatementHandler;
+import rife.database.DbRowProcessor;
 import rife.database.TestDatasources;
 import rife.database.exceptions.UnsupportedSqlFeatureException;
 import rife.database.queries.Select;
@@ -16,7 +19,11 @@ import rife.database.querymanagers.generic.beans.SimpleBean;
 import rife.tools.Convert;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -1007,6 +1014,390 @@ public class TestRestoreQuery {
                 .end();
 
             assertTrue(!manager_.restore(query).isEmpty());
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameter(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("This is bean1");
+            bean2.setTestString("This is bean2");
+            bean3.setTestString("This is bean3");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var query = manager_.getRestoreQuery()
+                .whereParameter("testString", "=");
+
+            assertTrue(query.getSql().endsWith("WHERE testString = ?"));
+            assertEquals(List.of("testString"), query.getParameters().getOrderedNames());
+
+            var list = manager_.restore(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "This is bean2");
+                }
+            });
+
+            assertEquals(1, list.size());
+            assertEquals("This is bean2", list.get(0).getTestString());
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterReuse(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+
+            bean1.setTestString("This is bean1");
+            bean2.setTestString("This is bean2");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+
+            var query = manager_.getRestoreQuery()
+                .whereParameter("testString", "=");
+
+            for (var value : new String[]{"This is bean1", "This is bean2"}) {
+                var list = manager_.restore(query, new DbPreparedStatementHandler<>() {
+                    public void setParameters(DbPreparedStatement statement) {
+                        statement.setString("testString", value);
+                    }
+                });
+
+                assertEquals(1, list.size());
+                assertEquals(value, list.get(0).getTestString());
+            }
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterAliased(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            bean1.setTestString("This is bean1");
+            manager_.save(bean1);
+
+            var query = manager_.getRestoreQuery()
+                .whereParameter("testString", "str", "=");
+
+            assertTrue(query.getSql().endsWith("WHERE testString = ?"));
+            assertEquals(List.of("str"), query.getParameters().getOrderedNames());
+
+            var list = manager_.restore(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("str", "This is bean1");
+                }
+            });
+
+            assertEquals(1, list.size());
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterAutoAnd(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("common");
+            bean1.setLinkBean(1);
+            bean2.setTestString("common");
+            bean2.setLinkBean(2);
+            bean3.setTestString("different");
+            bean3.setLinkBean(2);
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var literal_first = manager_.getRestoreQuery()
+                .where("linkBean", "=", 2)
+                .whereParameter("testString", "=");
+
+            assertTrue(literal_first.getSql().endsWith("WHERE linkBean = 2 AND testString = ?"));
+
+            var list = manager_.restore(literal_first, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "common");
+                }
+            });
+
+            assertEquals(1, list.size());
+            assertEquals(2, list.get(0).getLinkBean());
+
+            var parameters_only = manager_.getRestoreQuery()
+                .whereParameter("testString", "=")
+                .whereParameter("linkBean", "=");
+
+            assertTrue(parameters_only.getSql().endsWith("WHERE testString = ? AND linkBean = ?"));
+            assertEquals(List.of("testString", "linkBean"), parameters_only.getParameters().getOrderedNames());
+
+            list = manager_.restore(parameters_only, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement
+                        .setString("testString", "common")
+                        .setInt("linkBean", 1);
+                }
+            });
+
+            assertEquals(1, list.size());
+            assertEquals(1, list.get(0).getLinkBean());
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterAndOr(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("This is bean1");
+            bean2.setTestString("This is bean2");
+            bean3.setTestString("This is bean3");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var query = manager_.getRestoreQuery()
+                .whereParameter("testString", "one", "=")
+                .whereParameterOr("testString", "other", "=")
+                .orderBy("id");
+
+            assertTrue(query.getSql().endsWith("WHERE testString = ? OR testString = ? ORDER BY id ASC"));
+            assertEquals(List.of("one", "other"), query.getParameters().getOrderedNames());
+
+            var list = manager_.restore(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement
+                        .setString("one", "This is bean1")
+                        .setString("other", "This is bean3");
+                }
+            });
+
+            assertEquals(2, list.size());
+            assertEquals("This is bean1", list.get(0).getTestString());
+            assertEquals("This is bean3", list.get(1).getTestString());
+
+            var initial_and = manager_.getRestoreQuery();
+            assertThrows(IllegalArgumentException.class, () -> initial_and.whereParameterAnd("testString", "="));
+
+            var initial_or = manager_.getRestoreQuery();
+            assertThrows(IllegalArgumentException.class, () -> initial_or.whereParameterOr("testString", "="));
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParametersBean(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+
+            bean1.setTestString("This is bean1");
+            bean2.setTestString("This is bean2");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+
+            var query = manager_.getRestoreQuery()
+                .whereParametersExcluded(SimpleBean.class, new String[]{"id", "linkBean", "uuid", "enum"});
+
+            assertTrue(query.getSql().endsWith("WHERE testString = ?"));
+            assertEquals(List.of("testString"), query.getParameters().getOrderedNames());
+
+            var list = manager_.restore(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "This is bean2");
+                }
+            });
+
+            assertEquals(1, list.size());
+            assertEquals("This is bean2", list.get(0).getTestString());
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testRestoreFirstWhereParameter(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("common");
+            bean2.setTestString("common");
+            bean3.setTestString("different");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var query = manager_.getRestoreQuery()
+                .whereParameter("testString", "=")
+                .orderBy("id", Select.OrderByDirection.DESC);
+
+            var first = manager_.restoreFirst(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "common");
+                }
+            });
+
+            assertNotNull(first);
+            assertEquals(bean2.getId(), first.getId());
+
+            var missing = manager_.restoreFirst(query, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "absent");
+                }
+            });
+
+            assertNull(missing);
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterRowProcessor(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("common");
+            bean2.setTestString("common");
+            bean3.setTestString("different");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var query = manager_.getRestoreQuery()
+                .whereParameter("testString", "=");
+
+            var count = new int[1];
+            var processed = manager_.restore(query, new DbRowProcessor() {
+                public boolean processRow(ResultSet resultSet)
+                throws SQLException {
+                    count[0] += 1;
+                    return true;
+                }
+            }, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "common");
+                }
+            });
+
+            assertTrue(processed);
+            assertEquals(2, count[0]);
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterBeanFetcher(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("common");
+            bean2.setTestString("common");
+            bean3.setTestString("different");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var query = manager_.getRestoreQuery()
+                .whereParameter("testString", "=");
+
+            var fetched = new ArrayList<SimpleBean>();
+            var processed = manager_.restore(query, fetched::add, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "common");
+                }
+            });
+
+            assertTrue(processed);
+            assertEquals(2, fetched.size());
+            for (var fetched_bean : fetched) {
+                assertEquals("common", fetched_bean.getTestString());
+            }
+        } finally {
+            tearDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testWhereParameterCloneAndClear(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            bean1.setTestString("This is bean1");
+            manager_.save(bean1);
+
+            var query = manager_.getRestoreQuery()
+                .whereParameter("testString", "=");
+            var query_clone = query.clone();
+
+            assertEquals(query.getSql(), query_clone.getSql());
+            assertEquals(List.of("testString"), query_clone.getParameters().getOrderedNames());
+
+            var list = manager_.restore(query_clone, new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "This is bean1");
+                }
+            });
+
+            assertEquals(1, list.size());
+
+            query.clear();
+
+            assertFalse(query.getSql().contains("WHERE"));
+            assertNull(query.getParameters());
         } finally {
             tearDown();
         }

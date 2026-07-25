@@ -337,5 +337,54 @@ public class TestGenericQueryManagerDelegate {
             tearDown();
         }
     }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testParameterizedQueries(Datasource datasource) {
+        setup(datasource);
+        try {
+            var bean1 = new SimpleBean();
+            var bean2 = new SimpleBean();
+            var bean3 = new SimpleBean();
+
+            bean1.setTestString("common");
+            bean2.setTestString("common");
+            bean3.setTestString("different");
+
+            manager_.save(bean1);
+            manager_.save(bean2);
+            manager_.save(bean3);
+
+            var restore_query = manager_.getRestoreQuery()
+                .whereParameter("testString", "=");
+            var count_query = manager_.getCountQuery()
+                .whereParameter("testString", "=");
+            var handler = new DbPreparedStatementHandler<>() {
+                public void setParameters(DbPreparedStatement statement) {
+                    statement.setString("testString", "common");
+                }
+            };
+
+            assertEquals(2, manager_.restore(restore_query, handler).size());
+            assertNotNull(manager_.restoreFirst(restore_query, handler));
+            assertEquals(2, manager_.count(count_query, handler));
+
+            var rows = new int[1];
+            assertTrue(manager_.restore(restore_query, new DbRowProcessor() {
+                public boolean processRow(ResultSet resultSet)
+                throws SQLException {
+                    rows[0] += 1;
+                    return true;
+                }
+            }, handler));
+            assertEquals(2, rows[0]);
+
+            var fetched = new int[1];
+            assertTrue(manager_.restore(restore_query, bean -> fetched[0] += 1, handler));
+            assertEquals(2, fetched[0]);
+        } finally {
+            tearDown();
+        }
+    }
 }
 

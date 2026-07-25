@@ -102,6 +102,11 @@ public class GenericQueryManagerDelegate<T> implements GenericQueryManager<T> {
         return delegate_.restore(query);
     }
 
+    public List<T> restore(RestoreQuery query, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return delegate_.restore(query, handler);
+    }
+
     public boolean restore(DbRowProcessor rowProcessor)
     throws DatabaseException {
         return delegate_.restore(rowProcessor);
@@ -117,14 +122,29 @@ public class GenericQueryManagerDelegate<T> implements GenericQueryManager<T> {
         return delegate_.restoreFirst(query);
     }
 
+    public T restoreFirst(RestoreQuery query, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return delegate_.restoreFirst(query, handler);
+    }
+
     public boolean restore(RestoreQuery query, DbRowProcessor rowProcessor)
     throws DatabaseException {
         return delegate_.restore(query, rowProcessor);
     }
 
+    public boolean restore(RestoreQuery query, DbRowProcessor rowProcessor, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return delegate_.restore(query, rowProcessor, handler);
+    }
+
     public boolean restore(RestoreQuery query, BeanFetcher<T> beanFetcher)
     throws DatabaseException {
         return delegate_.restore(query, beanFetcher);
+    }
+
+    public boolean restore(RestoreQuery query, BeanFetcher<T> beanFetcher, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return delegate_.restore(query, beanFetcher, handler);
     }
 
     public CreateTable getInstallTableQuery()
@@ -148,6 +168,11 @@ public class GenericQueryManagerDelegate<T> implements GenericQueryManager<T> {
     public int count(CountQuery query)
     throws DatabaseException {
         return delegate_.count(query);
+    }
+
+    public int count(CountQuery query, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException {
+        return delegate_.count(query, handler);
     }
 
     public CountQuery getCountQuery() {

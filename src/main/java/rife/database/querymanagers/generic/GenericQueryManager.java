@@ -245,6 +245,24 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
     throws DatabaseException;
 
     /**
+     * Restore the first bean that matches the {@link RestoreQuery}, providing
+     * the values of the query's parameters through a {@link
+     * DbPreparedStatementHandler}.
+     * <p>Combined with {@link RestoreQuery#whereParameter}, this executes the
+     * query as a prepared statement with the parameter values bound by the
+     * database driver instead of being inlined into the SQL.
+     *
+     * @param query   the query the bean should be restored from
+     * @param handler the handler that sets the values of the query's
+     *                parameters
+     * @return the first bean that matches the {@link RestoreQuery}
+     * @see #restoreFirst(RestoreQuery)
+     * @since 1.10
+     */
+    BeanType restoreFirst(RestoreQuery query, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException;
+
+    /**
      * Restore a list of beans that match the provided {@link RestoreQuery}.
      * <p>This method will return a list of beans that match the provided
      * {@link RestoreQuery}. This can be used for more complex queries, or for
@@ -256,6 +274,25 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * @since 1.0
      */
     List<BeanType> restore(RestoreQuery query)
+    throws DatabaseException;
+
+    /**
+     * Restore a list of beans that match the provided {@link RestoreQuery},
+     * providing the values of the query's parameters through a {@link
+     * DbPreparedStatementHandler}.
+     * <p>Combined with {@link RestoreQuery#whereParameter}, this executes the
+     * query as a prepared statement with the parameter values bound by the
+     * database driver instead of being inlined into the SQL. The same query
+     * instance can be executed repeatedly with different parameter values.
+     *
+     * @param query   the query the beans should be restored from
+     * @param handler the handler that sets the values of the query's
+     *                parameters
+     * @return a list containing all the restored beans
+     * @see #restore(RestoreQuery)
+     * @since 1.10
+     */
+    List<BeanType> restore(RestoreQuery query, DbPreparedStatementHandler<?> handler)
     throws DatabaseException;
 
     /**
@@ -278,6 +315,23 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
 
     /**
      * Restore a list of beans that match the provided {@link RestoreQuery}
+     * and process with the {@link DbRowProcessor}, providing the values of
+     * the query's parameters through a {@link DbPreparedStatementHandler}.
+     *
+     * @param query        the query the beans should be restored from
+     * @param rowProcessor the row processor that should be used to process
+     *                     each matched bean row
+     * @param handler      the handler that sets the values of the query's
+     *                     parameters
+     * @return true if beans were processed, false if not
+     * @see #restore(RestoreQuery, DbRowProcessor)
+     * @since 1.10
+     */
+    boolean restore(RestoreQuery query, DbRowProcessor rowProcessor, DbPreparedStatementHandler<?> handler)
+    throws DatabaseException;
+
+    /**
+     * Restore a list of beans that match the provided {@link RestoreQuery}
      * and process with the {@link BeanFetcher}.
      * <p>This method will return a list of beans that match the provided
      * RestoreQuery and process these matches with the provided {@link
@@ -292,6 +346,23 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * @since 1.0
      */
     boolean restore(RestoreQuery query, BeanFetcher<BeanType> beanFetcher)
+    throws DatabaseException;
+
+    /**
+     * Restore a list of beans that match the provided {@link RestoreQuery}
+     * and process with the {@link BeanFetcher}, providing the values of the
+     * query's parameters through a {@link DbPreparedStatementHandler}.
+     *
+     * @param query       the query the beans should be restored from
+     * @param beanFetcher the bean fetcher that should be used to process
+     *                    each matched bean row
+     * @param handler     the handler that sets the values of the query's
+     *                    parameters
+     * @return true if beans were processed, false if not
+     * @see #restore(RestoreQuery, BeanFetcher)
+     * @since 1.10
+     */
+    boolean restore(RestoreQuery query, BeanFetcher<BeanType> beanFetcher, DbPreparedStatementHandler<?> handler)
     throws DatabaseException;
 
     /**
@@ -354,6 +425,26 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * @since 1.0
      */
     int count(CountQuery query)
+    throws DatabaseException;
+
+    /**
+     * Count the number of beans persisted with a custom {@link CountQuery},
+     * providing the values of the query's parameters through a {@link
+     * DbPreparedStatementHandler}.
+     * <p>Combined with {@link CountQuery#whereParameter}, this executes the
+     * query as a prepared statement with the parameter values bound by the
+     * database driver instead of being inlined into the SQL.
+     *
+     * @param query   the query that will be used to determine which beans to
+     *                count
+     * @param handler the handler that sets the values of the query's
+     *                parameters
+     * @return the number of beans persisted under this manager that match the
+     * provided query
+     * @see #count(CountQuery)
+     * @since 1.10
+     */
+    int count(CountQuery query, DbPreparedStatementHandler<?> handler)
     throws DatabaseException;
 
     /**

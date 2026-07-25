@@ -14,6 +14,7 @@ import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -732,5 +733,188 @@ public class TestJson {
 
         public Node getNext() { return next_; }
         public void setNext(Node next) { next_ = next; }
+    }
+
+    public static class OptionalBook {
+        private String title_;
+        private Integer year_;
+
+        public Optional<String> getTitle() { return Optional.ofNullable(title_); }
+        public void setTitle(String title) { title_ = title; }
+
+        public Optional<Integer> getYear() { return Optional.ofNullable(year_); }
+        public void setYear(Integer year) { year_ = year; }
+    }
+
+    public static class OptionalCatalog {
+        private Optional<List<OptionalBook>> books_ = Optional.empty();
+
+        public Optional<List<OptionalBook>> getBooks() { return books_; }
+        public void setBooks(Optional<List<OptionalBook>> books) { books_ = books; }
+    }
+
+    public static class GenericCatalogBase<T> {
+        private Optional<List<T>> items_ = Optional.empty();
+
+        public Optional<List<T>> getItems() { return items_; }
+        public void setItems(Optional<List<T>> items) { items_ = items; }
+    }
+
+    public static class BookCatalog extends GenericCatalogBase<OptionalBook> {}
+
+    public static class PlainListBase<T> {
+        private List<T> entries_;
+
+        public List<T> getEntries() { return entries_; }
+        public void setEntries(List<T> entries) { entries_ = entries; }
+    }
+
+    public static class BookList extends PlainListBase<OptionalBook> {}
+
+    @Test
+    void testInheritedNestedGenericsRoundTrip() {
+        var book = new OptionalBook();
+        book.setTitle("Refactoring");
+
+        // the type variable of the inherited Optional<List<T>> resolves
+        // against the concrete subclass, so elements convert to beans
+        var catalog = new BookCatalog();
+        catalog.setItems(Optional.of(List.of(book)));
+        var restored_catalog = Json.toBean(Json.from(catalog), BookCatalog.class);
+        var items = restored_catalog.getItems().orElseThrow();
+        assertInstanceOf(OptionalBook.class, items.get(0));
+        assertEquals(Optional.of("Refactoring"), items.get(0).getTitle());
+
+        // the same resolution applies to plain inherited generics
+        var book_list = new BookList();
+        book_list.setEntries(List.of(book));
+        var restored_list = Json.toBean(Json.from(book_list), BookList.class);
+        assertInstanceOf(OptionalBook.class, restored_list.getEntries().get(0));
+        assertEquals(Optional.of("Refactoring"), restored_list.getEntries().get(0).getTitle());
+    }
+
+    public static class IdiomaticCatalogBase<T> {
+        private List<T> items_;
+
+        public Optional<List<T>> getItems() { return Optional.ofNullable(items_); }
+        public void setItems(List<T> items) { items_ = items; }
+    }
+
+    public static class IdiomaticBookCatalog extends IdiomaticCatalogBase<OptionalBook> {}
+
+    public static class SetterOnlyTagsBase<T> {
+        protected List<T> stored_;
+
+        public void setTags(Optional<List<T>> tags) { stored_ = tags.orElse(null); }
+        public List<T> tags() { return stored_; }
+    }
+
+    public static class BookTags extends SetterOnlyTagsBase<OptionalBook> {}
+
+    public static class ContainerVariableBase<T> {
+        private T value_;
+
+        public Optional<T> getValue() { return Optional.ofNullable(value_); }
+        public void setValue(T value) { value_ = value; }
+    }
+
+    public static class BookListCatalog extends ContainerVariableBase<List<OptionalBook>> {}
+
+    public static class WildcardListBean {
+        private List<? extends OptionalBook> books_;
+
+        public List<? extends OptionalBook> getBooks() { return books_; }
+        public void setBooks(List<? extends OptionalBook> books) { books_ = books; }
+    }
+
+    @Test
+    void testWildcardElementTypeRoundTrip() {
+        // a wildcard element type stands for its upper bound, so the
+        // elements convert to beans instead of staying JSON objects
+        var book = new OptionalBook();
+        book.setTitle("Refactoring");
+        var bean = new WildcardListBean();
+        bean.setBooks(List.of(book));
+
+        var restored = Json.toBean(Json.from(bean), WildcardListBean.class);
+        assertInstanceOf(OptionalBook.class, restored.getBooks().get(0));
+        assertEquals(Optional.of("Refactoring"), restored.getBooks().get(0).getTitle());
+    }
+
+    @Test
+    void testTypeVariableResolvingToContainerRoundTrip() {
+        // the type variable itself resolves to a parameterized container,
+        // whose element type carries through to the restored beans
+        var book = new OptionalBook();
+        book.setTitle("Refactoring");
+        var catalog = new BookListCatalog();
+        catalog.setValue(List.of(book));
+
+        var restored = Json.toBean(Json.from(catalog), BookListCatalog.class);
+        var value = restored.getValue().orElseThrow();
+        assertInstanceOf(OptionalBook.class, value.get(0));
+        assertEquals(Optional.of("Refactoring"), value.get(0).getTitle());
+    }
+
+    @Test
+    void testInheritedIdiomaticNestedGenericsRoundTrip() {
+        // the recommended shape, an Optional getter with a plain setter, also
+        // resolves inherited element types through the setter's generic
+        var book = new OptionalBook();
+        book.setTitle("Refactoring");
+        var catalog = new IdiomaticBookCatalog();
+        catalog.setItems(List.of(book));
+
+        var restored = Json.toBean(Json.from(catalog), IdiomaticBookCatalog.class);
+        var items = restored.getItems().orElseThrow();
+        assertInstanceOf(OptionalBook.class, items.get(0));
+        assertEquals(Optional.of("Refactoring"), items.get(0).getTitle());
+    }
+
+    @Test
+    void testInheritedSetterOnlyNestedGenerics() {
+        // without a getter to fall back to, the Optional-typed setter alone
+        // carries the inherited element type
+        var json = Json.parseObject("""
+            {"tags":[{"title":"Refactoring","year":1999}]}""");
+        var restored = Json.toBean(json, BookTags.class);
+        assertInstanceOf(OptionalBook.class, restored.tags().get(0));
+        assertEquals(Optional.of("Refactoring"), restored.tags().get(0).getTitle());
+        assertEquals(Optional.of(1999), restored.tags().get(0).getYear());
+    }
+
+    @Test
+    void testOptionalNestedGenericsRoundTrip() {
+        var book = new OptionalBook();
+        book.setTitle("Refactoring");
+        book.setYear(1999);
+        var catalog = new OptionalCatalog();
+        catalog.setBooks(Optional.of(List.of(book)));
+
+        var json = Json.from(catalog);
+        var restored = Json.toBean(json, OptionalCatalog.class);
+
+        // the element type survives through the Optional-typed accessors,
+        // instead of leaving raw JsonObject instances in the list
+        var books = restored.getBooks().orElseThrow();
+        assertEquals(1, books.size());
+        assertInstanceOf(OptionalBook.class, books.get(0));
+        assertEquals(Optional.of("Refactoring"), books.get(0).getTitle());
+        assertEquals(Optional.of(1999), books.get(0).getYear());
+    }
+
+    @Test
+    void testOptionalBeanRoundTrip() {
+        // the idiomatic Optional shape serializes with its values unwrapped
+        var bean = new OptionalBook();
+        bean.setTitle("Refactoring");
+
+        var json = Json.from(bean);
+        assertEquals("Refactoring", json.getString("title"));
+
+        // and deserializes back through the recovered plain-typed setters
+        var restored = Json.toBean(json, OptionalBook.class);
+        assertEquals(Optional.of("Refactoring"), restored.getTitle());
+        assertEquals(Optional.empty(), restored.getYear(), "an absent value restores as an empty Optional");
     }
 }

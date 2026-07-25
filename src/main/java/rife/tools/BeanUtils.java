@@ -15,9 +15,14 @@ import rife.tools.exceptions.ConversionException;
 import rife.tools.exceptions.FileUtilsErrorException;
 import rife.validation.*;
 
+import java.awt.Image;
+import java.beans.BeanDescriptor;
 import java.beans.BeanInfo;
+import java.beans.EventSetDescriptor;
+import java.beans.IndexedPropertyDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,6 +30,9 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.Format;
 import java.text.ParseException;
@@ -34,6 +42,14 @@ import static rife.tools.BeanUtils.Accessors.*;
 
 /**
  * Utility class providing methods for working with Java beans.
+ * <p>Since 1.10, bean properties can use {@code Optional} getters. Their
+ * values will be unwrapped when they are read and an empty {@code Optional}
+ * means the same as {@code null}, the property type will be the
+ * {@code Optional}'s value type. The standard JavaBeans introspector drops
+ * a plain-typed setter next to an {@code Optional} getter, RIFE2 pairs it
+ * again so that the property simply behaves like a regular read-write
+ * property. A setter with an {@code Optional} parameter will receive its
+ * values wrapped.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
  * @since 1.0
@@ -56,8 +72,157 @@ public final class BeanUtils {
 
     private static final ConcurrentHashMap<Class<?>, BeanInfo> BEAN_INFO_CACHE = new ConcurrentHashMap<>();
 
+    private static Object unwrapOptional(Object value) {
+        if (value instanceof Optional<?> optional) {
+            return optional.orElse(null);
+        }
+        return value;
+    }
+
+    // only unwrap what is declared as Optional, a value that merely happens
+    // to be one passes through untouched
+    private static Object readPropertyValue(Method read, Object bean)
+    throws IllegalAccessException, InvocationTargetException {
+        var value = read.invoke(bean, (Object[]) null);
+        if (read.getReturnType() == Optional.class) {
+            return unwrapOptional(value);
+        }
+        return value;
+    }
+
+    private static final Map<Class<?>, Class<?>> BOXED_TYPES = Map.of(
+        boolean.class, Boolean.class,
+        byte.class, Byte.class,
+        char.class, Character.class,
+        short.class, Short.class,
+        int.class, Integer.class,
+        long.class, Long.class,
+        float.class, Float.class,
+        double.class, Double.class);
+
+    private static Class<?> optionalValueType(Class<?> beanClass, Type genericType) {
+        if (genericType instanceof ParameterizedType parameterized) {
+            return erasedType(beanClass, parameterized.getActualTypeArguments()[0]);
+        }
+        return Object.class;
+    }
+
+    private static Class<?> erasedType(Class<?> beanClass, Type type) {
+        return ClassUtils.erasedType(beanClass, type);
+    }
+
+    // enhanced descriptors already report their effective type, this also
+    // covers raw descriptors that were built outside getBeanInfo
+    private static Class<?> getEffectivePropertyType(Class<?> beanClass, PropertyDescriptor property) {
+        if (property instanceof OptionalPropertyDescriptor) {
+            return property.getPropertyType();
+        }
+
+        var read = property.getReadMethod();
+        if (read != null) {
+            if (read.getReturnType() == Optional.class) {
+                return optionalValueType(beanClass, read.getGenericReturnType());
+            }
+            return read.getReturnType();
+        }
+
+        var write = property.getWriteMethod();
+        if (write != null) {
+            if (write.getParameterTypes()[0] == Optional.class) {
+                return optionalValueType(beanClass, write.getGenericParameterTypes()[0]);
+            }
+            return write.getParameterTypes()[0];
+        }
+
+        return property.getPropertyType();
+    }
+
+    // the JavaBeans introspector refuses to pair a getter and a setter whose
+    // types don't line up, so the plain-typed setter next to an Optional
+    // getter is silently dropped, this recovers it by applying the same
+    // rules as the introspector
+    private static Method findSupplementalSetter(Class<?> beanClass, Method read) {
+        if (!read.getName().startsWith("get") ||
+            read.getName().length() <= 3) {
+            return null;
+        }
+
+        var write_type = optionalValueType(beanClass, read.getGenericReturnType());
+        var setter_name = "set" + read.getName().substring(3);
+        Method primitive_counterpart = null;
+        var candidates = new ArrayList<Method>();
+        for (var candidate : beanClass.getMethods()) {
+            if (!candidate.getName().equals(setter_name) ||
+                candidate.getParameterCount() != 1 ||
+                candidate.getReturnType() != void.class ||
+                Modifier.isStatic(candidate.getModifiers()) ||
+                !notValidationMethod(candidate)) {
+                continue;
+            }
+
+            // reflection unboxes at invocation time, so primitives compare
+            // through their boxed equivalents
+            var declared = erasedType(beanClass, candidate.getGenericParameterTypes()[0]);
+            if (declared == write_type) {
+                // its signature is unique and it preserves the null that an
+                // empty Optional carries
+                return candidate;
+            }
+            var parameter = BOXED_TYPES.getOrDefault(declared, declared);
+            if (parameter == write_type) {
+                // the primitive counterpart is exact after boxing, but can't
+                // receive null, so it only wins over mere subtypes
+                primitive_counterpart = candidate;
+            } else if (write_type.isAssignableFrom(parameter)) {
+                candidates.add(candidate);
+            }
+        }
+        if (primitive_counterpart != null) {
+            return primitive_counterpart;
+        }
+
+        // the stable order makes incomparable overloads resolve
+        // deterministically, and for the same resolved type the boxed
+        // declaration sorts first and wins since it can carry the null of
+        // an empty Optional
+        candidates.sort(Comparator
+            .comparing((Method candidate) -> resolvedSetterParameter(beanClass, candidate).getName())
+            .thenComparing(candidate -> candidate.getParameterTypes()[0].isPrimitive())
+            .thenComparing(candidate -> candidate.getParameterTypes()[0].getName()));
+        Method setter = null;
+        for (var candidate : candidates) {
+            var parameter = resolvedSetterParameter(beanClass, candidate);
+            if (write_type.isAssignableFrom(parameter) &&
+                (setter == null || parameter != write_type)) {
+                setter = candidate;
+                write_type = parameter;
+            }
+        }
+        return setter;
+    }
+
+    private static Class<?> resolvedSetterParameter(Class<?> beanClass, Method candidate) {
+        var parameter = erasedType(beanClass, candidate.getGenericParameterTypes()[0]);
+        return BOXED_TYPES.getOrDefault(parameter, parameter);
+    }
+
+    private static void invokeWriteMethod(Method writeMethod, Object bean, Object value)
+    throws IllegalAccessException, InvocationTargetException {
+        if (writeMethod.getParameterTypes()[0] == Optional.class &&
+            !(value instanceof Optional)) {
+            value = Optional.ofNullable(value);
+        }
+        writeMethod.invoke(bean, value);
+    }
+
     /**
      * Gets the BeanInfo for the specified beanClass.
+     * <p>The property descriptors describe {@code Optional} properties
+     * directly, {@link PropertyDescriptor#getPropertyType()} will return the
+     * {@code Optional}'s value type and
+     * {@link PropertyDescriptor#getWriteMethod()} will return the
+     * plain-typed setter that the standard introspector dropped. This also
+     * applies to properties that only have an {@code Optional} setter.
      *
      * @param beanClass The Class to get the BeanInfo for.
      * @return The BeanInfo for the specified beanClass.
@@ -69,7 +234,7 @@ public final class BeanUtils {
         try {
             return BEAN_INFO_CACHE.computeIfAbsent(beanClass, k -> {
                 try {
-                    return Introspector.getBeanInfo(beanClass);
+                    return enhanceBeanInfo(Introspector.getBeanInfo(beanClass), beanClass);
                 } catch (IntrospectionException e) {
                     throw new InnerClassException(e);
                 }
@@ -77,6 +242,103 @@ public final class BeanUtils {
         } catch (InnerClassException e) {
             throw new BeanUtilsException("Couldn't introspect the bean.", beanClass, e.getCause());
         }
+    }
+
+    // enhances the standard BeanInfo so that Optional properties describe
+    // themselves, everything that consumes the descriptors afterwards is
+    // correct without any Optional-specific handling
+    private static BeanInfo enhanceBeanInfo(BeanInfo info, Class<?> beanClass)
+    throws IntrospectionException {
+        var descriptors = info.getPropertyDescriptors();
+        if (null == descriptors) {
+            return info;
+        }
+
+        PropertyDescriptor[] enhanced = null;
+        for (var i = 0; i < descriptors.length; i++) {
+            var descriptor = descriptors[i];
+            if (descriptor instanceof IndexedPropertyDescriptor) {
+                continue;
+            }
+            var read = descriptor.getReadMethod();
+            var write = descriptor.getWriteMethod();
+            if ((read != null && read.getReturnType() == Optional.class) ||
+                (read == null && write != null && write.getParameterTypes()[0] == Optional.class)) {
+                if (null == enhanced) {
+                    // never mutate the array of the introspector's shared BeanInfo
+                    enhanced = descriptors.clone();
+                }
+                enhanced[i] = new OptionalPropertyDescriptor(beanClass, descriptor);
+            }
+        }
+
+        if (null == enhanced) {
+            return info;
+        }
+        return new EnhancedBeanInfo(info, enhanced);
+    }
+
+    private static final class OptionalPropertyDescriptor extends PropertyDescriptor {
+        private final Method writeMethod_;
+        private final Class<?> propertyType_;
+
+        // the introspector refuses a write method whose type differs from the
+        // getter's, so the descriptor is constructed with the getter alone and
+        // provides the write method and property type through the overrides
+        private OptionalPropertyDescriptor(Class<?> beanClass, PropertyDescriptor descriptor)
+        throws IntrospectionException {
+            super(descriptor.getName(), descriptor.getReadMethod(),
+                  descriptor.getReadMethod() == null ? descriptor.getWriteMethod() : null);
+
+            var read = descriptor.getReadMethod();
+            if (read != null) {
+                // prefer a plain-typed setter even when an Optional-typed one
+                // is paired, so that the write method accepts the property's
+                // effective type directly whenever the bean makes that possible
+                var write = findSupplementalSetter(beanClass, read);
+                if (null == write) {
+                    write = descriptor.getWriteMethod();
+                }
+                writeMethod_ = write;
+                propertyType_ = optionalValueType(beanClass, read.getGenericReturnType());
+            } else {
+                writeMethod_ = descriptor.getWriteMethod();
+                propertyType_ = optionalValueType(beanClass, writeMethod_.getGenericParameterTypes()[0]);
+            }
+
+            setBound(descriptor.isBound());
+            setConstrained(descriptor.isConstrained());
+            setPropertyEditorClass(descriptor.getPropertyEditorClass());
+            setDisplayName(descriptor.getDisplayName());
+            setExpert(descriptor.isExpert());
+            setHidden(descriptor.isHidden());
+            setPreferred(descriptor.isPreferred());
+            setShortDescription(descriptor.getShortDescription());
+            var attributes = descriptor.attributeNames();
+            while (attributes.hasMoreElements()) {
+                var attribute = attributes.nextElement();
+                setValue(attribute, descriptor.getValue(attribute));
+            }
+        }
+
+        public synchronized Method getWriteMethod() {
+            return writeMethod_;
+        }
+
+        public synchronized Class<?> getPropertyType() {
+            return propertyType_;
+        }
+    }
+
+    private record EnhancedBeanInfo(BeanInfo origin, PropertyDescriptor[] descriptors) implements BeanInfo {
+        public BeanDescriptor getBeanDescriptor() { return origin.getBeanDescriptor(); }
+        public EventSetDescriptor[] getEventSetDescriptors() { return origin.getEventSetDescriptors(); }
+        public int getDefaultEventIndex() { return origin.getDefaultEventIndex(); }
+        public PropertyDescriptor[] getPropertyDescriptors() { return descriptors; }
+        public int getDefaultPropertyIndex() { return origin.getDefaultPropertyIndex(); }
+        public MethodDescriptor[] getMethodDescriptors() { return origin.getMethodDescriptors(); }
+        public BeanInfo[] getAdditionalBeanInfo() { return origin.getAdditionalBeanInfo(); }
+        public Image getIcon(int iconKind) { return origin.getIcon(iconKind); }
     }
 
     private static boolean notValidationMethod(Method method) {
@@ -290,7 +552,7 @@ public final class BeanUtils {
                 }
 
                 // handle the property value
-                processor.gotProperty(name, descriptor, property_read_method.invoke(bean, (Object[]) null), constrained_property);
+                processor.gotProperty(name, descriptor, readPropertyValue(property_read_method, bean), constrained_property);
             }
 
             return true;
@@ -342,6 +604,8 @@ public final class BeanUtils {
     /**
      * Returns the value of the property with the given name from the specified bean.
      * Throws an exception if the property does not exist or is not readable.
+     * <p>The value of an {@code Optional} getter is unwrapped, an empty
+     * {@code Optional} returns {@code null}.
      *
      * @param bean The bean instance to retrieve the property value from.
      * @param name The name of the property to retrieve.
@@ -380,7 +644,7 @@ public final class BeanUtils {
                     }
 
                     try {
-                        return property_read_method.invoke(bean, (Object[]) null);
+                        return readPropertyValue(property_read_method, bean);
                     } catch (IllegalAccessException e) {
                         throw new BeanUtilsException("No permission to invoke the '" + property_read_method.getName() + "' method on the bean.", bean_class, e);
                     } catch (IllegalArgumentException e) {
@@ -398,6 +662,9 @@ public final class BeanUtils {
     /**
      * Sets the value of the property with the given name in the specified bean.
      * Throws an exception if the property does not exist or is not writable.
+     * <p>When the property only has an {@code Optional} getter, the paired
+     * plain-typed setter will be used. A setter with an {@code Optional}
+     * parameter will receive the value wrapped.
      *
      * @param bean  The bean instance to set the property value on.
      * @param name  The name of the property to set.
@@ -429,10 +696,18 @@ public final class BeanUtils {
 
                 // process the property if it was valid
                 if (property_name.equals(name)) {
-                    // obtain the value of the property
+                    // obtain the write method of the property, falling back to
+                    // the recovered setter of an Optional getter, and wrapping
+                    // the value when the setter declares an Optional parameter
                     property_write_method = bean_property.getWriteMethod();
+                    if (null == property_write_method &&
+                        !(bean_property instanceof OptionalPropertyDescriptor) &&
+                        bean_property.getReadMethod() != null &&
+                        bean_property.getReadMethod().getReturnType() == Optional.class) {
+                        property_write_method = findSupplementalSetter(bean_class, bean_property.getReadMethod());
+                    }
                     try {
-                        property_write_method.invoke(bean, value);
+                        invokeWriteMethod(property_write_method, bean, value);
                         return;
                     } catch (IllegalAccessException e) {
                         throw new BeanUtilsException("No permission to invoke the '" + property_write_method.getName() + "' method on the bean.", bean_class, e);
@@ -450,6 +725,8 @@ public final class BeanUtils {
 
     /**
      * Returns the class of a property of a bean, given its name.
+     * <p>The type of an {@code Optional} property is the {@code Optional}'s
+     * value type, not {@code Optional} itself.
      *
      * @param beanClass the class of the bean to search for the property
      * @param name      the name of the property to retrieve the type
@@ -471,7 +748,6 @@ public final class BeanUtils {
         var bean_properties = bean_info.getPropertyDescriptors();
         if (bean_properties.length > 0) {
             String property_name = null;
-            Method property_read_method = null;
 
             // iterate over the properties of the bean
             for (var bean_property : bean_properties) {
@@ -479,9 +755,7 @@ public final class BeanUtils {
 
                 // process the property if it was valid
                 if (property_name.equals(name)) {
-                    // obtain the value of the property
-                    property_read_method = bean_property.getReadMethod();
-                    return property_read_method.getReturnType();
+                    return getEffectivePropertyType(beanClass, bean_property);
                 }
             }
         }
@@ -531,13 +805,21 @@ public final class BeanUtils {
 
     /**
      * Formats a property value based on the given format from a constrained property.
+     * <p>A {@code null} value simply results in {@code null} without using
+     * the format. Values of {@code Optional} properties are already
+     * unwrapped when RIFE2 reads them.
      *
      * @param propertyValue       the value of the property to format
      * @param constrainedProperty the constrained property that contains formatting info
-     * @return the formatted value of the property
+     * @return the formatted value of the property; or {@code null} when the
+     * value is {@code null}
      * @since 1.0
      */
     public static String formatPropertyValue(Object propertyValue, ConstrainedProperty constrainedProperty) {
+        if (null == propertyValue) {
+            return null;
+        }
+
         if (propertyValue instanceof String) {
             return (String) propertyValue;
         }
@@ -622,18 +904,8 @@ public final class BeanUtils {
         final var property_types = new LinkedHashMap<String, Class>();
 
         processProperties(accessors, beanClass, includedProperties, excludedProperties, prefix, (name, descriptor) -> {
-            Class property_class = null;
-
-            // obtain and store the property type
-            var property_read_method = descriptor.getReadMethod();
-            if (property_read_method != null) {
-                property_class = property_read_method.getReturnType();
-            } else {
-                var property_write_method = descriptor.getWriteMethod();
-                property_class = property_write_method.getParameterTypes()[0];
-            }
-
-            property_types.put(name, property_class);
+            // obtain and store the effective property type
+            property_types.put(name, getEffectivePropertyType(beanClass, descriptor));
 
             return true;
         });
@@ -712,6 +984,14 @@ public final class BeanUtils {
 
     /**
      * Set the value of a bean property from an array of strings.
+     * <p>The values are converted to the property type, for an
+     * {@code Optional} property that is the {@code Optional}'s value type.
+     * When the property only has an {@code Optional} getter, the paired
+     * plain-typed setter will be used, and a setter with an {@code Optional}
+     * parameter will receive the converted value wrapped. When an empty
+     * value comes from the empty bean and the setter has a primitive
+     * parameter, the property will be left untouched since a primitive can't
+     * hold an absent value.
      *
      * @param propertyName       the name of the property
      * @param propertyValues     the values that will be set, can be {@code null}
@@ -762,10 +1042,19 @@ public final class BeanUtils {
 
             write_method = property.getWriteMethod();
             if (null == write_method) {
-                return;
+                // an enhanced descriptor already tried to recover a setter,
+                // only scan for descriptors that were built externally
+                var read_method = property.getReadMethod();
+                if (!(property instanceof OptionalPropertyDescriptor) &&
+                    read_method != null && read_method.getReturnType() == Optional.class) {
+                    write_method = findSupplementalSetter(bean_class, read_method);
+                }
+                if (null == write_method) {
+                    return;
+                }
             }
 
-            property_type = property.getPropertyType();
+            property_type = getEffectivePropertyType(bean_class, property);
             if (null == property_type) {
                 return;
             }
@@ -793,8 +1082,16 @@ public final class BeanUtils {
                         null == propertyValues[0] ||
                             propertyValues[0].isEmpty())) {
                     var read_method = property.getReadMethod();
-                    var empty_value = read_method.invoke(emptyBean, (Object[]) null);
-                    write_method.invoke(beanInstance, empty_value);
+                    // a setter-only property has nothing to read from the
+                    // empty bean, the null value lets an Optional setter
+                    // receive an empty Optional
+                    var empty_value = read_method == null ? null : readPropertyValue(read_method, emptyBean);
+                    // a primitive setter can't receive an absent value, leave
+                    // the property untouched instead of failing the population
+                    if (empty_value != null ||
+                        !write_method.getParameterTypes()[0].isPrimitive()) {
+                        invokeWriteMethod(write_method, beanInstance, empty_value);
+                    }
                 }
                 // assign the value normally
                 else {
@@ -802,7 +1099,7 @@ public final class BeanUtils {
                     if (property_type.isArray()) {
                         var component_type = property_type.getComponentType();
                         if (component_type == String.class) {
-                            write_method.invoke(beanInstance, new Object[]{propertyValues});
+                            invokeWriteMethod(write_method, beanInstance, propertyValues);
                         } else if (component_type == int.class) {
                             var parameter_values_typed = new int[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -814,7 +1111,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == Integer.class) {
                             var parameter_values_typed = new Integer[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -826,7 +1123,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == char.class) {
                             var parameter_values_typed = new char[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -834,7 +1131,7 @@ public final class BeanUtils {
                                     parameter_values_typed[i] = propertyValues[i].charAt(0);
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == Character.class) {
                             var parameter_values_typed = new Character[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -842,7 +1139,7 @@ public final class BeanUtils {
                                     parameter_values_typed[i] = propertyValues[i].charAt(0);
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == boolean.class) {
                             var parameter_values_typed = new boolean[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -850,7 +1147,7 @@ public final class BeanUtils {
                                     parameter_values_typed[i] = StringUtils.convertToBoolean(propertyValues[i]);
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == Boolean.class) {
                             var parameter_values_typed = new Boolean[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -858,7 +1155,7 @@ public final class BeanUtils {
                                     parameter_values_typed[i] = StringUtils.convertToBoolean(propertyValues[i]);
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == byte.class) {
                             var parameter_values_typed = new byte[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -870,7 +1167,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == Byte.class) {
                             var parameter_values_typed = new Byte[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -882,7 +1179,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == double.class) {
                             var parameter_values_typed = new double[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -894,7 +1191,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == Double.class) {
                             var parameter_values_typed = new Double[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -906,7 +1203,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == float.class) {
                             var parameter_values_typed = new float[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -918,7 +1215,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == Float.class) {
                             var parameter_values_typed = new Float[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -930,7 +1227,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == long.class) {
                             var parameter_values_typed = new long[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -942,7 +1239,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == Long.class) {
                             var parameter_values_typed = new Long[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -954,7 +1251,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == short.class) {
                             var parameter_values_typed = new short[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -966,7 +1263,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == Short.class) {
                             var parameter_values_typed = new Short[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -978,7 +1275,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == BigDecimal.class) {
                             var parameter_values_typed = new BigDecimal[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -990,7 +1287,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == StringBuffer.class) {
                             var parameter_values_typed = new StringBuffer[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -998,7 +1295,7 @@ public final class BeanUtils {
                                     parameter_values_typed[i] = new StringBuffer(propertyValues[i]);
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (component_type == StringBuilder.class) {
                             var parameter_values_typed = new StringBuilder[propertyValues.length];
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -1006,7 +1303,7 @@ public final class BeanUtils {
                                     parameter_values_typed[i] = new StringBuilder(propertyValues[i]);
                                 }
                             }
-                            write_method.invoke(beanInstance, new Object[]{parameter_values_typed});
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (Date.class.isAssignableFrom(component_type) ||
                             Instant.class.isAssignableFrom(component_type) ||
                             LocalDateTime.class.isAssignableFrom(component_type) ||
@@ -1072,7 +1369,7 @@ public final class BeanUtils {
                                         }
                                     }
                                 }
-                                write_method.invoke(beanInstance, parameter_values_typed);
+                                invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                             } catch (ParseException e) {
                                 if (validated != null) {
                                     validated.addValidationError(new ValidationError.INVALID(propertyName).erroneousValue(propertyValues[0]));
@@ -1094,7 +1391,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, parameter_values_typed);
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         } else if (constrained_property != null && constrained_property.isFormatted()) {
                             var parameter_values_typed = Array.newInstance(component_type, propertyValues.length);
                             for (var i = 0; i < propertyValues.length; i++) {
@@ -1108,7 +1405,7 @@ public final class BeanUtils {
                                     }
                                 }
                             }
-                            write_method.invoke(beanInstance, parameter_values_typed);
+                            invokeWriteMethod(write_method, beanInstance, parameter_values_typed);
                         }
                     }
                     // process an object or a primitive type
@@ -1267,7 +1564,7 @@ public final class BeanUtils {
                         }
 
                         if (parameter_value_typed != null) {
-                            write_method.invoke(beanInstance, parameter_value_typed);
+                            invokeWriteMethod(write_method, beanInstance, parameter_value_typed);
                         }
                     }
                 }
@@ -1340,10 +1637,19 @@ public final class BeanUtils {
 
             write_method = property.getWriteMethod();
             if (null == write_method) {
-                return;
+                // an enhanced descriptor already tried to recover a setter,
+                // only scan for descriptors that were built externally
+                var read_method = property.getReadMethod();
+                if (!(property instanceof OptionalPropertyDescriptor) &&
+                    read_method != null && read_method.getReturnType() == Optional.class) {
+                    write_method = findSupplementalSetter(bean_class, read_method);
+                }
+                if (null == write_method) {
+                    return;
+                }
             }
 
-            property_type = property.getPropertyType();
+            property_type = getEffectivePropertyType(bean_class, property);
             if (null == property_type) {
                 return;
             }
@@ -1402,7 +1708,7 @@ public final class BeanUtils {
                             }
                         }
 
-                        write_method.invoke(beanInstance, parameter_value_typed);
+                        invokeWriteMethod(write_method, beanInstance, parameter_value_typed);
                     }
                 }
             } catch (FileUtilsErrorException | FileNotFoundException e) {

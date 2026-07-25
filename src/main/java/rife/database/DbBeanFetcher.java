@@ -6,14 +6,14 @@ package rife.database;
 
 import rife.database.exceptions.BeanException;
 import rife.database.exceptions.DatabaseException;
+import rife.tools.BeanUtils;
 import rife.tools.Convert;
 import rife.tools.StringUtils;
+import rife.tools.exceptions.BeanUtilsException;
 import rife.tools.exceptions.ConversionException;
 import rife.validation.ConstrainedUtils;
 
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +40,7 @@ public class DbBeanFetcher<BeanType> extends DbRowProcessor {
     private BeanType lastBeanInstance_ = null;
     private final HashMap<String, PropertyDescriptor> beanProperties_ = new HashMap<>();
     private final HashMap<String, String> columnAliases_ = new HashMap<>();
+    private Set<String> optionalWrapProperties_ = null;
     private ArrayList<BeanType> collectedInstances_ = null;
 
     /**
@@ -78,13 +79,27 @@ public class DbBeanFetcher<BeanType> extends DbRowProcessor {
         datasource_ = datasource;
         beanClass_ = beanClass;
         try {
-            bean_info = Introspector.getBeanInfo(beanClass);
-        } catch (IntrospectionException e) {
+            bean_info = BeanUtils.getBeanInfo(beanClass);
+        } catch (BeanUtilsException e) {
             throw new BeanException("Couldn't introspect the bean with class '" + beanClass_.getName() + "'.", beanClass, e);
         }
         var bean_properties = bean_info.getPropertyDescriptors();
         for (var bean_property : bean_properties) {
-            beanProperties_.put(bean_property.getName().toLowerCase(), bean_property);
+            var property_key = bean_property.getName().toLowerCase();
+            beanProperties_.put(property_key, bean_property);
+
+            // determine up front which setters expect their values wrapped in
+            // an Optional, so that rows populate without any per-column checks
+            // when the bean doesn't use Optional
+            var write_method = bean_property.getWriteMethod();
+            if (write_method != null &&
+                write_method.getParameterCount() == 1 &&
+                write_method.getParameterTypes()[0] == Optional.class) {
+                if (null == optionalWrapProperties_) {
+                    optionalWrapProperties_ = new HashSet<>();
+                }
+                optionalWrapProperties_.add(property_key);
+            }
         }
 
         // map explicitly constrained column names back to their properties,
@@ -238,8 +253,12 @@ public class DbBeanFetcher<BeanType> extends DbRowProcessor {
 
                 // if the typed object isn't null, set the value
                 if (typed_object != null) {
-                    // stored the property type
-                    write_method.invoke(instance, typed_object);
+                    if (optionalWrapProperties_ != null &&
+                        optionalWrapProperties_.contains(propertyName)) {
+                        write_method.invoke(instance, Optional.ofNullable(typed_object));
+                    } else {
+                        write_method.invoke(instance, typed_object);
+                    }
                 }
             } catch (IllegalAccessException e) {
                 throw new SQLException("No permission to invoke the '" + write_method.getName() + "' method on the bean with class '" + beanClass_.getName() + "'.", e);

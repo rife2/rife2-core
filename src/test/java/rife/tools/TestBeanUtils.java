@@ -6,6 +6,7 @@ package rife.tools;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import rife.config.RifeConfig;
 import rife.tools.exceptions.BeanUtilsException;
@@ -3559,5 +3560,858 @@ public class TestBeanUtils {
         assertEquals("23 Jan 2023 13:45:23", BeanUtils.formatPropertyValue(LocalDateTime.of(2023, Month.JANUARY, 23, 13, 45, 23, 142000000), new ConstrainedProperty("property").format(format)));
         assertEquals("23 Jan 2023 00:00:00", BeanUtils.formatPropertyValue(LocalDate.of(2023, Month.JANUARY, 23), new ConstrainedProperty("property").format(format)));
         assertEquals("1 Jan 1970 13:45:23", BeanUtils.formatPropertyValue(LocalTime.of(13, 45, 23, 142000000), new ConstrainedProperty("property").format(format)));
+    }
+
+    @Nested
+    class TestOptionalProperties {
+        // the idiomatic shape, Optional getters with plain-typed setters, the
+        // exact bean shape the standard introspector refuses to pair
+        public static class OptionalIdiomaticBean {
+            private String name_;
+            private Integer count_;
+            private String plain_;
+
+            public Optional<String> getName() { return Optional.ofNullable(name_); }
+            public void setName(String name) { name_ = name; }
+
+            public Optional<Integer> getCount() { return Optional.ofNullable(count_); }
+            public void setCount(Integer count) { count_ = count; }
+
+            public String getPlain() { return plain_; }
+            public void setPlain(String plain) { plain_ = plain; }
+        }
+
+        // the symmetric shape, the introspector pairs it and the setter
+        // values are wrapped
+        public static class OptionalSymmetricBean {
+            private Optional<String> value_ = Optional.empty();
+
+            public Optional<String> getValue() { return value_; }
+            public void setValue(Optional<String> value) { value_ = value; }
+        }
+
+        public static class OptionalReadOnlyBean {
+            public Optional<String> getOnly() { return Optional.of("only"); }
+            public Optional<String> getNullRef() { return null; }
+        }
+
+        public static class WriteOnlyBean {
+            public void setOnly(String only) {}
+        }
+
+        @Test
+        void testIntrospectorDropsMismatchedSetterCanary()
+        throws Exception {
+            // the supplemental pairing exists because the standard introspector
+            // silently drops a setter whose type doesn't match the getter; when
+            // this canary fails, a JDK changed that behavior and the pairing
+            // should be revisited
+            for (var descriptor : java.beans.Introspector.getBeanInfo(OptionalIdiomaticBean.class, Object.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("name")) {
+                    assertNotNull(descriptor.getReadMethod());
+                    assertNull(descriptor.getWriteMethod(), "the introspector is expected to drop the mismatched setter");
+                    return;
+                }
+            }
+            fail("the name property wasn't found");
+        }
+
+        @Test
+        void testIdiomaticEnumeration()
+        throws BeanUtilsException {
+            // the recovered setter makes the property a full read-write member
+            var default_names = BeanUtils.getPropertyNames(OptionalIdiomaticBean.class, null, null, null);
+            assertEquals(Set.of("name", "count", "plain"), default_names);
+            assertEquals(Set.of("name", "count", "plain"), BeanUtils.getPropertyNames(BeanUtils.Accessors.GETTERS, OptionalIdiomaticBean.class, null, null, null));
+            assertEquals(Set.of("name", "count", "plain"), BeanUtils.getPropertyNames(BeanUtils.Accessors.SETTERS, OptionalIdiomaticBean.class, null, null, null));
+            assertEquals(3, BeanUtils.countProperties(OptionalIdiomaticBean.class, null, null, null));
+        }
+
+        @Test
+        void testReadOnlyEnumeration()
+        throws BeanUtilsException {
+            // without a setter to recover, an Optional getter stays read-only
+            assertEquals(Collections.emptySet(), BeanUtils.getPropertyNames(OptionalReadOnlyBean.class, null, null, null));
+            assertEquals(Set.of("only", "nullRef"), BeanUtils.getPropertyNames(BeanUtils.Accessors.GETTERS, OptionalReadOnlyBean.class, null, null, null));
+        }
+
+        @Test
+        void testEffectiveTypes()
+        throws BeanUtilsException {
+            assertSame(String.class, BeanUtils.getPropertyType(OptionalIdiomaticBean.class, "name"));
+            assertSame(Integer.class, BeanUtils.getPropertyType(OptionalIdiomaticBean.class, "count"));
+            assertSame(String.class, BeanUtils.getPropertyType(OptionalIdiomaticBean.class, "plain"));
+            assertSame(String.class, BeanUtils.getPropertyType(OptionalSymmetricBean.class, "value"));
+            // a write-only property resolves through its setter instead of
+            // raising a NullPointerException
+            assertSame(String.class, BeanUtils.getPropertyType(WriteOnlyBean.class, "only"));
+
+            var types = BeanUtils.getPropertyTypes(OptionalIdiomaticBean.class, null, null, null);
+            assertSame(String.class, types.get("name"));
+            assertSame(Integer.class, types.get("count"));
+            assertSame(String.class, types.get("plain"));
+        }
+
+        @Test
+        void testValuesAreUnwrapped()
+        throws BeanUtilsException {
+            var bean = new OptionalIdiomaticBean();
+            bean.setName("hello");
+
+            var values = BeanUtils.getPropertyValues(bean, null, null, null);
+            assertEquals("hello", values.get("name"));
+            assertFalse(values.get("name") instanceof Optional);
+            assertNull(values.get("count"), "an empty Optional reads as null");
+
+            assertEquals("hello", BeanUtils.getPropertyValue(bean, "name"));
+            assertNull(BeanUtils.getPropertyValue(bean, "count"));
+        }
+
+        @Test
+        void testNullOptionalReferenceIsLenient()
+        throws BeanUtilsException {
+            // a getter that returns a null Optional reference reads as null
+            assertNull(BeanUtils.getPropertyValue(new OptionalReadOnlyBean(), "nullRef"));
+        }
+
+        @Test
+        void testFormatPropertyValueNull() {
+            // Optional values arrive at formatting already unwrapped by the
+            // property value methods, and a null never consults the format
+            assertNull(BeanUtils.formatPropertyValue(null, null));
+            assertNull(BeanUtils.formatPropertyValue(null, new ConstrainedProperty("property").format(RifeConfig.tools().getConcisePreciseDateFormat())));
+        }
+
+        @Test
+        void testRoundTripIdiomatic()
+        throws BeanUtilsException {
+            var properties = BeanUtils.getUppercasedBeanProperties(OptionalIdiomaticBean.class);
+            var bean = new OptionalIdiomaticBean();
+
+            // string values convert to the effective type and reach the
+            // recovered plain-typed setters
+            BeanUtils.setUppercasedBeanProperty("NAME", new String[]{"hello"}, null, properties, bean, null);
+            BeanUtils.setUppercasedBeanProperty("COUNT", new String[]{"438"}, null, properties, bean, null);
+            assertEquals(Optional.of("hello"), bean.getName());
+            assertEquals(Optional.of(438), bean.getCount());
+        }
+
+        @Test
+        void testRoundTripSymmetric()
+        throws BeanUtilsException {
+            var properties = BeanUtils.getUppercasedBeanProperties(OptionalSymmetricBean.class);
+            var bean = new OptionalSymmetricBean();
+
+            // the converted value is wrapped for the Optional-typed setter
+            BeanUtils.setUppercasedBeanProperty("VALUE", new String[]{"world"}, null, properties, bean, null);
+            assertEquals(Optional.of("world"), bean.getValue());
+        }
+
+        @Test
+        void testEmptyBeanPath()
+        throws BeanUtilsException {
+            var properties = BeanUtils.getUppercasedBeanProperties(OptionalIdiomaticBean.class);
+            var empty_bean = new OptionalIdiomaticBean();
+            empty_bean.setName("default");
+
+            // an empty submission takes the value from the empty bean, through
+            // the Optional getter and into the recovered setter
+            var bean = new OptionalIdiomaticBean();
+            bean.setName("previous");
+            BeanUtils.setUppercasedBeanProperty("NAME", new String[0], null, properties, bean, empty_bean);
+            assertEquals(Optional.of("default"), bean.getName());
+        }
+
+        @Test
+        void testSetPropertyValueOptional()
+        throws BeanUtilsException {
+            var idiomatic = new OptionalIdiomaticBean();
+            BeanUtils.setPropertyValue(idiomatic, "name", "direct");
+            assertEquals(Optional.of("direct"), idiomatic.getName());
+
+            var symmetric = new OptionalSymmetricBean();
+            BeanUtils.setPropertyValue(symmetric, "value", "wrapped");
+            assertEquals(Optional.of("wrapped"), symmetric.getValue());
+        }
+
+        @Test
+        void testPrefixAndFilters()
+        throws BeanUtilsException {
+            // prefixes and inclusion filters apply to recovered properties
+            // like to any other
+            assertEquals(Set.of("PRE:name"),
+                BeanUtils.getPropertyNames(OptionalIdiomaticBean.class, new String[]{"PRE:name"}, null, "PRE:"));
+            assertEquals(Set.of("name", "plain"),
+                BeanUtils.getPropertyNames(OptionalIdiomaticBean.class, null, new String[]{"count"}, null));
+
+            var properties = BeanUtils.getUppercasedBeanProperties(OptionalIdiomaticBean.class);
+            var bean = new OptionalIdiomaticBean();
+            BeanUtils.setUppercasedBeanProperty("PRE:NAME", new String[]{"prefixed"}, "PRE:", properties, bean, null);
+            assertEquals(Optional.of("prefixed"), bean.getName());
+        }
+
+        public static class OptionalBaseBean {
+            protected String label_;
+
+            public Optional<String> getLabel() { return Optional.ofNullable(label_); }
+        }
+
+        public static class OptionalDerivedBean extends OptionalBaseBean {
+            public void setLabel(String label) { label_ = label; }
+        }
+
+        @Test
+        void testInheritedPairing()
+        throws BeanUtilsException {
+            // the Optional getter lives in the superclass and the plain-typed
+            // setter in the subclass, the recovery pairs across the hierarchy
+            assertEquals(Set.of("label"), BeanUtils.getPropertyNames(OptionalDerivedBean.class, null, null, null));
+
+            var properties = BeanUtils.getUppercasedBeanProperties(OptionalDerivedBean.class);
+            var bean = new OptionalDerivedBean();
+            BeanUtils.setUppercasedBeanProperty("LABEL", new String[]{"inherited"}, null, properties, bean, null);
+            assertEquals(Optional.of("inherited"), bean.getLabel());
+        }
+
+        @SuppressWarnings("rawtypes")
+        public static class RawOptionalBean {
+            private String value_;
+
+            public Optional getRaw() { return Optional.ofNullable(value_); }
+            public void setRaw(String value) { value_ = value; }
+        }
+
+        @Test
+        void testRawOptionalBehavesAsOptionalObject()
+        throws BeanUtilsException {
+            // a raw Optional getter has no resolvable value type and behaves
+            // like Optional<Object>, following the introspector's assignability
+            // rule the most specific same-named setter is paired
+            assertEquals(Set.of("raw"), BeanUtils.getPropertyNames(RawOptionalBean.class, null, null, null));
+            assertSame(Object.class, BeanUtils.getPropertyType(RawOptionalBean.class, "raw"));
+
+            var bean = new RawOptionalBean();
+            BeanUtils.setPropertyValue(bean, "raw", "rawvalue");
+            assertEquals("rawvalue", BeanUtils.getPropertyValue(bean, "raw"));
+        }
+
+        public static class OverloadedOptionalBean {
+            private String text_;
+            private StringBuilder builder_;
+
+            public Optional<String> getText() { return Optional.ofNullable(text_); }
+            public void setText(String text) { text_ = text; }
+            public void setText(StringBuilder text) { builder_ = text; }
+        }
+
+        @Test
+        void testOverloadedSettersPickExactMatch()
+        throws BeanUtilsException {
+            var properties = BeanUtils.getUppercasedBeanProperties(OverloadedOptionalBean.class);
+            var bean = new OverloadedOptionalBean();
+            BeanUtils.setUppercasedBeanProperty("TEXT", new String[]{"picked"}, null, properties, bean, null);
+            assertEquals(Optional.of("picked"), bean.getText());
+            assertNull(bean.builder_, "the overload that matches the Optional's value type is used");
+        }
+
+        public static class OptionalArrayBean {
+            private String[] tags_;
+
+            public Optional<String[]> getTags() { return Optional.ofNullable(tags_); }
+            public void setTags(String[] tags) { tags_ = tags; }
+        }
+
+        @Test
+        void testOptionalArrayProperty()
+        throws BeanUtilsException {
+            assertSame(String[].class, BeanUtils.getPropertyType(OptionalArrayBean.class, "tags"));
+
+            var properties = BeanUtils.getUppercasedBeanProperties(OptionalArrayBean.class);
+            var bean = new OptionalArrayBean();
+            BeanUtils.setUppercasedBeanProperty("TAGS", new String[]{"one", "two"}, null, properties, bean, null);
+            assertArrayEquals(new String[]{"one", "two"}, bean.getTags().orElseThrow());
+
+            // reading unwraps to the array itself
+            assertArrayEquals(new String[]{"one", "two"}, (String[]) BeanUtils.getPropertyValue(bean, "tags"));
+        }
+
+        public static class OptionalDateBean {
+            private LocalDate date_;
+
+            public Optional<LocalDate> getDate() { return Optional.ofNullable(date_); }
+            public void setDate(LocalDate date) { date_ = date; }
+        }
+
+        @Test
+        void testDateConversion()
+        throws BeanUtilsException {
+            // the date conversion machinery targets the effective type
+            assertSame(LocalDate.class, BeanUtils.getPropertyType(OptionalDateBean.class, "date"));
+
+            var properties = BeanUtils.getUppercasedBeanProperties(OptionalDateBean.class);
+            var bean = new OptionalDateBean();
+            BeanUtils.setUppercasedBeanProperty("DATE", new String[]{"2023-01-23 00:00"}, null, properties, bean, null);
+            assertEquals(Optional.of(LocalDate.of(2023, Month.JANUARY, 23)), bean.getDate());
+        }
+
+        public static class ValidatedOptionalBean extends rife.validation.MetaData {
+            private Integer count_;
+
+            public Optional<Integer> getCount() { return Optional.ofNullable(count_); }
+            public void setCount(Integer count) { count_ = count; }
+        }
+
+        @Test
+        void testValidatedConversionError()
+        throws BeanUtilsException {
+            // a value that can't convert to the effective type registers a
+            // validation error instead of corrupting the property
+            var properties = BeanUtils.getUppercasedBeanProperties(ValidatedOptionalBean.class);
+            var bean = new ValidatedOptionalBean();
+            BeanUtils.setUppercasedBeanProperty("count", new String[]{"notanumber"}, null, properties, bean, null);
+            assertEquals(Optional.empty(), bean.getCount(), "the property stays untouched");
+            assertEquals(1, bean.getValidationErrors().size());
+            assertEquals("count", bean.getValidationErrors().iterator().next().getSubject());
+        }
+
+        public static class PrimitiveOptionalBean {
+            public OptionalInt getScore() { return OptionalInt.of(42); }
+            public void setScore(OptionalInt score) {}
+        }
+
+        @Test
+        void testEmptyParameterWithPrimitiveSetter()
+        throws BeanUtilsException {
+            // a blank submission can't hand an absent value to a primitive
+            // setter, the property is left untouched instead of failing
+            var properties = BeanUtils.getUppercasedBeanProperties(PrimitiveParamSetterBean.class);
+            var bean = new PrimitiveParamSetterBean();
+            BeanUtils.setUppercasedBeanProperty("COUNT", new String[]{"42"}, null, properties, bean, null);
+            assertEquals(Optional.of(42), bean.getCount());
+
+            BeanUtils.setUppercasedBeanProperty("COUNT", new String[0], null, properties, bean, new PrimitiveParamSetterBean());
+            assertEquals(Optional.of(42), bean.getCount(), "the existing value survives a blank submission");
+        }
+
+        @Test
+        void testDescriptorsAreSelfDescribing()
+        throws BeanUtilsException {
+            // the descriptors that getBeanInfo hands out describe Optional
+            // properties directly, plain descriptor-based code that uses
+            // getPropertyType() and getWriteMethod() is correct without any
+            // Optional-specific handling
+            for (var descriptor : BeanUtils.getBeanInfo(OptionalIdiomaticBean.class).getPropertyDescriptors()) {
+                switch (descriptor.getName()) {
+                    case "name" -> {
+                        assertSame(String.class, descriptor.getPropertyType());
+                        assertNotNull(descriptor.getWriteMethod(), "the recovered setter is the write method");
+                        assertSame(String.class, descriptor.getWriteMethod().getParameterTypes()[0]);
+                    }
+                    case "count" -> {
+                        assertSame(Integer.class, descriptor.getPropertyType());
+                        assertNotNull(descriptor.getWriteMethod());
+                    }
+                    case "plain" -> assertSame(String.class, descriptor.getPropertyType());
+                }
+            }
+
+            // the symmetric shape reports the value type too, while keeping
+            // its own Optional-typed setter as the write method
+            for (var descriptor : BeanUtils.getBeanInfo(OptionalSymmetricBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("value")) {
+                    assertSame(String.class, descriptor.getPropertyType());
+                    assertNotNull(descriptor.getWriteMethod());
+                    assertSame(Optional.class, descriptor.getWriteMethod().getParameterTypes()[0]);
+                }
+            }
+        }
+
+        public static class DualSetterOptionalBean {
+            private Optional<String> value_ = Optional.empty();
+
+            public Optional<String> getValue() { return value_; }
+            public void setValue(Optional<String> value) { value_ = value; }
+            public void setValue(String value) { value_ = Optional.ofNullable(value); }
+        }
+
+        @Test
+        void testPlainSetterPreferredOverOptionalSetter()
+        throws Exception {
+            // when the bean offers both setter shapes, the plain-typed one
+            // becomes the write method, so even naive reflection code can
+            // write the effective type directly, without any wrapping
+            for (var descriptor : BeanUtils.getBeanInfo(DualSetterOptionalBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("value")) {
+                    assertSame(String.class, descriptor.getPropertyType());
+                    assertSame(String.class, descriptor.getWriteMethod().getParameterTypes()[0]);
+
+                    var bean = new DualSetterOptionalBean();
+                    descriptor.getWriteMethod().invoke(bean, "naive");
+                    assertEquals(Optional.of("naive"), bean.getValue());
+                    return;
+                }
+            }
+            fail("the value property wasn't found");
+        }
+
+        public static class MixedIsGetterBean {
+            private boolean enabled_;
+            private String note_;
+
+            public boolean isEnabled() { return enabled_; }
+            public void setEnabled(boolean enabled) { enabled_ = enabled; }
+
+            public Optional<String> getNote() { return Optional.ofNullable(note_); }
+            public void setNote(String note) { note_ = note; }
+        }
+
+        @Test
+        void testIsGetterBooleansAlongsideOptionals()
+        throws BeanUtilsException {
+            // a primitive boolean is-getter is a regular property next to
+            // Optional ones, the enhancement leaves its descriptor untouched
+            assertEquals(Set.of("enabled", "note"), BeanUtils.getPropertyNames(MixedIsGetterBean.class, null, null, null));
+            assertSame(boolean.class, BeanUtils.getPropertyType(MixedIsGetterBean.class, "enabled"));
+            for (var descriptor : BeanUtils.getBeanInfo(MixedIsGetterBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("enabled")) {
+                    assertEquals("isEnabled", descriptor.getReadMethod().getName());
+                }
+            }
+
+            var properties = BeanUtils.getUppercasedBeanProperties(MixedIsGetterBean.class);
+            var bean = new MixedIsGetterBean();
+            BeanUtils.setUppercasedBeanProperty("ENABLED", new String[]{"true"}, null, properties, bean, null);
+            BeanUtils.setUppercasedBeanProperty("NOTE", new String[]{"hi"}, null, properties, bean, null);
+            assertTrue(bean.isEnabled());
+            assertEquals(Optional.of("hi"), bean.getNote());
+        }
+
+        public static class IsPrefixOptionalBean {
+            private Boolean active_;
+
+            public Optional<Boolean> isActive() { return Optional.ofNullable(active_); }
+            public void setActive(Boolean active) { active_ = active; }
+        }
+
+        @Test
+        void testIsPrefixIsNotAnOptionalGetter()
+        throws BeanUtilsException {
+            // the is prefix is only a getter for primitive booleans, an
+            // Optional-returning is-method is not a getter at all, so the
+            // property is write-only
+            assertEquals(Collections.emptySet(), BeanUtils.getPropertyNames(IsPrefixOptionalBean.class, null, null, null));
+            assertEquals(Collections.emptySet(), BeanUtils.getPropertyNames(BeanUtils.Accessors.GETTERS, IsPrefixOptionalBean.class, null, null, null));
+            assertEquals(Set.of("active"), BeanUtils.getPropertyNames(BeanUtils.Accessors.SETTERS, IsPrefixOptionalBean.class, null, null, null));
+            assertSame(Boolean.class, BeanUtils.getPropertyType(IsPrefixOptionalBean.class, "active"));
+        }
+
+        public static class OptionalBooleanBean {
+            private Boolean active_;
+
+            public Optional<Boolean> getActive() { return Optional.ofNullable(active_); }
+            public void setActive(Boolean active) { active_ = active; }
+        }
+
+        @Test
+        void testOptionalBooleanRoundTrip()
+        throws BeanUtilsException {
+            assertSame(Boolean.class, BeanUtils.getPropertyType(OptionalBooleanBean.class, "active"));
+
+            var properties = BeanUtils.getUppercasedBeanProperties(OptionalBooleanBean.class);
+            var bean = new OptionalBooleanBean();
+            BeanUtils.setUppercasedBeanProperty("ACTIVE", new String[]{"true"}, null, properties, bean, null);
+            assertEquals(Optional.of(Boolean.TRUE), bean.getActive());
+        }
+
+        public static class FluentSetterOptionalBean {
+            public Optional<String> getName() { return Optional.empty(); }
+            public FluentSetterOptionalBean setName(String name) { return this; }
+        }
+
+        @Test
+        void testFluentSetterIsNotRecovered()
+        throws BeanUtilsException {
+            // the introspector only pairs void setters, the recovery follows
+            // the same rule so Optional properties aren't treated differently
+            assertEquals(Collections.emptySet(), BeanUtils.getPropertyNames(FluentSetterOptionalBean.class, null, null, null));
+            for (var descriptor : BeanUtils.getBeanInfo(FluentSetterOptionalBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("name")) {
+                    assertNull(descriptor.getWriteMethod());
+                }
+            }
+        }
+
+        public static class StaticSetterOptionalBean {
+            public Optional<String> getCode() { return Optional.empty(); }
+            public static void setCode(String code) {}
+        }
+
+        @Test
+        void testStaticSetterIsNotRecovered()
+        throws BeanUtilsException {
+            // the introspector ignores static methods, the recovery does too
+            assertEquals(Collections.emptySet(), BeanUtils.getPropertyNames(StaticSetterOptionalBean.class, null, null, null));
+            assertEquals(Set.of("code"), BeanUtils.getPropertyNames(BeanUtils.Accessors.GETTERS, StaticSetterOptionalBean.class, null, null, null));
+        }
+
+        public static class SubtypeSetterBean {
+            private CharSequence text_;
+
+            public Optional<CharSequence> getText() { return Optional.ofNullable(text_); }
+            public void setText(String text) { text_ = text; }
+        }
+
+        @Test
+        void testSubtypeSetterIsRecovered()
+        throws BeanUtilsException {
+            // the introspector pairs a setter whose parameter is a subtype of
+            // the getter type, the recovery applies the same rule
+            assertEquals(Set.of("text"), BeanUtils.getPropertyNames(SubtypeSetterBean.class, null, null, null));
+            assertSame(CharSequence.class, BeanUtils.getPropertyType(SubtypeSetterBean.class, "text"));
+
+            var bean = new SubtypeSetterBean();
+            BeanUtils.setPropertyValue(bean, "text", "subtyped");
+            assertEquals(Optional.of("subtyped"), bean.getText());
+        }
+
+        public static class PrimitiveParamSetterBean {
+            private int count_ = -1;
+
+            public Optional<Integer> getCount() { return count_ < 0 ? Optional.empty() : Optional.of(count_); }
+            public void setCount(int count) { count_ = count; }
+        }
+
+        @Test
+        void testPrimitiveSetterCounterpartIsRecovered()
+        throws BeanUtilsException {
+            // a primitive parameter pairs with its boxed value type,
+            // reflection unboxes the converted value at invocation time
+            assertEquals(Set.of("count"), BeanUtils.getPropertyNames(PrimitiveParamSetterBean.class, null, null, null));
+            assertSame(Integer.class, BeanUtils.getPropertyType(PrimitiveParamSetterBean.class, "count"));
+
+            var properties = BeanUtils.getUppercasedBeanProperties(PrimitiveParamSetterBean.class);
+            var bean = new PrimitiveParamSetterBean();
+            BeanUtils.setUppercasedBeanProperty("COUNT", new String[]{"42"}, null, properties, bean, null);
+            assertEquals(Optional.of(42), bean.getCount());
+        }
+
+        public static class IndexedPropertyBean {
+            private String[] items_ = {"a", "b"};
+
+            public String[] getItems() { return items_; }
+            public void setItems(String[] items) { items_ = items; }
+            public String getItems(int index) { return items_[index]; }
+            public void setItems(int index, String item) { items_[index] = item; }
+        }
+
+        @Test
+        void testIndexedPropertiesUntouched()
+        throws BeanUtilsException {
+            // indexed properties keep their own descriptor type and behavior
+            for (var descriptor : BeanUtils.getBeanInfo(IndexedPropertyBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("items")) {
+                    assertInstanceOf(java.beans.IndexedPropertyDescriptor.class, descriptor);
+                }
+            }
+            assertSame(String[].class, BeanUtils.getPropertyType(IndexedPropertyBean.class, "items"));
+
+            var properties = BeanUtils.getUppercasedBeanProperties(IndexedPropertyBean.class);
+            var bean = new IndexedPropertyBean();
+            BeanUtils.setUppercasedBeanProperty("ITEMS", new String[]{"x", "y"}, null, properties, bean, null);
+            assertArrayEquals(new String[]{"x", "y"}, bean.getItems());
+        }
+
+        public static class SetterOnlyOptionalBean {
+            private String token_;
+
+            public void setToken(Optional<String> token) { token_ = token.orElse(null); }
+            public String token() { return token_; }
+        }
+
+        @Test
+        void testSetterOnlyOptionalProperty()
+        throws BeanUtilsException {
+            // a setter-only Optional property describes itself with the value
+            // type too, and receives its values wrapped
+            assertEquals(Set.of("token"), BeanUtils.getPropertyNames(BeanUtils.Accessors.SETTERS, SetterOnlyOptionalBean.class, null, null, null));
+            assertSame(String.class, BeanUtils.getPropertyType(SetterOnlyOptionalBean.class, "token"));
+            for (var descriptor : BeanUtils.getBeanInfo(SetterOnlyOptionalBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("token")) {
+                    assertSame(String.class, descriptor.getPropertyType());
+                }
+            }
+
+            var properties = BeanUtils.getUppercasedBeanProperties(SetterOnlyOptionalBean.class);
+            var bean = new SetterOnlyOptionalBean();
+            BeanUtils.setUppercasedBeanProperty("TOKEN", new String[]{"secret"}, null, properties, bean, null);
+            assertEquals("secret", bean.token());
+
+            var other = new SetterOnlyOptionalBean();
+            BeanUtils.setPropertyValue(other, "token", "direct");
+            assertEquals("direct", other.token());
+
+            // a blank update passes an empty Optional through the setter
+            // instead of failing on the absent getter
+            BeanUtils.setUppercasedBeanProperty("TOKEN", new String[0], null, properties, bean, new SetterOnlyOptionalBean());
+            assertNull(bean.token());
+        }
+
+        public static class GenericOptionalBase<T> {
+            protected T value_;
+
+            public Optional<T> getValue() { return Optional.ofNullable(value_); }
+            public void setValue(T value) { value_ = value; }
+        }
+
+        public static class GenericOptionalSub extends GenericOptionalBase<String> {}
+
+        public static class GenericIntegerSub extends GenericOptionalBase<Integer> {}
+
+        public static class GenericMiddle<S> extends GenericOptionalBase<S> {}
+
+        public static class GenericChainedSub extends GenericMiddle<Long> {}
+
+        @SuppressWarnings("rawtypes")
+        public static class GenericRawSub extends GenericOptionalBase {}
+
+        @Test
+        void testInheritedGenericOptionalResolves()
+        throws BeanUtilsException {
+            // type variables resolve against the bean class's generic
+            // hierarchy, so Optional<T> from a supertype behaves like the
+            // concrete type the bean provides
+            assertEquals(Set.of("value"), BeanUtils.getPropertyNames(GenericOptionalSub.class, null, null, null));
+            assertSame(String.class, BeanUtils.getPropertyType(GenericOptionalSub.class, "value"));
+            assertSame(Integer.class, BeanUtils.getPropertyType(GenericIntegerSub.class, "value"));
+            assertSame(Long.class, BeanUtils.getPropertyType(GenericChainedSub.class, "value"));
+
+            // request population converts to the resolved type
+            var text_bean = new GenericOptionalSub();
+            BeanUtils.setUppercasedBeanProperty("VALUE", new String[]{"resolved"}, null,
+                BeanUtils.getUppercasedBeanProperties(GenericOptionalSub.class), text_bean, null);
+            assertEquals(Optional.of("resolved"), text_bean.getValue());
+
+            var int_bean = new GenericIntegerSub();
+            BeanUtils.setUppercasedBeanProperty("VALUE", new String[]{"42"}, null,
+                BeanUtils.getUppercasedBeanProperties(GenericIntegerSub.class), int_bean, null);
+            assertEquals(Optional.of(42), int_bean.getValue());
+        }
+
+        public static class GenericArrayBase<T> {
+            protected T[] values_;
+
+            public Optional<T[]> getValues() { return Optional.ofNullable(values_); }
+            public void setValues(T[] values) { values_ = values; }
+        }
+
+        public static class GenericArrayStrings extends GenericArrayBase<String> {}
+
+        @Test
+        void testInheritedGenericArrayResolves()
+        throws BeanUtilsException {
+            // a generic array component resolves through the hierarchy and
+            // reconstitutes the concrete array type
+            assertEquals(Set.of("values"), BeanUtils.getPropertyNames(GenericArrayStrings.class, null, null, null));
+            assertSame(String[].class, BeanUtils.getPropertyType(GenericArrayStrings.class, "values"));
+
+            // request population treats it as an array property
+            var bean = new GenericArrayStrings();
+            BeanUtils.setUppercasedBeanProperty("VALUES", new String[]{"a", "b"}, null,
+                BeanUtils.getUppercasedBeanProperties(GenericArrayStrings.class), bean, null);
+            assertArrayEquals(new String[]{"a", "b"}, bean.getValues().orElseThrow());
+        }
+
+        @Test
+        void testRawGenericSubclassDegradesToObject()
+        throws BeanUtilsException {
+            // a raw extension provides no type argument to resolve, the
+            // property degrades to Object but stays usable
+            assertSame(Object.class, BeanUtils.getPropertyType(GenericRawSub.class, "value"));
+
+            var bean = new GenericRawSub();
+            BeanUtils.setPropertyValue(bean, "value", "raw");
+            assertEquals("raw", BeanUtils.getPropertyValue(bean, "value"));
+        }
+
+        public static class UndeclaredOptionalBean {
+            private Object data_ = Optional.of("x");
+
+            public Object getData() { return data_; }
+            public void setData(Object data) { data_ = data; }
+        }
+
+        @Test
+        void testOnlyDeclaredOptionalGettersUnwrap()
+        throws BeanUtilsException {
+            // an Object property that happens to hold an Optional isn't
+            // unwrapped, only getters declared to return Optional are
+            var value = BeanUtils.getPropertyValue(new UndeclaredOptionalBean(), "data");
+            assertInstanceOf(Optional.class, value);
+            assertEquals(Optional.of("x"), value);
+            assertEquals(Optional.of("x"), BeanUtils.getPropertyValues(new UndeclaredOptionalBean(), null, null, null).get("data"));
+        }
+
+        @Test
+        void testDescriptorMetadataPreserved()
+        throws BeanUtilsException {
+            // the enhancement copies the metadata of the original descriptor,
+            // so the flags and attributes of a custom BeanInfo survive
+            for (var descriptor : BeanUtils.getBeanInfo(OptionalMetadataBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("label")) {
+                    assertSame(String.class, descriptor.getPropertyType());
+                    assertNotNull(descriptor.getWriteMethod(), "the setter is still recovered");
+                    assertTrue(descriptor.isBound());
+                    assertTrue(descriptor.isExpert());
+                    assertTrue(descriptor.isPreferred());
+                    assertFalse(descriptor.isHidden());
+                    assertEquals("Label Display", descriptor.getDisplayName());
+                    assertEquals("A labelled optional", descriptor.getShortDescription());
+                    assertEquals("attribute", descriptor.getValue("custom"));
+                    return;
+                }
+            }
+            fail("the label property wasn't found");
+        }
+
+        public static class WildcardOptionalBean {
+            private Number num_;
+
+            public Optional<? extends Number> getNum() { return Optional.ofNullable(num_); }
+            public void setNum(Number num) { num_ = num; }
+        }
+
+        @Test
+        void testWildcardResolvesToUpperBound()
+        throws BeanUtilsException {
+            // a wildcard value type stands for its upper bound instead of
+            // degrading to Object
+            assertEquals(Set.of("num"), BeanUtils.getPropertyNames(WildcardOptionalBean.class, null, null, null));
+            assertSame(Number.class, BeanUtils.getPropertyType(WildcardOptionalBean.class, "num"));
+
+            var bean = new WildcardOptionalBean();
+            BeanUtils.setPropertyValue(bean, "num", 42);
+            assertEquals(42, BeanUtils.getPropertyValue(bean, "num"));
+        }
+
+        public static class BoundedOptionalBean<T extends Number> {
+            private T num_;
+
+            public Optional<T> getNum() { return Optional.ofNullable(num_); }
+            public void setNum(T num) { num_ = num; }
+        }
+
+        @Test
+        void testBoundedVariableErasesToBound()
+        throws BeanUtilsException {
+            // an unresolved type variable erases to its first bound, like the
+            // compiled class file does
+            assertEquals(Set.of("num"), BeanUtils.getPropertyNames(BoundedOptionalBean.class, null, null, null));
+            assertSame(Number.class, BeanUtils.getPropertyType(BoundedOptionalBean.class, "num"));
+
+            var bean = new BoundedOptionalBean<Integer>();
+            BeanUtils.setPropertyValue(bean, "num", 42);
+            assertEquals(42, BeanUtils.getPropertyValue(bean, "num"));
+        }
+
+        public static class AmbiguousOverloadBean {
+            private CharSequence text_;
+
+            public Optional<CharSequence> getText() { return Optional.ofNullable(text_); }
+            public void setText(String text) { text_ = text; }
+            public void setText(StringBuilder text) { text_ = text; }
+        }
+
+        public static class ExactOverloadBean {
+            private CharSequence text_;
+
+            public Optional<CharSequence> getText() { return Optional.ofNullable(text_); }
+            public void setText(CharSequence text) { text_ = text; }
+            public void setText(String text) { text_ = text; }
+        }
+
+        @Test
+        void testOverloadSelectionIsDeterministic()
+        throws BeanUtilsException {
+            // incomparable subtype overloads resolve over a stable order
+            for (var descriptor : BeanUtils.getBeanInfo(AmbiguousOverloadBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("text")) {
+                    assertSame(String.class, descriptor.getWriteMethod().getParameterTypes()[0]);
+                }
+            }
+
+            // an exact match on the value type wins outright
+            for (var descriptor : BeanUtils.getBeanInfo(ExactOverloadBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("text")) {
+                    assertSame(CharSequence.class, descriptor.getWriteMethod().getParameterTypes()[0]);
+                }
+            }
+        }
+
+        public static class DualPrimitiveBoxedBean {
+            private Integer count_;
+
+            public Optional<Integer> getCount() { return Optional.ofNullable(count_); }
+            public void setCount(int count) { count_ = count; }
+            public void setCount(Integer count) { count_ = count; }
+        }
+
+        @Test
+        void testBoxedOverloadPreferredOverPrimitive()
+        throws BeanUtilsException {
+            // when both counterparts exist, the boxed one wins regardless of
+            // reflection order, since it can carry the null of an empty Optional
+            for (var descriptor : BeanUtils.getBeanInfo(DualPrimitiveBoxedBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("count")) {
+                    assertSame(Integer.class, descriptor.getWriteMethod().getParameterTypes()[0]);
+                }
+            }
+
+            var properties = BeanUtils.getUppercasedBeanProperties(DualPrimitiveBoxedBean.class);
+            var bean = new DualPrimitiveBoxedBean();
+            BeanUtils.setUppercasedBeanProperty("COUNT", new String[]{"42"}, null, properties, bean, null);
+            assertEquals(Optional.of(42), bean.getCount());
+
+            // through the boxed setter, a blank update restores absence,
+            // unlike the primitive-only bean where the value is left untouched
+            BeanUtils.setUppercasedBeanProperty("COUNT", new String[0], null, properties, bean, new DualPrimitiveBoxedBean());
+            assertEquals(Optional.empty(), bean.getCount());
+        }
+
+        public static class SubtypeDualBean {
+            private Number value_;
+
+            public Optional<Number> getValue() { return Optional.ofNullable(value_); }
+            public void setValue(short value) { value_ = value; }
+            public void setValue(Short value) { value_ = value; }
+        }
+
+        @Test
+        void testBoxedPreferredAtEverySpecificityLevel()
+        throws BeanUtilsException {
+            // among subtype candidates that resolve to the same type, the
+            // boxed declaration wins over its primitive counterpart too
+            for (var descriptor : BeanUtils.getBeanInfo(SubtypeDualBean.class).getPropertyDescriptors()) {
+                if (descriptor.getName().equals("value")) {
+                    assertSame(Short.class, descriptor.getWriteMethod().getParameterTypes()[0]);
+                }
+            }
+
+            var bean = new SubtypeDualBean();
+            BeanUtils.setPropertyValue(bean, "value", (short) 7);
+            assertEquals((short) 7, BeanUtils.getPropertyValue(bean, "value"));
+
+            // null flows through the nullable overload instead of failing
+            BeanUtils.setPropertyValue(bean, "value", null);
+            assertNull(BeanUtils.getPropertyValue(bean, "value"));
+        }
+
+        @Test
+        void testPrimitiveOptionalsStayOpaque()
+        throws BeanUtilsException {
+            // OptionalInt, OptionalLong and OptionalDouble are deliberately
+            // not unwrapped, they behave like any other opaque property type
+            assertSame(OptionalInt.class, BeanUtils.getPropertyType(PrimitiveOptionalBean.class, "score"));
+            assertEquals(OptionalInt.of(42), BeanUtils.getPropertyValue(new PrimitiveOptionalBean(), "score"));
+        }
     }
 }

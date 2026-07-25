@@ -5,6 +5,7 @@
 package rife.json;
 
 import rife.tools.BeanUtils;
+import rife.tools.ClassUtils;
 import rife.tools.Convert;
 import rife.tools.StringUtils;
 import rife.tools.exceptions.BeanUtilsException;
@@ -18,6 +19,8 @@ import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -396,7 +400,7 @@ public final class Json {
                 if (value == null && type.isPrimitive()) {
                     continue;
                 }
-                var converted = convertToPropertyValue(value, type, propertyGenericType(beanClass, name, type));
+                var converted = convertToPropertyValue(beanClass, value, type, propertyGenericType(beanClass, name, type));
                 BeanUtils.setPropertyValue(bean, name, converted);
             } catch (ConversionException | BeanUtilsException e) {
                 throw new IllegalArgumentException("Unable to set bean property '" + name + "' of " + beanClass.getName(), e);
@@ -445,7 +449,7 @@ public final class Json {
                 continue;
             }
             try {
-                values[i] = convertToPropertyValue(value, component.getType(), component.getGenericType());
+                values[i] = convertToPropertyValue(recordClass, value, component.getType(), component.getGenericType());
             } catch (ConversionException e) {
                 throw new IllegalArgumentException("Unable to set record component '" + component.getName() + "' of " + recordClass.getName(), e);
             }
@@ -461,17 +465,35 @@ public final class Json {
 
     private static Type propertyGenericType(Class<?> beanClass, String name, Class<?> type) {
         var setter = "set" + StringUtils.capitalize(name);
+        Type optional_argument = null;
         for (var method : beanClass.getMethods()) {
             if (method.getParameterCount() == 1 &&
-                method.getName().equals(setter) &&
-                method.getParameterTypes()[0] == type) {
-                return method.getGenericParameterTypes()[0];
+                method.getName().equals(setter)) {
+                if (method.getParameterTypes()[0] == type) {
+                    return method.getGenericParameterTypes()[0];
+                }
+                if (method.getParameterTypes()[0] == Optional.class &&
+                    method.getGenericParameterTypes()[0] instanceof ParameterizedType parameterized) {
+                    optional_argument = parameterized.getActualTypeArguments()[0];
+                }
             }
+        }
+        if (optional_argument != null) {
+            return optional_argument;
+        }
+
+        try {
+            var getter = beanClass.getMethod("get" + StringUtils.capitalize(name));
+            if (getter.getReturnType() == Optional.class &&
+                getter.getGenericReturnType() instanceof ParameterizedType parameterized) {
+                return parameterized.getActualTypeArguments()[0];
+            }
+        } catch (NoSuchMethodException ignored) {
         }
         return type;
     }
 
-    private static Object convertToPropertyValue(Object value, Class<?> type, Type genericType)
+    private static Object convertToPropertyValue(Class<?> beanClass, Object value, Class<?> type, Type genericType)
     throws ConversionException {
         if (value == null) {
             return null;
@@ -479,8 +501,8 @@ public final class Json {
 
         if (value instanceof JsonObject object) {
             if (Map.class.isAssignableFrom(type)) {
-                var key_class = typeArgumentClass(genericType, 0);
-                var value_class = typeArgumentClass(genericType, 1);
+                var key_class = typeArgumentClass(beanClass, genericType, 0);
+                var value_class = typeArgumentClass(beanClass, genericType, 1);
                 if (value_class == null || !type.isAssignableFrom(LinkedHashMap.class)) {
                     if (type.isInstance(object)) {
                         return object;
@@ -493,7 +515,7 @@ public final class Json {
                     if (key_class != null && key_class != String.class && key_class != Object.class) {
                         key = Convert.toType(key, key_class);
                     }
-                    map.put(key, convertToPropertyValue(entry.getValue(), value_class, value_class));
+                    map.put(key, convertToPropertyValue(beanClass, entry.getValue(), value_class, value_class));
                 }
                 return map;
             }
@@ -508,7 +530,7 @@ public final class Json {
                 var component = type.getComponentType();
                 var result = Array.newInstance(component, array.size());
                 for (var i = 0; i < array.size(); ++i) {
-                    Array.set(result, i, convertToPropertyValue(array.get(i), component, component));
+                    Array.set(result, i, convertToPropertyValue(beanClass, array.get(i), component, component));
                 }
                 return result;
             }
@@ -521,12 +543,12 @@ public final class Json {
                 } else {
                     return Convert.toType(array, type);
                 }
-                var element_class = typeArgumentClass(genericType, 0);
+                var element_class = typeArgumentClass(beanClass, genericType, 0);
                 if (element_class == null) {
                     collection.addAll(array);
                 } else {
                     for (var element : array) {
-                        collection.add(convertToPropertyValue(element, element_class, element_class));
+                        collection.add(convertToPropertyValue(beanClass, element, element_class, element_class));
                     }
                 }
                 return collection;
@@ -543,11 +565,26 @@ public final class Json {
         return Convert.toType(value, type);
     }
 
-    private static Class<?> typeArgumentClass(Type genericType, int index) {
+    private static Class<?> typeArgumentClass(Class<?> beanClass, Type genericType, int index) {
+        if (genericType instanceof TypeVariable<?> variable) {
+            genericType = ClassUtils.resolveTypeVariable(beanClass, variable);
+        }
         if (genericType instanceof ParameterizedType parameterized) {
             var arguments = parameterized.getActualTypeArguments();
-            if (index < arguments.length && arguments[index] instanceof Class<?> argument) {
-                return argument;
+            if (index < arguments.length) {
+                var argument = arguments[index];
+                if (argument instanceof WildcardType wildcard) {
+                    argument = wildcard.getUpperBounds()[0];
+                }
+                if (argument instanceof TypeVariable<?> variable) {
+                    argument = ClassUtils.resolveTypeVariable(beanClass, variable);
+                    if (argument instanceof TypeVariable<?> unresolved) {
+                        argument = unresolved.getBounds()[0];
+                    }
+                }
+                if (argument instanceof Class<?> klass) {
+                    return klass;
+                }
             }
         }
         return null;

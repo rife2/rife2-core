@@ -255,8 +255,8 @@ public abstract class GenericQueryManagerRelationalUtils {
                             Class associated_class = null;
                             try {
                                 Class klass = Class.forName("rife.database.querymanagers.generic.GenericTypeDetector");
-                                var method = klass.getDeclaredMethod("detectAssociatedClass", Method.class);
-                                associated_class = (Class) method.invoke(null, read_method);
+                                var method = klass.getDeclaredMethod("detectAssociatedClass", Class.class, Method.class);
+                                associated_class = (Class) method.invoke(null, manager.getBaseClass(), read_method);
                             } catch (Exception e) {
                                 throw new DatabaseException(e);
                             }
@@ -320,8 +320,8 @@ public abstract class GenericQueryManagerRelationalUtils {
                             Class associated_class = null;
                             try {
                                 Class klass = Class.forName("rife.database.querymanagers.generic.GenericTypeDetector");
-                                var method = klass.getDeclaredMethod("detectAssociatedClass", Method.class);
-                                associated_class = (Class) method.invoke(null, read_method);
+                                var method = klass.getDeclaredMethod("detectAssociatedClass", Class.class, Method.class);
+                                associated_class = (Class) method.invoke(null, manager.getBaseClass(), read_method);
                             } catch (Exception e) {
                                 throw new DatabaseException(e);
                             }

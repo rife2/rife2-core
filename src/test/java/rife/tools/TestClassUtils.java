@@ -9,10 +9,58 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestClassUtils {
+    public static class Base<T> {
+        public Optional<T> getValue() { return Optional.empty(); }
+        public List<T> getList() { return null; }
+        public T[] getArray() { return null; }
+    }
+
+    public static class Middle<S> extends Base<S> {}
+
+    public static class Concrete extends Middle<Integer> {}
+
+    public static class Bounded<T extends Number> {
+        public T getValue() { return null; }
+    }
+
+    @Test
+    void testResolveTypeVariable()
+    throws Exception {
+        var variable = (java.lang.reflect.TypeVariable<?>) ((java.lang.reflect.ParameterizedType) Base.class.getMethod("getValue").getGenericReturnType()).getActualTypeArguments()[0];
+        // resolves through multiple levels of the hierarchy
+        assertEquals(Integer.class, ClassUtils.resolveTypeVariable(Concrete.class, variable));
+        // stays the variable itself when the hierarchy doesn't provide an argument
+        assertSame(variable, ClassUtils.resolveTypeVariable(Base.class, variable));
+    }
+
+    @Test
+    void testErasedType()
+    throws Exception {
+        var optional_argument = ((java.lang.reflect.ParameterizedType) Base.class.getMethod("getValue").getGenericReturnType()).getActualTypeArguments()[0];
+        var list_type = Base.class.getMethod("getList").getGenericReturnType();
+        var array_type = Base.class.getMethod("getArray").getGenericReturnType();
+        var bounded_type = Bounded.class.getMethod("getValue").getGenericReturnType();
+
+        // a variable resolves against the context class
+        assertSame(Integer.class, ClassUtils.erasedType(Concrete.class, optional_argument));
+        // an unresolved variable erases to its first bound
+        assertSame(Object.class, ClassUtils.erasedType(Base.class, optional_argument));
+        assertSame(Number.class, ClassUtils.erasedType(Bounded.class, bounded_type));
+        // a parameterized type erases to its raw class
+        assertSame(List.class, ClassUtils.erasedType(Concrete.class, list_type));
+        // a generic array reconstitutes the resolved array class
+        assertSame(Integer[].class, ClassUtils.erasedType(Concrete.class, array_type));
+        // plain classes pass through
+        assertSame(String.class, ClassUtils.erasedType(Concrete.class, String.class));
+    }
+
     @Test
     void testIsNumeric() {
         assertTrue(ClassUtils.isNumeric(Byte.class));

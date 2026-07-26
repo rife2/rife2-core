@@ -51,7 +51,7 @@ public class MimeType extends EnumClass<String> {
      */
     public static final MimeType TEXT_PLAIN = new MimeType(TEXT_PLAIN_IDENTIFIER);
     /**
-     * The {@code text/plain} mime type.
+     * The {@code text/xml} mime type.
      */
     public static final MimeType TEXT_XML = new MimeType(TEXT_XML_IDENTIFIER);
     /**

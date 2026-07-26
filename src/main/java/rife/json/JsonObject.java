@@ -21,23 +21,19 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Represents a JSON object as a regular ordered map, with additional
- * fluent construction methods and typed value retrieval.
- * <p>
- * Values are plain Java instances: {@code String}, {@code Long},
- * {@code Double}, {@code Boolean}, {@code null}, {@link JsonObject} and
- * {@link JsonArray}.
- * <p>
- * All the mutation methods convert maps, collections and arrays to
- * {@code JsonObject} and {@code JsonArray} instances, values that are
- * assigned through map entries bypass this conversion.
- * <p>
- * The typed retrieval methods are lenient: strings are parsed into the
- * requested numeric or boolean types, numbers are truncated when
- * narrower types are requested, and absent or null members return the
- * provided default or a zero-like value.
- * <p>
- * For instance:
+ * A {@code JsonObject} represents a JSON object as a regular ordered map,
+ * with additional fluent construction methods and typed value retrieval.
+ * <p>The values that are stored are plain Java instances: {@code String},
+ * {@code Long}, {@code Double}, {@code Boolean}, {@code null},
+ * {@code JsonObject} and {@link JsonArray}.
+ * <p>All the mutation methods convert maps, collections and arrays to
+ * {@code JsonObject} and {@code JsonArray} instances, while values that
+ * are assigned through map entries bypass this conversion.
+ * <p>The typed retrieval methods are lenient. Strings will be parsed into
+ * the requested numeric or boolean types and numbers will be truncated
+ * when narrower types are requested. Members that are absent or that are
+ * null return the provided default value or a zero-like value.
+ * <p>For instance:
  * <pre>
  * var json = new JsonObject()
  *     .set("name", "my-app")
@@ -49,6 +45,8 @@ import java.util.function.Function;
  * </pre>
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
+ * @see Json
+ * @see JsonArray
  * @since 1.10
  */
 public class JsonObject extends LinkedHashMap<String, Object> {
@@ -56,7 +54,11 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Creates an empty JSON object.
+     * <p>Members can afterwards be added with the regular map methods or
+     * with the fluent construction methods.
      *
+     * @see #JsonObject(Map)
+     * @see #set(String, Object)
      * @since 1.10
      */
     public JsonObject() {
@@ -64,12 +66,13 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Creates a JSON object with the members of a map.
-     * <p>
-     * Nested maps, collections and arrays are converted to
-     * {@code JsonObject} and {@link JsonArray} instances.
+     * <p>This constructor will copy over the entries of the provided map in
+     * the map's iteration order, while nested maps, collections and arrays
+     * are converted to {@code JsonObject} and {@link JsonArray} instances.
      *
      * @param members the map whose members become the members of this
      *                JSON object, in the map's iteration order
+     * @see #JsonObject()
      * @since 1.10
      */
     public JsonObject(Map<String, ?> members) {
@@ -78,15 +81,15 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Parses a JSON document that is expected to be a JSON object.
-     * <p>
-     * This is equivalent to {@link Json#parseObject(String)} and also
-     * enables RIFE2's standard conversions to convert strings to
-     * {@code JsonObject} instances.
+     * <p>This method does the same as {@link Json#parseObject(String)} and
+     * additionally enables RIFE2's standard conversions to convert strings
+     * to {@code JsonObject} instances.
      *
      * @param json the JSON document to parse
      * @return the parsed {@code JsonObject}
      * @throws JsonParseException when the document couldn't be parsed or
      *                            isn't a JSON object
+     * @see Json#parseObject(String)
      * @since 1.10
      */
     public static JsonObject parse(String json) {
@@ -95,14 +98,15 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Sets a member of this JSON object.
-     * <p>
-     * Maps, collections and arrays are converted to {@code JsonObject}
-     * and {@link JsonArray} instances so that the typed retrieval
-     * methods work on them.
+     * <p>Maps, collections and arrays are converted to {@code JsonObject}
+     * and {@link JsonArray} instances so that the typed retrieval methods
+     * work on them too.
      *
      * @param name  the name of the member
      * @param value the value of the member
      * @return this {@code JsonObject} instance
+     * @see #object(String, JsonObjectAction)
+     * @see #array(String, JsonArrayAction)
      * @since 1.10
      */
     public JsonObject set(String name, Object value) {
@@ -165,10 +169,15 @@ public class JsonObject extends LinkedHashMap<String, Object> {
     /**
      * Sets a member of this JSON object to a new nested JSON object that
      * is constructed by the provided action.
+     * <p>This method will create the nested {@code JsonObject} for you and
+     * hand it to the action so that you can populate it inline, after which
+     * it is set as the member with the provided name.
      *
      * @param name   the name of the member
      * @param action the action that constructs the nested object
      * @return this {@code JsonObject} instance
+     * @see #array(String, JsonArrayAction)
+     * @see #set(String, Object)
      * @since 1.10
      */
     public JsonObject object(String name, JsonObjectAction action) {
@@ -181,10 +190,15 @@ public class JsonObject extends LinkedHashMap<String, Object> {
     /**
      * Sets a member of this JSON object to a new nested JSON array that
      * is constructed by the provided action.
+     * <p>This method will create the nested {@link JsonArray} for you and
+     * hand it to the action so that you can populate it inline, after which
+     * it is set as the member with the provided name.
      *
      * @param name   the name of the member
      * @param action the action that constructs the nested array
      * @return this {@code JsonObject} instance
+     * @see #object(String, JsonObjectAction)
+     * @see #set(String, Object)
      * @since 1.10
      */
     public JsonObject array(String name, JsonArrayAction action) {
@@ -198,7 +212,9 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * Retrieves a member as a string.
      *
      * @param name the name of the member
-     * @return the member value as a string; or {@code null} when absent or null
+     * @return the member value as a string; or
+     * <p>{@code null} if the member is absent or null
+     * @see #getString(String, String)
      * @since 1.10
      */
     public String getString(String name) {
@@ -206,11 +222,15 @@ public class JsonObject extends LinkedHashMap<String, Object> {
     }
 
     /**
-     * Retrieves a member as a string.
+     * Retrieves a member as a string, falling back to a default value in
+     * case the member isn't there.
      *
      * @param name         the name of the member
-     * @param defaultValue the value to return when the member is absent or null
-     * @return the member value as a string; or the default value
+     * @param defaultValue the value to return when the member is absent or
+     *                     null
+     * @return the member value as a string; or
+     * <p>the default value if the member is absent or null
+     * @see #getString(String)
      * @since 1.10
      */
     public String getString(String name, String defaultValue) {
@@ -223,9 +243,13 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Retrieves a member as an int.
+     * <p>Strings will be parsed and wider numbers will be truncated so that
+     * they fit into an int.
      *
      * @param name the name of the member
-     * @return the member value as an int; or {@code 0} when absent or null
+     * @return the member value as an int; or
+     * <p>{@code 0} if the member is absent or null
+     * @see #getInt(String, int)
      * @since 1.10
      */
     public int getInt(String name) {
@@ -233,11 +257,15 @@ public class JsonObject extends LinkedHashMap<String, Object> {
     }
 
     /**
-     * Retrieves a member as an int.
+     * Retrieves a member as an int, falling back to a default value in
+     * case the member isn't there.
      *
      * @param name         the name of the member
-     * @param defaultValue the value to return when the member is absent or null
-     * @return the member value as an int; or the default value
+     * @param defaultValue the value to return when the member is absent or
+     *                     null
+     * @return the member value as an int; or
+     * <p>the default value if the member is absent or null
+     * @see #getInt(String)
      * @since 1.10
      */
     public int getInt(String name, int defaultValue) {
@@ -253,9 +281,13 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Retrieves a member as a long.
+     * <p>Strings will be parsed and floating point numbers will be
+     * truncated so that they fit into a long.
      *
      * @param name the name of the member
-     * @return the member value as a long; or {@code 0L} when absent or null
+     * @return the member value as a long; or
+     * <p>{@code 0L} if the member is absent or null
+     * @see #getLong(String, long)
      * @since 1.10
      */
     public long getLong(String name) {
@@ -263,11 +295,15 @@ public class JsonObject extends LinkedHashMap<String, Object> {
     }
 
     /**
-     * Retrieves a member as a long.
+     * Retrieves a member as a long, falling back to a default value in
+     * case the member isn't there.
      *
      * @param name         the name of the member
-     * @param defaultValue the value to return when the member is absent or null
-     * @return the member value as a long; or the default value
+     * @param defaultValue the value to return when the member is absent or
+     *                     null
+     * @return the member value as a long; or
+     * <p>the default value if the member is absent or null
+     * @see #getLong(String)
      * @since 1.10
      */
     public long getLong(String name, long defaultValue) {
@@ -283,9 +319,12 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Retrieves a member as a double.
+     * <p>Strings will be parsed so that they can be used as a double too.
      *
      * @param name the name of the member
-     * @return the member value as a double; or {@code 0.0} when absent or null
+     * @return the member value as a double; or
+     * <p>{@code 0.0} if the member is absent or null
+     * @see #getDouble(String, double)
      * @since 1.10
      */
     public double getDouble(String name) {
@@ -293,11 +332,15 @@ public class JsonObject extends LinkedHashMap<String, Object> {
     }
 
     /**
-     * Retrieves a member as a double.
+     * Retrieves a member as a double, falling back to a default value in
+     * case the member isn't there.
      *
      * @param name         the name of the member
-     * @param defaultValue the value to return when the member is absent or null
-     * @return the member value as a double; or the default value
+     * @param defaultValue the value to return when the member is absent or
+     *                     null
+     * @return the member value as a double; or
+     * <p>the default value if the member is absent or null
+     * @see #getDouble(String)
      * @since 1.10
      */
     public double getDouble(String name, double defaultValue) {
@@ -313,9 +356,12 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Retrieves a member as a boolean.
+     * <p>Strings will be parsed so that they can be used as a boolean too.
      *
      * @param name the name of the member
-     * @return the member value as a boolean; or {@code false} when absent or null
+     * @return the member value as a boolean; or
+     * <p>{@code false} if the member is absent or null
+     * @see #getBoolean(String, boolean)
      * @since 1.10
      */
     public boolean getBoolean(String name) {
@@ -323,11 +369,15 @@ public class JsonObject extends LinkedHashMap<String, Object> {
     }
 
     /**
-     * Retrieves a member as a boolean.
+     * Retrieves a member as a boolean, falling back to a default value in
+     * case the member isn't there.
      *
      * @param name         the name of the member
-     * @param defaultValue the value to return when the member is absent or null
-     * @return the member value as a boolean; or the default value
+     * @param defaultValue the value to return when the member is absent or
+     *                     null
+     * @return the member value as a boolean; or
+     * <p>the default value if the member is absent or null
+     * @see #getBoolean(String)
      * @since 1.10
      */
     public boolean getBoolean(String name, boolean defaultValue) {
@@ -343,12 +393,16 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Retrieves a member as a date.
-     * <p>
-     * ISO 8601 strings and epoch millisecond numbers convert through
-     * RIFE2's standard conversions.
+     * <p>ISO 8601 strings and epoch millisecond numbers are converted
+     * through RIFE2's standard conversions.
      *
      * @param name the name of the member
-     * @return the member value as a {@code Date}; or {@code null} when absent or null
+     * @return the member value as a {@code Date}; or
+     * <p>{@code null} if the member is absent or null
+     * @see #getInstant(String)
+     * @see #getLocalDate(String)
+     * @see #getLocalDateTime(String)
+     * @see #getLocalTime(String)
      * @since 1.10
      */
     public Date getDate(String name) {
@@ -357,12 +411,16 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Retrieves a member as an instant.
-     * <p>
-     * ISO 8601 strings and epoch millisecond numbers convert through
-     * RIFE2's standard conversions.
+     * <p>ISO 8601 strings and epoch millisecond numbers are converted
+     * through RIFE2's standard conversions.
      *
      * @param name the name of the member
-     * @return the member value as an {@code Instant}; or {@code null} when absent or null
+     * @return the member value as an {@code Instant}; or
+     * <p>{@code null} if the member is absent or null
+     * @see #getDate(String)
+     * @see #getLocalDate(String)
+     * @see #getLocalDateTime(String)
+     * @see #getLocalTime(String)
      * @since 1.10
      */
     public Instant getInstant(String name) {
@@ -371,12 +429,16 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Retrieves a member as a local date.
-     * <p>
-     * ISO 8601 strings and epoch millisecond numbers convert through
-     * RIFE2's standard conversions.
+     * <p>ISO 8601 strings and epoch millisecond numbers are converted
+     * through RIFE2's standard conversions.
      *
      * @param name the name of the member
-     * @return the member value as a {@code LocalDate}; or {@code null} when absent or null
+     * @return the member value as a {@code LocalDate}; or
+     * <p>{@code null} if the member is absent or null
+     * @see #getDate(String)
+     * @see #getInstant(String)
+     * @see #getLocalDateTime(String)
+     * @see #getLocalTime(String)
      * @since 1.10
      */
     public LocalDate getLocalDate(String name) {
@@ -385,12 +447,16 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Retrieves a member as a local date and time.
-     * <p>
-     * ISO 8601 strings and epoch millisecond numbers convert through
-     * RIFE2's standard conversions.
+     * <p>ISO 8601 strings and epoch millisecond numbers are converted
+     * through RIFE2's standard conversions.
      *
      * @param name the name of the member
-     * @return the member value as a {@code LocalDateTime}; or {@code null} when absent or null
+     * @return the member value as a {@code LocalDateTime}; or
+     * <p>{@code null} if the member is absent or null
+     * @see #getDate(String)
+     * @see #getInstant(String)
+     * @see #getLocalDate(String)
+     * @see #getLocalTime(String)
      * @since 1.10
      */
     public LocalDateTime getLocalDateTime(String name) {
@@ -399,12 +465,16 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Retrieves a member as a local time.
-     * <p>
-     * ISO 8601 strings and epoch millisecond numbers convert through
-     * RIFE2's standard conversions.
+     * <p>ISO 8601 strings and epoch millisecond numbers are converted
+     * through RIFE2's standard conversions.
      *
      * @param name the name of the member
-     * @return the member value as a {@code LocalTime}; or {@code null} when absent or null
+     * @return the member value as a {@code LocalTime}; or
+     * <p>{@code null} if the member is absent or null
+     * @see #getDate(String)
+     * @see #getInstant(String)
+     * @see #getLocalDate(String)
+     * @see #getLocalDateTime(String)
      * @since 1.10
      */
     public LocalTime getLocalTime(String name) {
@@ -431,7 +501,10 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * Retrieves a member as a nested JSON object.
      *
      * @param name the name of the member
-     * @return the nested {@code JsonObject}; or {@code null} when absent or null
+     * @return the nested {@code JsonObject}; or
+     * <p>{@code null} if the member is absent or null
+     * @see #getArray(String)
+     * @see #object(String, JsonObjectAction)
      * @since 1.10
      */
     public JsonObject getObject(String name) {
@@ -442,7 +515,10 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * Retrieves a member as a nested JSON array.
      *
      * @param name the name of the member
-     * @return the nested {@code JsonArray}; or {@code null} when absent or null
+     * @return the nested {@code JsonArray}; or
+     * <p>{@code null} if the member is absent or null
+     * @see #getObject(String)
+     * @see #array(String, JsonArrayAction)
      * @since 1.10
      */
     public JsonArray getArray(String name) {
@@ -451,9 +527,13 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Fills a new bean instance with the members of this JSON object.
+     * <p>This method does the same as {@link Json#toBean(JsonObject, Class)},
+     * where you'll find a detailed description of how the members are
+     * matched up with the properties of the bean.
      *
      * @param beanClass the class of the bean to fill
      * @return the filled bean instance
+     * @see Json#toBean(JsonObject, Class)
      * @since 1.10
      */
     public <T> T toBean(Class<T> beanClass) {
@@ -464,6 +544,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * Serializes this JSON object into its compact string representation.
      *
      * @return the JSON string
+     * @see #toPrettyString()
+     * @see #print(Writer)
      * @since 1.10
      */
     public String toString() {
@@ -475,6 +557,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * representation.
      *
      * @return the pretty-printed JSON string
+     * @see #toString()
+     * @see #prettyPrint(Writer)
      * @since 1.10
      */
     public String toPrettyString() {
@@ -483,11 +567,13 @@ public class JsonObject extends LinkedHashMap<String, Object> {
 
     /**
      * Serializes this JSON object in its compact representation to a writer.
-     * <p>
-     * The output is streamed, no intermediate string is built.
+     * <p>The output is streamed so that no intermediate string has to be
+     * built up in memory.
      *
      * @param writer the writer to serialize to
      * @throws IOException when an error occurred while writing
+     * @see #prettyPrint(Writer)
+     * @see #toString()
      * @since 1.10
      */
     public void print(Writer writer)
@@ -498,11 +584,13 @@ public class JsonObject extends LinkedHashMap<String, Object> {
     /**
      * Serializes this JSON object in its multi-line indented representation
      * to a writer.
-     * <p>
-     * The output is streamed, no intermediate string is built.
+     * <p>The output is streamed so that no intermediate string has to be
+     * built up in memory.
      *
      * @param writer the writer to serialize to
      * @throws IOException when an error occurred while writing
+     * @see #print(Writer)
+     * @see #toPrettyString()
      * @since 1.10
      */
     public void prettyPrint(Writer writer)

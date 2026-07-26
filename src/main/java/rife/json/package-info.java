@@ -5,8 +5,7 @@
 
 /**
  * Provides JSON parsing, generation and bean conversion.
- * <p>
- * JSON templates interoperate directly with this package: whole JSON
+ * <p>JSON templates interoperate directly with this package. Whole JSON
  * structures, numbers and literals are embedded into template values with
  * {@code setValue}, while string content that appears inside quoted
  * positions should be set with {@code setValueEncoded} so that it's

@@ -24,26 +24,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A single declarative database migration.
- * <p>
- * A migration declares an ordered series of steps in {@link #up} by
+ * Provides a single declarative database migration.
+ *
+ * <p>A migration declares an ordered series of steps in {@link #up} by
  * calling one of the {@code add} methods. The steps are query builders,
- * literal SQL statements, or {@link DbMigrationAction} instances for data
- * transforms that need Java logic. A migration never executes anything
- * itself, the steps are collected and executed by {@link DbMigrations}.
- * <p>
- * The protected factory methods create query builders that are bound to
- * the datasource that is being migrated. Creating a builder doesn't add
- * a step, every step is explicitly added with {@code add}.
- * <p>
- * A migration that extends this class directly is irreversible, rolling
- * it back raises
+ * literal SQL statements, or {@link DbMigrationAction} instances for the
+ * data transforms that need Java logic. A migration never executes
+ * anything itself, since the steps are merely collected and are afterwards
+ * executed by {@link DbMigrations}.
+ *
+ * <p>The protected factory methods create query builders that are bound to
+ * the datasource that is being migrated. Creating such a builder doesn't
+ * add a step by itself, since every step has to be added explicitly with
+ * one of the {@code add} methods.
+ *
+ * <p>A migration that extends this class directly is irreversible, which
+ * means that rolling it back raises
  * {@link rife.database.migrations.exceptions.IrreversibleMigrationException}.
- * A migration that can be reversed extends
+ * When a migration can be reversed, it extends
  * {@link ReversibleDbMigration} instead and also declares the reverse
  * steps in its {@code down} method.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
+ * @see ReversibleDbMigration
+ * @see DbMigrationAction
+ * @see DbMigrations
  * @since 1.10
  */
 public abstract class DbMigration {
@@ -52,7 +57,13 @@ public abstract class DbMigration {
 
     /**
      * Declares the steps that perform this migration.
+     * <p>This method will be called while the steps of the migration are
+     * being collected; you declare each of them by calling one of the
+     * {@code add} methods, in the order in which they have to be executed.
      *
+     * @see #add(Query)
+     * @see #add(String)
+     * @see #add(DbMigrationAction)
      * @since 1.10
      */
     public abstract void up();
@@ -60,9 +71,14 @@ public abstract class DbMigration {
 
     /**
      * Adds a query builder step to this migration.
+     * <p>This makes it possible to declare the step with the
+     * object-oriented query builders so that the SQL that is eventually
+     * executed stays database-independent.
      *
      * @param query the query to execute as this step
      * @return this migration
+     * @see #add(String)
+     * @see #add(DbMigrationAction)
      * @since 1.10
      */
     protected DbMigration add(Query query) {
@@ -74,9 +90,14 @@ public abstract class DbMigration {
 
     /**
      * Adds a literal SQL step to this migration.
+     * <p>This makes it possible to execute statements that the query
+     * builders don't cover, at the cost of tying the migration to the SQL
+     * dialect that you're writing it in.
      *
      * @param sql the SQL statement to execute as this step
      * @return this migration
+     * @see #add(Query)
+     * @see #add(DbMigrationAction)
      * @since 1.10
      */
     protected DbMigration add(String sql) {
@@ -89,9 +110,15 @@ public abstract class DbMigration {
 
     /**
      * Adds a Java logic step to this migration.
+     * <p>This makes it possible to perform data transforms that can't be
+     * expressed as a single query. The action receives the query manager
+     * of the datasource that is being migrated at the moment that the step
+     * is executed.
      *
      * @param action the action to execute as this step
      * @return this migration
+     * @see #add(Query)
+     * @see #add(String)
      * @since 1.10
      */
     protected DbMigration add(DbMigrationAction action) {
@@ -103,6 +130,10 @@ public abstract class DbMigration {
 
     /**
      * Retrieves the datasource that this migration is being collected for.
+     * <p>The datasource is only available while the steps are being
+     * declared, which is why you can only use it and the query builder
+     * factory methods that rely on it from inside {@code up} or
+     * {@code down}.
      *
      * @return the active datasource
      * @since 1.10
@@ -115,11 +146,14 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for creating a table,
-     * bound to the datasource of this migration.
+     * Creates a query builder for creating a table.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param table the name of the table to create
-     * @return the query builder
+     * @return the {@link CreateTable} query builder
+     * @see #alterTable(String)
+     * @see #dropTable(String)
      * @since 1.10
      */
     protected CreateTable createTable(String table) {
@@ -127,11 +161,16 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for altering a table,
-     * bound to the datasource of this migration.
+     * Creates a query builder for altering a table.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
+     * Since each {@link AlterTable} query performs exactly one alteration,
+     * you add one of them for every alteration that the migration needs.
      *
      * @param table the name of the table to alter
-     * @return the query builder
+     * @return the {@link AlterTable} query builder
+     * @see #createTable(String)
+     * @see #dropTable(String)
      * @since 1.10
      */
     protected AlterTable alterTable(String table) {
@@ -139,11 +178,14 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for dropping a table,
-     * bound to the datasource of this migration.
+     * Creates a query builder for dropping a table.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param table the name of the table to drop
-     * @return the query builder
+     * @return the {@link DropTable} query builder
+     * @see #createTable(String)
+     * @see #alterTable(String)
      * @since 1.10
      */
     protected DropTable dropTable(String table) {
@@ -151,11 +193,13 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for creating an index,
-     * bound to the datasource of this migration.
+     * Creates a query builder for creating an index.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param name the name of the index to create
-     * @return the query builder
+     * @return the {@link CreateIndex} query builder
+     * @see #dropIndex(String)
      * @since 1.10
      */
     protected CreateIndex createIndex(String name) {
@@ -163,11 +207,13 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for dropping an index,
-     * bound to the datasource of this migration.
+     * Creates a query builder for dropping an index.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param name the name of the index to drop
-     * @return the query builder
+     * @return the {@link DropIndex} query builder
+     * @see #createIndex(String)
      * @since 1.10
      */
     protected DropIndex dropIndex(String name) {
@@ -175,11 +221,13 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for creating a view,
-     * bound to the datasource of this migration.
+     * Creates a query builder for creating a view.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param view the name of the view to create
-     * @return the query builder
+     * @return the {@link CreateView} query builder
+     * @see #dropView(String)
      * @since 1.10
      */
     protected CreateView createView(String view) {
@@ -187,11 +235,13 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for dropping a view,
-     * bound to the datasource of this migration.
+     * Creates a query builder for dropping a view.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param view the name of the view to drop
-     * @return the query builder
+     * @return the {@link DropView} query builder
+     * @see #createView(String)
      * @since 1.10
      */
     protected DropView dropView(String view) {
@@ -199,11 +249,13 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for creating a sequence,
-     * bound to the datasource of this migration.
+     * Creates a query builder for creating a sequence.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param name the name of the sequence to create
-     * @return the query builder
+     * @return the {@link CreateSequence} query builder
+     * @see #dropSequence(String)
      * @since 1.10
      */
     protected CreateSequence createSequence(String name) {
@@ -211,11 +263,13 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for dropping a sequence,
-     * bound to the datasource of this migration.
+     * Creates a query builder for dropping a sequence.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param name the name of the sequence to drop
-     * @return the query builder
+     * @return the {@link DropSequence} query builder
+     * @see #createSequence(String)
      * @since 1.10
      */
     protected DropSequence dropSequence(String name) {
@@ -223,11 +277,14 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for truncating a table,
-     * bound to the datasource of this migration.
+     * Creates a query builder for truncating a table.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param table the name of the table to truncate
-     * @return the query builder
+     * @return the {@link Truncate} query builder
+     * @see #dropTable(String)
+     * @see #delete(String)
      * @since 1.10
      */
     protected Truncate truncate(String table) {
@@ -235,11 +292,14 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for inserting data,
-     * bound to the datasource of this migration.
+     * Creates a query builder for inserting data.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param table the name of the table to insert into
-     * @return the query builder
+     * @return the {@link Insert} query builder
+     * @see #update(String)
+     * @see #delete(String)
      * @since 1.10
      */
     protected Insert insert(String table) {
@@ -247,11 +307,14 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for updating data,
-     * bound to the datasource of this migration.
+     * Creates a query builder for updating data.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param table the name of the table to update
-     * @return the query builder
+     * @return the {@link Update} query builder
+     * @see #insert(String)
+     * @see #delete(String)
      * @since 1.10
      */
     protected Update update(String table) {
@@ -259,11 +322,15 @@ public abstract class DbMigration {
     }
 
     /**
-     * Creates a query builder for deleting data,
-     * bound to the datasource of this migration.
+     * Creates a query builder for deleting data.
+     * <p>The returned builder is bound to the datasource that is being
+     * migrated and still has to be added as a step with {@link #add(Query)}.
      *
      * @param table the name of the table to delete from
-     * @return the query builder
+     * @return the {@link Delete} query builder
+     * @see #insert(String)
+     * @see #update(String)
+     * @see #truncate(String)
      * @since 1.10
      */
     protected Delete delete(String table) {

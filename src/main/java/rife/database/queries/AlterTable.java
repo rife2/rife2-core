@@ -24,22 +24,27 @@ import rife.validation.ConstrainedUtils;
  * DbQueryManager.executeUpdate()}.
  *
  * <p>Each {@code AlterTable} instance performs exactly one alteration, since
- * that is the only form that all databases support. Several alterations are
- * simply executed as a series of {@code AlterTable} queries.
+ * that is the only form that all the databases support. When you need several
+ * alterations, you simply execute them as a series of {@code AlterTable}
+ * queries.
+ *
  * <p>The {@code alterColumnType} alteration restates the complete column
- * definition on the databases that require it, like MySQL and Oracle, the
- * nullability and default that are provided with it are then part of the
- * restated definition. Databases that alter the type in isolation only
- * change the type, there the nullability and the default are altered with
- * the dedicated {@code alterColumnNullable} and {@code alterColumnDefault}
- * alterations.
+ * definition on the databases that require it, like MySQL and Oracle, so that
+ * the nullability and the default that you provide with it become part of the
+ * restated definition. Databases that alter the type in isolation only change
+ * the type, which means that you have to alter the nullability and the default
+ * there with the dedicated {@code alterColumnNullable} and
+ * {@code alterColumnDefault} alterations.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
  * @since 1.10
  */
 public class AlterTable extends AbstractQuery implements Cloneable {
     /**
-     * The alterations that an {@code AlterTable} query can perform.
+     * Provides the alterations that an {@code AlterTable} query can perform.
+     * <p>Exactly one of them is set up on each query and the alteration that
+     * has been chosen can be retrieved with
+     * {@link AlterTable#getAlteration()}.
      *
      * @since 1.10
      */
@@ -572,8 +577,8 @@ public class AlterTable extends AbstractQuery implements Cloneable {
 
         initAlteration(Alteration.ADD_PRIMARY_KEY);
         // the primary key is constructed directly since the column lives in
-        // the altered table, CreateTable would try to make its own column
-        // definition not null
+        // the altered table and CreateTable would try to make its own
+        // column definition not null
         primaryKey_ = definition_.new PrimaryKey(name, columns);
         return this;
     }

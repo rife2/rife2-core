@@ -4,8 +4,9 @@
  */
 
 /**
- * Provides classes for versioned database schema migrations that are
- * declared with the object-oriented query builders and executed explicitly.
+ * Provides classes and interfaces for versioned database schema migrations
+ * that are declared with the object-oriented query builders and that are
+ * executed explicitly.
  * @since 1.10
  */
 package rife.database.migrations;

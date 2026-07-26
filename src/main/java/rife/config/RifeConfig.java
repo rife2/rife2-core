@@ -586,8 +586,11 @@ public class RifeConfig {
         }
 
         /**
-         * The name of the cookie that holds the CSRF token.
+         * Retrieves the name of the cookie that holds the CSRF token.
+         * <p>This defaults to {@link #DEFAULT_CSRF_COOKIE_NAME}.
          *
+         * @return the name of the CSRF token cookie
+         * @see #setCsrfCookieName(String)
          * @since 1.10
          */
         public String getCsrfCookieName() {
@@ -602,8 +605,12 @@ public class RifeConfig {
         }
 
         /**
-         * The name of the request parameter that submits the CSRF token.
+         * Retrieves the name of the request parameter that submits the CSRF
+         * token.
+         * <p>This defaults to {@link #DEFAULT_CSRF_PARAMETER_NAME}.
          *
+         * @return the name of the CSRF token parameter
+         * @see #setCsrfParameterName(String)
          * @since 1.10
          */
         public String getCsrfParameterName() {
@@ -618,8 +625,12 @@ public class RifeConfig {
         }
 
         /**
-         * The name of the request header that submits the CSRF token.
+         * Retrieves the name of the request header that submits the CSRF
+         * token.
+         * <p>This defaults to {@link #DEFAULT_CSRF_HEADER_NAME}.
          *
+         * @return the name of the CSRF token header
+         * @see #setCsrfHeaderName(String)
          * @since 1.10
          */
         public String getCsrfHeaderName() {

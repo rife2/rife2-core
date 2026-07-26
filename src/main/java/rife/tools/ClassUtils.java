@@ -25,15 +25,19 @@ public final class ClassUtils {
     }
 
     /**
-     * Follows a type variable through the generic hierarchy of a class,
-     * for instance resolving {@code T} of a supertype to the type argument
-     * that the class provides for it.
+     * Follows a type variable through the generic hierarchy of a class.
+     * <p>This method will for instance resolve the {@code T} of a supertype
+     * to the type argument that the provided class supplies for it, while
+     * continuing to follow the resolved type for as long as it is a type
+     * variable itself.
      *
      * @param context  the class whose generic hierarchy provides the type
      *                 arguments
      * @param variable the type variable to resolve
-     * @return the resolved type; or the type variable itself when the
-     * hierarchy doesn't provide an argument for it
+     * @return the resolved type; or
+     * <p>the type variable itself if the hierarchy doesn't provide an
+     * argument for it
+     * @see #erasedType(Class, Type)
      * @since 1.10
      */
     public static Type resolveTypeVariable(Class<?> context, TypeVariable<?> variable) {
@@ -52,16 +56,18 @@ public final class ClassUtils {
     }
 
     /**
-     * Erases a generic type to the class it will be at runtime, resolving
-     * type variables through the generic hierarchy of the provided class.
-     * An unresolved variable erases to its first bound and a wildcard to
-     * its upper bound.
+     * Erases a generic type to the class that it will be at runtime.
+     * <p>This method will resolve type variables through the generic
+     * hierarchy of the provided class, while a variable that can't be
+     * resolved erases to its first bound and a wildcard to its upper bound.
      *
      * @param context the class whose generic hierarchy provides the type
      *                arguments
      * @param type    the generic type to erase
-     * @return the erased class; or {@code Object} when the type can't be
-     * erased to anything more specific
+     * @return the erased class; or
+     * <p>{@code Object} if the type can't be erased to anything more
+     * specific
+     * @see #resolveTypeVariable(Class, TypeVariable)
      * @since 1.10
      */
     public static Class<?> erasedType(Class<?> context, Type type) {

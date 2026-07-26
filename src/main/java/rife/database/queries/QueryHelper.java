@@ -18,15 +18,14 @@ import java.util.Set;
 
 public abstract class QueryHelper {
     /**
-     * Returns the database column name that a bean property maps to.
-     * <p>
-     * When the property is constrained with an explicit column name, that
-     * name is returned, otherwise the column name is simply the property
-     * name. This makes it possible to use column names that can't be
-     * expressed as bean property names.
+     * Retrieves the database column name that a bean property maps to.
+     * <p>This method will return the explicit column name when the property
+     * has been constrained with one, otherwise the column name is simply the
+     * property name. This makes it possible to use column names that can't
+     * be expressed as bean property names.
      *
-     * @param constrained  the constrained bean to look the property up in,
-     *                     {@code null} when the bean isn't constrained
+     * @param constrained  the constrained bean to look the property up in;
+     *                     or {@code null} when the bean isn't constrained
      * @param propertyName the name of the bean property
      * @return the column name to use for the property
      * @since 1.10

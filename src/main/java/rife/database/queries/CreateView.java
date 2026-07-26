@@ -25,10 +25,10 @@ import java.util.List;
  * {@link rife.database.DbQueryManager#executeUpdate(Query)
  * DbQueryManager.executeUpdate()}.
  *
- * <p>The view definition is provided either as a {@link Select} query, which
- * makes the view construction as database-independent as the query builders,
- * or as a literal SQL string. A select query with parameters can't define a
- * view since views don't have placeholders.
+ * <p>You provide the view definition either as a {@link Select} query, which
+ * makes the construction of the view just as database-independent as the
+ * query builders themselves, or as a literal SQL string. A select query that
+ * has parameters can't define a view, since views don't have placeholders.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
  * @since 1.10
@@ -140,7 +140,7 @@ public class CreateView extends AbstractQuery implements Cloneable {
             } else {
                 var definition = definition_;
                 if (select_ != null) {
-                    // a view can't contain placeholders, a parametrized
+                    // a view can't contain placeholders, so a parametrized
                     // select query can never define one
                     if (select_.getParameters() != null &&
                         !select_.getParameters().getOrderedNames().isEmpty()) {

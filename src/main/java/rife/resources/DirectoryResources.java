@@ -15,10 +15,9 @@ import java.nio.file.Files;
  * This class offers {@code ResourceFinder} and {@code ResourceWriter}
  * capabilities for resources that are stored as files in a directory on
  * the file system.
- * <p>
- * Resource names are relative paths inside the directory, a {@code /}
- * separator maps to a sub-directory. The directory is created when it
- * doesn't exist yet and the content is stored as UTF-8.
+ * <p>Resource names are relative paths inside the directory, where a
+ * {@code /} separator maps to a sub-directory. The directory is created
+ * when it doesn't exist yet and the content is stored as UTF-8.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
  * @see rife.resources.ResourceFinder
@@ -30,9 +29,9 @@ public class DirectoryResources extends ResourceFinderDirectories implements Res
 
     /**
      * Creates a new instance for the provided directory.
+     * <p>The directory will be created when it doesn't exist yet.
      *
-     * @param directory the directory that the resources are stored in,
-     *                  it is created when it doesn't exist yet
+     * @param directory the directory that the resources are stored in
      * @since 1.10
      */
     public DirectoryResources(File directory) {

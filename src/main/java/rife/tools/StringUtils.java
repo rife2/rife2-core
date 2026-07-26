@@ -952,13 +952,14 @@ public final class StringUtils {
     }
 
     /**
-     * Strips the quote characters that databases use around SQL
-     * identifiers, this handles double quotes, backticks and square
-     * brackets.
+     * Strips the quote characters that databases use around SQL identifiers.
+     * <p>This method will remove double quotes, backticks and square
+     * brackets, since those are the characters that the various databases
+     * use for quoting, so that only the bare identifier remains.
      *
      * @param identifier the SQL identifier to strip the quotes from
-     * @return the identifier without quote characters; or {@code null}
-     * when {@code null} was provided
+     * @return the identifier without quote characters; or
+     * <p>{@code null} if {@code null} was provided
      * @see #encodeSql(String)
      * @since 1.10
      */

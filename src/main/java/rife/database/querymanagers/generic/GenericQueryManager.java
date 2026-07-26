@@ -55,12 +55,14 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
     String getIdentifierName();
 
     /**
-     * Get the name of the database column that the identifier property
-     * maps to.
-     * <p>This is the same as the identifier property name unless the
-     * property is constrained with an explicit column name.
+     * Get the name of the database column that the identifier property maps
+     * to.
+     * <p>This method will return the same name as the identifier property,
+     * unless that property has been constrained with an explicit column
+     * name.
      *
      * @return the name of the identifier column
+     * @see #getIdentifierName()
      * @since 1.10
      */
     default String getIdentifierColumn() {
@@ -81,7 +83,7 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
     /**
      * Install the database structure into the database.
      * <p>This method will cause the structure needed to persist the bean to
-     * be installed into the database. This includes any validatity checks
+     * be installed into the database. This includes any validity checks
      * that the database supports and that have already been defined.
      * Including (but not limited to): length, notNull, notEmpty, etc. etc.
      * This method will fail semi-gracefully if the installation fails.
@@ -99,7 +101,7 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * <p>This method will cause the structure needed to persist the bean to
      * be installed into the database using the provided custom query. The
      * custom query is usually obtained by using {@link
-     * #getInstallTableQuery()}. This includes any validatity checks that the
+     * #getInstallTableQuery()}. This includes any validity checks that the
      * database supports and that have already been defined. Including (but
      * not limited to): length, notNull, notEmpty, etc. etc. This method will
      * fail semi-gracefully if the installation fails. Generally it's best to
@@ -248,8 +250,10 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * Restore the first bean that matches the {@link RestoreQuery}, providing
      * the values of the query's parameters through a {@link
      * DbPreparedStatementHandler}.
-     * <p>Combined with {@link RestoreQuery#whereParameter}, this executes the
-     * query as a prepared statement with the parameter values bound by the
+     * <p>This method will return the first bean that matches the query, just
+     * like {@link #restoreFirst(RestoreQuery)} does. Since the query is
+     * executed as a prepared statement, the values of the parameters that
+     * were declared with {@link RestoreQuery#whereParameter} are bound by the
      * database driver instead of being inlined into the SQL.
      *
      * @param query   the query the bean should be restored from
@@ -280,10 +284,13 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * Restore a list of beans that match the provided {@link RestoreQuery},
      * providing the values of the query's parameters through a {@link
      * DbPreparedStatementHandler}.
-     * <p>Combined with {@link RestoreQuery#whereParameter}, this executes the
-     * query as a prepared statement with the parameter values bound by the
-     * database driver instead of being inlined into the SQL. The same query
-     * instance can be executed repeatedly with different parameter values.
+     * <p>This method will return the same list of beans as {@link
+     * #restore(RestoreQuery)} does. Since the query is executed as a prepared
+     * statement, the values of the parameters that were declared with {@link
+     * RestoreQuery#whereParameter} are bound by the database driver instead
+     * of being inlined into the SQL. This makes it possible to execute the
+     * same query instance over and over again with different parameter
+     * values.
      *
      * @param query   the query the beans should be restored from
      * @param handler the handler that sets the values of the query's
@@ -317,6 +324,11 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * Restore a list of beans that match the provided {@link RestoreQuery}
      * and process with the {@link DbRowProcessor}, providing the values of
      * the query's parameters through a {@link DbPreparedStatementHandler}.
+     * <p>This method will process the matching beans exactly like {@link
+     * #restore(RestoreQuery, DbRowProcessor)} does. Since the query is
+     * executed as a prepared statement, the values of the parameters that
+     * were declared with {@link RestoreQuery#whereParameter} are bound by the
+     * database driver instead of being inlined into the SQL.
      *
      * @param query        the query the beans should be restored from
      * @param rowProcessor the row processor that should be used to process
@@ -352,6 +364,11 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * Restore a list of beans that match the provided {@link RestoreQuery}
      * and process with the {@link BeanFetcher}, providing the values of the
      * query's parameters through a {@link DbPreparedStatementHandler}.
+     * <p>This method will process the matching beans exactly like {@link
+     * #restore(RestoreQuery, BeanFetcher)} does. Since the query is executed
+     * as a prepared statement, the values of the parameters that were
+     * declared with {@link RestoreQuery#whereParameter} are bound by the
+     * database driver instead of being inlined into the SQL.
      *
      * @param query       the query the beans should be restored from
      * @param beanFetcher the bean fetcher that should be used to process
@@ -368,7 +385,7 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
     /**
      * Get the query that would be used to install the table.
      * <p>This method will return the query that would be used to install the
-     * database structure. Can be used to modify the structure if i custom
+     * database structure. Can be used to modify the structure if a custom
      * structure is needed. Mostly likely to be passed into {@link
      * #install(CreateTable)}
      *
@@ -408,7 +425,6 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      *
      * @return the number of beans persisted under this manager
      * @since 1.0
-     * @since 1.0
      */
     int count()
     throws DatabaseException;
@@ -431,9 +447,11 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * Count the number of beans persisted with a custom {@link CountQuery},
      * providing the values of the query's parameters through a {@link
      * DbPreparedStatementHandler}.
-     * <p>Combined with {@link CountQuery#whereParameter}, this executes the
-     * query as a prepared statement with the parameter values bound by the
-     * database driver instead of being inlined into the SQL.
+     * <p>This method will count the beans in the same way as {@link
+     * #count(CountQuery)} does. Since the query is executed as a prepared
+     * statement, the values of the parameters that were declared with {@link
+     * CountQuery#whereParameter} are bound by the database driver instead of
+     * being inlined into the SQL.
      *
      * @param query   the query that will be used to determine which beans to
      *                count
@@ -452,18 +470,18 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * persisted under this manager
      *
      * @return the query that would be used to count the total number of beans
-     * persisted under this managerù
+     * persisted under this manager
      * @since 1.0
      */
     CountQuery getCountQuery();
 
     /**
      * Delete a single identified bean
-     * <p>This method will delete the bean identifed by the passed in
+     * <p>This method will delete the bean identified by the passed in
      * identifier.
      *
      * @param objectId the identifier of the bean
-     * @return true if the deletion suceeded, false if it did not
+     * @return true if the deletion succeeded, false if it did not
      * @since 1.0
      */
     boolean delete(int objectId)
@@ -475,7 +493,7 @@ public interface GenericQueryManager<BeanType> extends ValidationContext {
      * DeleteQuery}.
      *
      * @param query the query to select the beans
-     * @return true if the deletion suceeded, false if it did not
+     * @return true if the deletion succeeded, false if it did not
      * @since 1.0
      */
     boolean delete(DeleteQuery query)

@@ -36,27 +36,28 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Provides JSON parsing, generation and bean conversion.
- * <p>
- * Parsing is strict according to RFC 8259 and produces plain Java values:
- * {@link JsonObject}, {@link JsonArray}, {@code String}, {@code Long},
- * {@code Double}, {@code Boolean} and {@code null}. Integral numbers that
- * don't fit a {@code Long} become {@code Double} values and can lose
- * precision. When an object contains the same member name multiple times,
- * the last value wins.
- * <p>
- * For instance:
+ * The {@code Json} class provides JSON parsing, generation and bean
+ * conversion.
+ * <p>Parsing is strict according to RFC 8259 and produces plain Java
+ * values: {@link JsonObject}, {@link JsonArray}, {@code String},
+ * {@code Long}, {@code Double}, {@code Boolean} and {@code null}. Integral
+ * numbers that don't fit into a {@code Long} become {@code Double} values,
+ * which means that they can lose precision. When an object contains the
+ * same member name multiple times, the last value wins.
+ * <p>For instance:
  * <pre>
  * var config = Json.parseObject("""
  *     {"name": "my-app", "port": 8080}""");
  * var port = config.getInt("port", 80);
  * </pre>
- * <p>
- * Beans convert in both directions with {@link #from} and {@link #toBean},
- * relying on the same property conventions as the rest of RIFE2. Records
- * convert through their components in the same fashion.
+ * <p>Beans are converted in both directions with {@link #from} and
+ * {@link #toBean}, relying on the same property conventions as the rest of
+ * RIFE2. Records are converted through their components in the same
+ * fashion.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
+ * @see JsonObject
+ * @see JsonArray
  * @since 1.10
  */
 public final class Json {
@@ -65,11 +66,16 @@ public final class Json {
 
     /**
      * Parses a JSON document.
+     * <p>This method will parse any JSON document and hand you back
+     * whichever value sits at the top level of it.
      *
      * @param json the JSON document to parse
      * @return the parsed value: a {@code JsonObject}, {@code JsonArray},
      * {@code String}, {@code Long}, {@code Double}, {@code Boolean} or {@code null}
      * @throws JsonParseException when the document couldn't be parsed
+     * @see #parse(Reader)
+     * @see #parseObject(String)
+     * @see #parseArray(String)
      * @since 1.10
      */
     public static Object parse(String json) {
@@ -81,13 +87,15 @@ public final class Json {
 
     /**
      * Parses a JSON document from a reader.
-     * <p>
-     * The reader is read fully before parsing starts.
+     * <p>The reader will be read out entirely before the parsing starts.
      *
      * @param reader the reader to parse the JSON document from
      * @return the parsed value
      * @throws JsonParseException when the document couldn't be parsed
      * @throws IOException        when an error occurred while reading
+     * @see #parse(String)
+     * @see #parseObject(Reader)
+     * @see #parseArray(Reader)
      * @since 1.10
      */
     public static Object parse(Reader reader)
@@ -103,11 +111,17 @@ public final class Json {
 
     /**
      * Parses a JSON document that is expected to be a JSON object.
+     * <p>This method will refuse any document whose top-level value isn't
+     * a JSON object, so that you don't have to check the type of the
+     * result yourself.
      *
      * @param json the JSON document to parse
      * @return the parsed {@code JsonObject}
      * @throws JsonParseException when the document couldn't be parsed or
      *                            isn't a JSON object
+     * @see #parse(String)
+     * @see #parseObject(Reader)
+     * @see #parseArray(String)
      * @since 1.10
      */
     public static JsonObject parseObject(String json) {
@@ -118,13 +132,18 @@ public final class Json {
     }
 
     /**
-     * Parses a JSON document from a reader that is expected to be a JSON object.
+     * Parses a JSON document from a reader that is expected to be a JSON
+     * object.
+     * <p>The reader will be read out entirely before the parsing starts.
      *
      * @param reader the reader to parse the JSON document from
      * @return the parsed {@code JsonObject}
      * @throws JsonParseException when the document couldn't be parsed or
      *                            isn't a JSON object
      * @throws IOException        when an error occurred while reading
+     * @see #parse(Reader)
+     * @see #parseObject(String)
+     * @see #parseArray(Reader)
      * @since 1.10
      */
     public static JsonObject parseObject(Reader reader)
@@ -137,11 +156,17 @@ public final class Json {
 
     /**
      * Parses a JSON document that is expected to be a JSON array.
+     * <p>This method will refuse any document whose top-level value isn't
+     * a JSON array, so that you don't have to check the type of the result
+     * yourself.
      *
      * @param json the JSON document to parse
      * @return the parsed {@code JsonArray}
      * @throws JsonParseException when the document couldn't be parsed or
      *                            isn't a JSON array
+     * @see #parse(String)
+     * @see #parseArray(Reader)
+     * @see #parseObject(String)
      * @since 1.10
      */
     public static JsonArray parseArray(String json) {
@@ -152,13 +177,18 @@ public final class Json {
     }
 
     /**
-     * Parses a JSON document from a reader that is expected to be a JSON array.
+     * Parses a JSON document from a reader that is expected to be a JSON
+     * array.
+     * <p>The reader will be read out entirely before the parsing starts.
      *
      * @param reader the reader to parse the JSON document from
      * @return the parsed {@code JsonArray}
      * @throws JsonParseException when the document couldn't be parsed or
      *                            isn't a JSON array
      * @throws IOException        when an error occurred while reading
+     * @see #parse(Reader)
+     * @see #parseArray(String)
+     * @see #parseObject(Reader)
      * @since 1.10
      */
     public static JsonArray parseArray(Reader reader)
@@ -171,13 +201,15 @@ public final class Json {
 
     /**
      * Creates a JSON object from the properties of a bean.
-     * <p>
-     * Properties that are constrained as not {@code serialized} are not
-     * included. Records are converted through their components instead
-     * of properties.
+     * <p>Properties that are constrained as not {@code serialized} are not
+     * included. Records are converted through their components instead of
+     * through their properties.
      *
      * @param bean the bean to convert
      * @return the JSON object with the bean's properties as members
+     * @see #fromExcluded(Object, String...)
+     * @see #from(Collection)
+     * @see #toBean(JsonObject, Class)
      * @since 1.10
      */
     public static JsonObject from(Object bean) {
@@ -187,10 +219,14 @@ public final class Json {
     /**
      * Creates a JSON object from the properties of a bean, excluding
      * particular properties.
+     * <p>This method behaves exactly like {@link #from(Object)}, apart from
+     * the properties whose names you provide, which are left out of the
+     * resulting JSON object.
      *
      * @param bean               the bean to convert
      * @param excludedProperties the names of the properties to exclude
      * @return the JSON object with the bean's properties as members
+     * @see #from(Object)
      * @since 1.10
      */
     public static JsonObject fromExcluded(Object bean, String... excludedProperties) {
@@ -198,11 +234,14 @@ public final class Json {
     }
 
     /**
-     * Creates a JSON array from the elements of a collection, converting
-     * beans and records to JSON objects like {@link #from(Object)} does.
+     * Creates a JSON array from the elements of a collection.
+     * <p>The beans and records that are amongst the elements are converted
+     * to JSON objects, just like {@link #from(Object)} does.
      *
      * @param elements the collection to convert
      * @return the JSON array with the converted elements
+     * @see #from(Object)
+     * @see #toBeanList(JsonArray, Class)
      * @since 1.10
      */
     public static JsonArray from(Collection<?> elements) {
@@ -216,14 +255,15 @@ public final class Json {
 
     /**
      * Serializes any JSON value into its compact string representation.
-     * <p>
-     * Accepts strings, numbers, booleans, {@code null}, maps, collections,
-     * arrays, dates, temporals, enums, {@link JsonObject}, {@link JsonArray},
-     * and beans or records, including beans nested inside maps, collections
-     * and arrays, which are converted with {@link #from} automatically.
+     * <p>This method accepts strings, numbers, booleans, {@code null},
+     * maps, collections, arrays, dates, temporals, enums,
+     * {@link JsonObject}, {@link JsonArray}, and beans or records,
+     * including the beans that are nested inside maps, collections and
+     * arrays, since those are automatically converted with {@link #from}.
      *
      * @param value the value to serialize
      * @return the JSON string
+     * @see #toPrettyString(Object)
      * @since 1.10
      */
     public static String toString(Object value) {
@@ -240,11 +280,11 @@ public final class Json {
     /**
      * Serializes any JSON value into its multi-line indented string
      * representation.
-     * <p>
-     * Accepts the same values as {@link #toString(Object)}.
+     * <p>This method accepts the same values as {@link #toString(Object)}.
      *
      * @param value the value to serialize
      * @return the pretty-printed JSON string
+     * @see #toString(Object)
      * @since 1.10
      */
     public static String toPrettyString(Object value) {
@@ -350,22 +390,22 @@ public final class Json {
 
     /**
      * Fills a new bean instance with the members of a JSON object.
-     * <p>
-     * Members without a matching bean property are ignored. Nested JSON
-     * objects are converted to the types of their matching bean properties.
-     * The elements of arrays, collections and maps are converted to the
-     * component and generic types that the property setters declare.
-     * <p>
-     * Properties that are constrained as not {@code serialized} or not
+     * <p>Members without a matching bean property are ignored, while nested
+     * JSON objects are converted to the types of their matching bean
+     * properties. The elements of arrays, collections and maps are
+     * converted to the component and generic types that the property
+     * setters declare.
+     * <p>Properties that are constrained as not {@code serialized} or not
      * {@code editable} are never filled in.
-     * <p>
-     * Records are instantiated through their canonical constructor with
-     * the members that match their components, absent members become
-     * {@code null} or the primitive default values.
+     * <p>Records are instantiated through their canonical constructor with
+     * the members that match their components, while members that are
+     * absent become {@code null} or the primitive default values.
      *
      * @param json      the JSON object with the values to fill in
      * @param beanClass the class of the bean to fill
      * @return the filled bean instance
+     * @see #toBeanList(JsonArray, Class)
+     * @see #from(Object)
      * @since 1.10
      */
     public static <T> T toBean(JsonObject json, Class<T> beanClass) {
@@ -412,13 +452,14 @@ public final class Json {
     /**
      * Fills a list of new bean instances with the members of the JSON
      * objects in a JSON array.
-     * <p>
-     * Each element is converted with the same rules as {@link #toBean},
-     * {@code null} elements stay {@code null}.
+     * <p>Each element is converted with the same rules as {@link #toBean},
+     * while elements that are {@code null} stay {@code null}.
      *
      * @param json      the JSON array with the JSON objects to convert
      * @param beanClass the class of the beans to fill
      * @return the list with a bean instance for each element
+     * @see #toBean(JsonObject, Class)
+     * @see #from(Collection)
      * @since 1.10
      */
     public static <T> List<T> toBeanList(JsonArray json, Class<T> beanClass) {
@@ -707,9 +748,8 @@ public final class Json {
         } else if (value.getClass().isArray()) {
             writeNativeArray(value, out, indent);
         } else {
-            // a bean or record: convert it (and any beans nested in its graph)
-            // to a JSON object and write that, so an object graph, including
-            // beans inside maps, collections and arrays, serializes end to end
+            // beans and records are converted to a JSON object first, so that
+            // entire object graphs serialize end to end
             write(fromBean(value, null, new IdentityHashMap<>()), out, indent);
         }
     }
@@ -817,8 +857,7 @@ public final class Json {
         out.append('"');
     }
 
-    // determines whether a string can be emitted without any escaping,
-    // mirroring the characters that the JSON encoding escapes
+    // mirrors the characters that the JSON encoding escapes
     private static boolean isPlainString(String string) {
         char previous = 0;
         for (var i = 0; i < string.length(); ++i) {
@@ -842,7 +881,7 @@ public final class Json {
         }
 
         // escape unpaired surrogates so that the output is always
-        // well-formed, valid surrogate pairs are preserved as-is
+        // well-formed, while valid surrogate pairs are preserved as-is
         var out = new StringBuilder(encoded.length() + 5);
         for (var i = 0; i < encoded.length(); ++i) {
             var c = encoded.charAt(i);

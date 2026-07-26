@@ -25,8 +25,8 @@ import java.util.List;
  * DbQueryManager.executeUpdate()}.
  *
  * <p>Some databases, like MySQL, drop an index in the context of a table.
- * Providing the table makes the query portable to those databases, it's
- * simply not emitted for the databases that drop indexes by name alone.
+ * Providing the table makes the query portable to those databases, while it
+ * simply isn't emitted for the databases that drop indexes by name alone.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
  * @since 1.10
@@ -90,8 +90,8 @@ public class DropIndex extends AbstractQuery implements Cloneable {
             } else {
                 var template = TemplateFactory.SQL.get("sql." + StringUtils.encodeClassname(datasource_.getAliasedDriver()) + ".drop_index");
 
-                // some databases drop an index in the context of its table,
-                // there the table is required
+                // some databases drop an index in the context of its table
+                // and require it to be provided
                 if (template.hasValueId("TABLE")) {
                     if (null == table_) {
                         throw new TableNameRequiredException("DropIndex");

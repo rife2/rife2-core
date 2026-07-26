@@ -43,13 +43,13 @@ import static rife.tools.BeanUtils.Accessors.*;
 /**
  * Utility class providing methods for working with Java beans.
  * <p>Since 1.10, bean properties can use {@code Optional} getters. Their
- * values will be unwrapped when they are read and an empty {@code Optional}
- * means the same as {@code null}, the property type will be the
- * {@code Optional}'s value type. The standard JavaBeans introspector drops
- * a plain-typed setter next to an {@code Optional} getter, RIFE2 pairs it
- * again so that the property simply behaves like a regular read-write
- * property. A setter with an {@code Optional} parameter will receive its
- * values wrapped.
+ * values will be unwrapped when they are read, where an empty
+ * {@code Optional} means the same as {@code null}, and the type of such a
+ * property is the {@code Optional}'s value type. Since the standard
+ * JavaBeans introspector drops a plain-typed setter that sits next to an
+ * {@code Optional} getter, RIFE2 pairs them up again so that the property
+ * simply behaves like a regular read-write property. A setter that declares
+ * an {@code Optional} parameter will receive its values wrapped.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
  * @since 1.0
@@ -79,8 +79,8 @@ public final class BeanUtils {
         return value;
     }
 
-    // only unwrap what is declared as Optional, a value that merely happens
-    // to be one passes through untouched
+    // only unwrap what is declared as Optional so that a value that merely
+    // happens to be one passes through untouched
     private static Object readPropertyValue(Method read, Object bean)
     throws IllegalAccessException, InvocationTargetException {
         var value = read.invoke(bean, (Object[]) null);
@@ -111,8 +111,8 @@ public final class BeanUtils {
         return ClassUtils.erasedType(beanClass, type);
     }
 
-    // enhanced descriptors already report their effective type, this also
-    // covers raw descriptors that were built outside getBeanInfo
+    // enhanced descriptors already report their effective type, while the
+    // fallbacks also cover raw descriptors that were built outside getBeanInfo
     private static Class<?> getEffectivePropertyType(Class<?> beanClass, PropertyDescriptor property) {
         if (property instanceof OptionalPropertyDescriptor) {
             return property.getPropertyType();
@@ -139,7 +139,7 @@ public final class BeanUtils {
 
     // the JavaBeans introspector refuses to pair a getter and a setter whose
     // types don't line up, so the plain-typed setter next to an Optional
-    // getter is silently dropped, this recovers it by applying the same
+    // getter is silently dropped and this recovers it by applying the same
     // rules as the introspector
     private static Method findSupplementalSetter(Class<?> beanClass, Method read) {
         if (!read.getName().startsWith("get") ||
@@ -218,8 +218,9 @@ public final class BeanUtils {
     /**
      * Gets the BeanInfo for the specified beanClass.
      * <p>The property descriptors describe {@code Optional} properties
-     * directly, {@link PropertyDescriptor#getPropertyType()} will return the
-     * {@code Optional}'s value type and
+     * directly, which means that
+     * {@link PropertyDescriptor#getPropertyType()} will return the
+     * {@code Optional}'s value type and that
      * {@link PropertyDescriptor#getWriteMethod()} will return the
      * plain-typed setter that the standard introspector dropped. This also
      * applies to properties that only have an {@code Optional} setter.
@@ -245,7 +246,7 @@ public final class BeanUtils {
     }
 
     // enhances the standard BeanInfo so that Optional properties describe
-    // themselves, everything that consumes the descriptors afterwards is
+    // themselves and everything that consumes the descriptors afterwards is
     // correct without any Optional-specific handling
     private static BeanInfo enhanceBeanInfo(BeanInfo info, Class<?> beanClass)
     throws IntrospectionException {
@@ -604,8 +605,8 @@ public final class BeanUtils {
     /**
      * Returns the value of the property with the given name from the specified bean.
      * Throws an exception if the property does not exist or is not readable.
-     * <p>The value of an {@code Optional} getter is unwrapped, an empty
-     * {@code Optional} returns {@code null}.
+     * <p>The value of an {@code Optional} getter will be unwrapped, so that
+     * an empty {@code Optional} results in {@code null}.
      *
      * @param bean The bean instance to retrieve the property value from.
      * @param name The name of the property to retrieve.
@@ -662,9 +663,10 @@ public final class BeanUtils {
     /**
      * Sets the value of the property with the given name in the specified bean.
      * Throws an exception if the property does not exist or is not writable.
-     * <p>When the property only has an {@code Optional} getter, the paired
-     * plain-typed setter will be used. A setter with an {@code Optional}
-     * parameter will receive the value wrapped.
+     * <p>When the property only has an {@code Optional} getter, the
+     * plain-typed setter that RIFE2 pairs with it will be used, while a
+     * setter that declares an {@code Optional} parameter will receive the
+     * value wrapped.
      *
      * @param bean  The bean instance to set the property value on.
      * @param name  The name of the property to set.
@@ -725,8 +727,8 @@ public final class BeanUtils {
 
     /**
      * Returns the class of a property of a bean, given its name.
-     * <p>The type of an {@code Optional} property is the {@code Optional}'s
-     * value type, not {@code Optional} itself.
+     * <p>The type of an {@code Optional} property is the type of the value
+     * that the {@code Optional} holds, and not {@code Optional} itself.
      *
      * @param beanClass the class of the bean to search for the property
      * @param name      the name of the property to retrieve the type
@@ -805,9 +807,9 @@ public final class BeanUtils {
 
     /**
      * Formats a property value based on the given format from a constrained property.
-     * <p>A {@code null} value simply results in {@code null} without using
-     * the format. Values of {@code Optional} properties are already
-     * unwrapped when RIFE2 reads them.
+     * <p>A {@code null} value simply results in {@code null} without the
+     * format being used. Note that the values of {@code Optional}
+     * properties have already been unwrapped when RIFE2 reads them.
      *
      * @param propertyValue       the value of the property to format
      * @param constrainedProperty the constrained property that contains formatting info
@@ -984,14 +986,14 @@ public final class BeanUtils {
 
     /**
      * Set the value of a bean property from an array of strings.
-     * <p>The values are converted to the property type, for an
-     * {@code Optional} property that is the {@code Optional}'s value type.
-     * When the property only has an {@code Optional} getter, the paired
-     * plain-typed setter will be used, and a setter with an {@code Optional}
-     * parameter will receive the converted value wrapped. When an empty
-     * value comes from the empty bean and the setter has a primitive
-     * parameter, the property will be left untouched since a primitive can't
-     * hold an absent value.
+     * <p>The values will be converted to the type of the property, which for
+     * an {@code Optional} property is the type of the value that it holds.
+     * When the property only has an {@code Optional} getter, the plain-typed
+     * setter that RIFE2 pairs with it will be used, while a setter that
+     * declares an {@code Optional} parameter will receive the converted
+     * value wrapped. When an empty value comes from the empty bean and the
+     * setter takes a primitive parameter, the property will be left
+     * untouched since a primitive can't hold an absent value.
      *
      * @param propertyName       the name of the property
      * @param propertyValues     the values that will be set, can be {@code null}
@@ -1043,7 +1045,7 @@ public final class BeanUtils {
             write_method = property.getWriteMethod();
             if (null == write_method) {
                 // an enhanced descriptor already tried to recover a setter,
-                // only scan for descriptors that were built externally
+                // so only scan for descriptors that were built externally
                 var read_method = property.getReadMethod();
                 if (!(property instanceof OptionalPropertyDescriptor) &&
                     read_method != null && read_method.getReturnType() == Optional.class) {
@@ -1083,11 +1085,12 @@ public final class BeanUtils {
                             propertyValues[0].isEmpty())) {
                     var read_method = property.getReadMethod();
                     // a setter-only property has nothing to read from the
-                    // empty bean, the null value lets an Optional setter
-                    // receive an empty Optional
+                    // empty bean, where the null value lets an Optional
+                    // setter receive an empty Optional
                     var empty_value = read_method == null ? null : readPropertyValue(read_method, emptyBean);
-                    // a primitive setter can't receive an absent value, leave
-                    // the property untouched instead of failing the population
+                    // a primitive setter can't receive an absent value, so
+                    // leave the property untouched instead of failing the
+                    // population
                     if (empty_value != null ||
                         !write_method.getParameterTypes()[0].isPrimitive()) {
                         invokeWriteMethod(write_method, beanInstance, empty_value);
@@ -1638,7 +1641,7 @@ public final class BeanUtils {
             write_method = property.getWriteMethod();
             if (null == write_method) {
                 // an enhanced descriptor already tried to recover a setter,
-                // only scan for descriptors that were built externally
+                // so only scan for descriptors that were built externally
                 var read_method = property.getReadMethod();
                 if (!(property instanceof OptionalPropertyDescriptor) &&
                     read_method != null && read_method.getReturnType() == Optional.class) {

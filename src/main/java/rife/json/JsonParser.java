@@ -5,9 +5,12 @@
 package rife.json;
 
 /**
- * Parses JSON documents according to RFC 8259, this is an internal class.
+ * Parses JSON documents according to RFC 8259.
+ * <p>This is an internal class that you're not supposed to use directly,
+ * the {@link Json} class provides the public parsing methods.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
+ * @see Json
  * @since 1.10
  */
 class JsonParser {
@@ -136,7 +139,7 @@ class JsonParser {
 
             var c = input_.charAt(position_);
             if (c == '"') {
-                // strings can't contain raw newlines, the column advances
+                // strings can't contain raw newlines, so the column advances
                 // by the number of characters that were scanned in bulk
                 column_ += position_ - segment_start + 1;
                 String result;
@@ -193,8 +196,8 @@ class JsonParser {
                 column_ += position_ - segment_start;
                 throw error("Unescaped control character in string");
             } else {
-                // plain characters are scanned in bulk, the column is
-                // updated when the segment ends
+                // plain characters are scanned in bulk, so the column is
+                // only updated when the segment ends
                 position_ += 1;
             }
         }

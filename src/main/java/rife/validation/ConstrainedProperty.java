@@ -549,14 +549,17 @@ public class ConstrainedProperty implements Cloneable {
     /**
      * Sets whether the property takes part in data-interchange
      * representations like JSON.
-     * <p>
-     * When a property isn't serialized, it's not included when such
-     * representations are generated and it's not filled in when they are
-     * bound back to beans. This doesn't affect Java object serialization.
+     * <p>When a property isn't serialized, it isn't included when such
+     * representations are generated and it isn't filled in when they are
+     * bound back to beans. Note that this doesn't affect Java object
+     * serialization.
      *
-     * @param serialized {@code true} when the property takes part in
-     *                   data-interchange representations; or {@code false} otherwise
-     * @return this {@code ConstrainedProperty} instance
+     * @param serialized {@code true} if the property takes part in
+     *                   data-interchange representations; or
+     *                   <p>{@code false} if it doesn't
+     * @return the current {@code ConstrainedProperty} instance
+     * @see #setSerialized(boolean)
+     * @see #isSerialized()
      * @since 1.10
      */
     public ConstrainedProperty serialized(boolean serialized) {
@@ -597,9 +600,11 @@ public class ConstrainedProperty implements Cloneable {
      * uploaded files from one that receives regular parameter values, for
      * instance when a bean is populated from a form submission.
      *
-     * @param file {@code true} when the property is entered through a file
-     *             upload; or {@code false} otherwise
+     * @param file {@code true} if the property is entered through a file
+     *             upload; or
+     *             <p>{@code false} if it isn't
      * @return the current {@code ConstrainedProperty} instance
+     * @see #setFile(boolean)
      * @see #isFile()
      * @since 1.10
      */
@@ -1114,16 +1119,14 @@ public class ConstrainedProperty implements Cloneable {
 
     /**
      * Sets the name of the database column that this property maps to.
-     * <p>
-     * This makes it possible to use column names that can't be expressed
+     * <p>This makes it possible to use column names that can't be expressed
      * as bean property names, for instance because they contain characters
      * that are invalid in Java identifiers. The column name is used as-is
-     * when queries are generated from the bean, and result set columns
-     * with this name are mapped back to this property when beans are
-     * fetched.
+     * when queries are generated from the bean, and result set columns with
+     * this name are mapped back to this property when beans are fetched.
      *
      * @param name the name of the database column
-     * @return this {@code ConstrainedProperty}
+     * @return the current {@code ConstrainedProperty} instance
      * @see #setColumnName(String)
      * @see #hasColumnName()
      * @see #getColumnName()
@@ -1155,8 +1158,8 @@ public class ConstrainedProperty implements Cloneable {
     /**
      * Retrieves the name of the database column that this property maps to.
      *
-     * @return the name of the database column; or {@code null} when none
-     * was set
+     * @return the name of the database column; or
+     * <p>{@code null} if no column name was set
      * @see #columnName(String)
      * @see #setColumnName(String)
      * @see #hasColumnName()
@@ -1169,8 +1172,8 @@ public class ConstrainedProperty implements Cloneable {
     /**
      * Indicates whether a database column name was set for this property.
      *
-     * @return {@code true} when a column name was set; or {@code false}
-     * otherwise
+     * @return {@code true} if a column name was set; or
+     * <p>{@code false} if it wasn't
      * @see #columnName(String)
      * @see #setColumnName(String)
      * @see #getColumnName()

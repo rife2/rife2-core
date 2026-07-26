@@ -1036,6 +1036,39 @@ public class TestDbMigrations {
     }
 
     @Test
+    void testPreviewMirrorsMigrateWhenAheadOfRegistrations() {
+        var datasource = TestDatasources.H2;
+        var migrations = createMigrations(datasource);
+
+        // a version above every registered migration has nothing to apply
+        // instead of moving the schema backwards
+        assertEquals(5, migrations.migrateFrom(5));
+        assertTrue(migrations.previewFrom(5).isEmpty());
+    }
+
+    @Test
+    void testPreviewRefusesToMoveBackwards() {
+        var datasource = TestDatasources.H2;
+        var migrations = createMigrations(datasource);
+
+        // preview shows what migrate would do, so it refuses the same
+        // backwards target instead of quietly producing nothing
+        assertThrows(IllegalArgumentException.class, () -> migrations.migrateFrom(2, 1));
+        assertThrows(IllegalArgumentException.class, () -> migrations.previewFrom(2, 1));
+    }
+
+    @Test
+    void testRollbackReturnsTheVersionThatWasReached() {
+        var datasource = TestDatasources.H2;
+        var migrations = createMigrations(datasource);
+
+        // the stateless variant takes any current version, and nothing sits
+        // between the target and a current version that isn't registered,
+        // so the schema stays where it was
+        assertEquals(5, migrations.rollbackFrom(5, 2));
+    }
+
+    @Test
     void testDefaultStateResource() {
         assertEquals("rife/migrations/version", RifeConfig.MigrationsConfig.DEFAULT_STATE_RESOURCE);
         assertEquals("rife/migrations/version", RifeConfig.migrations().getStateResource());

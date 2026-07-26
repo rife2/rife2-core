@@ -11,9 +11,12 @@ import org.junit.jupiter.api.Test;
 import rife.config.RifeConfig;
 import rife.tools.exceptions.BeanUtilsException;
 import rife.tools.exceptions.SerializationUtilsErrorException;
+import rife.engine.UploadedFile;
 import rife.validation.ConstrainedProperty;
+import rife.validation.Validation;
 
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.*;
@@ -118,6 +121,57 @@ public class TestBeanUtils {
         assertEquals(bean.getPropertyReadonly(), 23L);
         BeanUtils.setUppercasedBeanProperty("propertyReadonly", new String[]{"42131"}, null, bean_properties, bean, new BeanImpl2());
         assertEquals(bean.getPropertyReadonly(), 23L);
+    }
+
+    public static class UploadGuardBean extends Validation {
+        private String locked_ = "untouched";
+        private String open_ = null;
+
+        protected void activateValidation() {
+            addConstraint(new ConstrainedProperty("locked").editable(false));
+            addConstraint(new ConstrainedProperty("open"));
+        }
+
+        public void setLocked(String locked) {
+            locked_ = locked;
+        }
+
+        public String getLocked() {
+            return locked_;
+        }
+
+        public void setOpen(String open) {
+            open_ = open;
+        }
+
+        public String getOpen() {
+            return open_;
+        }
+    }
+
+    @Test
+    void testSetUppercasedBeanPropertyFileHonorsEditable()
+    throws Exception {
+        var file = File.createTempFile("rifetest", ".txt");
+        file.deleteOnExit();
+        FileUtils.writeString("uploaded content", file);
+        try (var uploaded = new UploadedFile("upload.txt", "text/plain")) {
+            uploaded.setTempFile(file);
+
+            var bean_properties = BeanUtils.getUppercasedBeanProperties(UploadGuardBean.class);
+            var bean = new UploadGuardBean();
+
+            BeanUtils.setUppercasedBeanProperty("locked", uploaded, null, bean_properties, bean);
+            assertEquals("untouched", bean.getLocked());
+
+            BeanUtils.setUppercasedBeanProperty("open", uploaded, null, bean_properties, bean);
+            assertEquals("uploaded content", bean.getOpen());
+
+            // the parameter name only has to match the property
+            // case-insensitively, the guard has to hold up for those too
+            BeanUtils.setUppercasedBeanProperty("Locked", uploaded, null, bean_properties, bean);
+            assertEquals("untouched", bean.getLocked());
+        }
     }
 
     @Test

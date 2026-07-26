@@ -84,6 +84,7 @@ public class ConstrainedProperty implements Cloneable {
     public static final String SAVED = "SAVED";
     public static final String SERIALIZED = "SERIALIZED";
     public static final String DISPLAYED_RAW = "DISPLAYED_RAW";
+    public static final String FILE = "FILE";
     public static final String MIN_LENGTH = "MIN_LENGTH";
     public static final String MAX_LENGTH = "MAX_LENGTH";
     public static final String SCALE = "SCALE";
@@ -588,6 +589,32 @@ public class ConstrainedProperty implements Cloneable {
 
     public boolean isDisplayedRaw() {
         return Convert.toBoolean(constraints_.get(DISPLAYED_RAW), false);
+    }
+
+    /**
+     * Sets whether the property receives its content through a file upload.
+     * <p>This makes it possible to distinguish a property that is backed by
+     * uploaded files from one that receives regular parameter values, for
+     * instance when a bean is populated from a form submission.
+     *
+     * @param file {@code true} when the property is entered through a file
+     *             upload; or {@code false} otherwise
+     * @return the current {@code ConstrainedProperty} instance
+     * @see #isFile()
+     * @since 1.10
+     */
+    public ConstrainedProperty file(boolean file) {
+        setFile(file);
+
+        return this;
+    }
+
+    public void setFile(boolean file) {
+        setConstraint(FILE, file);
+    }
+
+    public boolean isFile() {
+        return Convert.toBoolean(constraints_.get(FILE), false);
     }
 
     public boolean hasLimitedLength() {

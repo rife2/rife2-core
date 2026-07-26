@@ -1660,6 +1660,15 @@ public final class BeanUtils {
             }
 
             var constrained = ConstrainedUtils.makeConstrainedInstance(beanInstance);
+            if (constrained != null) {
+                // the property name is looked up through the resolved
+                // descriptor since the parameter name only has to match it
+                // case-insensitively
+                var constrained_property = constrained.getConstrainedProperty(property.getName());
+                if (constrained_property != null && !constrained_property.isEditable()) {
+                    return;
+                }
+            }
 
             try {
                 if (propertyFile.wasSizeExceeded()) {

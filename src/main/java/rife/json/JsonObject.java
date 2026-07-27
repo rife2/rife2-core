@@ -249,6 +249,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the member value as an int; or
      * <p>{@code 0} if the member is absent or null
+     * @throws NumberFormatException when the value is a string that
+     *                               can't be parsed into this type
      * @see #getInt(String, int)
      * @since 1.10
      */
@@ -287,6 +289,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the member value as a long; or
      * <p>{@code 0L} if the member is absent or null
+     * @throws NumberFormatException when the value is a string that
+     *                               can't be parsed into this type
      * @see #getLong(String, long)
      * @since 1.10
      */
@@ -324,6 +328,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the member value as a double; or
      * <p>{@code 0.0} if the member is absent or null
+     * @throws NumberFormatException when the value is a string that
+     *                               can't be parsed into this type
      * @see #getDouble(String, double)
      * @since 1.10
      */
@@ -399,6 +405,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the member value as a {@code Date}; or
      * <p>{@code null} if the member is absent or null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
      * @see #getInstant(String)
      * @see #getLocalDate(String)
      * @see #getLocalDateTime(String)
@@ -417,6 +425,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the member value as an {@code Instant}; or
      * <p>{@code null} if the member is absent or null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
      * @see #getDate(String)
      * @see #getLocalDate(String)
      * @see #getLocalDateTime(String)
@@ -435,6 +445,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the member value as a {@code LocalDate}; or
      * <p>{@code null} if the member is absent or null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
      * @see #getDate(String)
      * @see #getInstant(String)
      * @see #getLocalDateTime(String)
@@ -453,6 +465,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the member value as a {@code LocalDateTime}; or
      * <p>{@code null} if the member is absent or null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
      * @see #getDate(String)
      * @see #getInstant(String)
      * @see #getLocalDate(String)
@@ -471,6 +485,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the member value as a {@code LocalTime}; or
      * <p>{@code null} if the member is absent or null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
      * @see #getDate(String)
      * @see #getInstant(String)
      * @see #getLocalDate(String)
@@ -503,6 +519,7 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the nested {@code JsonObject}; or
      * <p>{@code null} if the member is absent or null
+     * @throws ClassCastException when the value is of another type
      * @see #getArray(String)
      * @see #object(String, JsonObjectAction)
      * @since 1.10
@@ -517,6 +534,7 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * @param name the name of the member
      * @return the nested {@code JsonArray}; or
      * <p>{@code null} if the member is absent or null
+     * @throws ClassCastException when the value is of another type
      * @see #getObject(String)
      * @see #array(String, JsonArrayAction)
      * @since 1.10

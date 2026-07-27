@@ -28,7 +28,7 @@ import java.util.function.UnaryOperator;
  * {@link JsonObject} and {@code JsonArray}.
  * <p>All the mutation methods convert maps, collections and arrays to
  * {@code JsonObject} and {@code JsonArray} instances, while values that
- * are assigned through list iterators bypass this conversion.
+ * are assigned through sublist views bypass this conversion.
  * <p>The typed retrieval methods are lenient. Strings will be parsed into
  * the requested numeric or boolean types and numbers will be truncated
  * when narrower types are requested. Elements that are null return
@@ -210,6 +210,9 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the element value as an int; or
      * <p>{@code 0} if the element is null
+     * @throws NumberFormatException when the value is a string that
+     *                               can't be parsed into this type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getString(int)
      * @see #getLong(int)
      * @see #getDouble(int)
@@ -234,6 +237,9 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the element value as a long; or
      * <p>{@code 0L} if the element is null
+     * @throws NumberFormatException when the value is a string that
+     *                               can't be parsed into this type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getString(int)
      * @see #getInt(int)
      * @see #getDouble(int)
@@ -257,6 +263,9 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the element value as a double; or
      * <p>{@code 0.0} if the element is null
+     * @throws NumberFormatException when the value is a string that
+     *                               can't be parsed into this type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getString(int)
      * @see #getInt(int)
      * @see #getLong(int)
@@ -302,6 +311,9 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the element value as a {@code Date}; or
      * <p>{@code null} if the element is null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getInstant(int)
      * @see #getLocalDate(int)
      * @see #getLocalDateTime(int)
@@ -320,6 +332,9 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the element value as an {@code Instant}; or
      * <p>{@code null} if the element is null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getDate(int)
      * @see #getLocalDate(int)
      * @see #getLocalDateTime(int)
@@ -338,6 +353,9 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the element value as a {@code LocalDate}; or
      * <p>{@code null} if the element is null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getDate(int)
      * @see #getInstant(int)
      * @see #getLocalDateTime(int)
@@ -356,6 +374,9 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the element value as a {@code LocalDateTime}; or
      * <p>{@code null} if the element is null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getDate(int)
      * @see #getInstant(int)
      * @see #getLocalDate(int)
@@ -374,6 +395,9 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the element value as a {@code LocalTime}; or
      * <p>{@code null} if the element is null
+     * @throws IllegalArgumentException when the value can't be
+     *                                  converted into this type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getDate(int)
      * @see #getInstant(int)
      * @see #getLocalDate(int)
@@ -421,6 +445,8 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the nested {@link JsonObject}; or
      * <p>{@code null} if the element is null
+     * @throws ClassCastException when the value is of another type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getArray(int)
      * @see #object(JsonObjectAction)
      * @since 1.10
@@ -435,6 +461,8 @@ public class JsonArray extends ArrayList<Object> {
      * @param index the index of the element
      * @return the nested {@code JsonArray}; or
      * <p>{@code null} if the element is null
+     * @throws ClassCastException when the value is of another type
+     * @throws IndexOutOfBoundsException when the index is out of range
      * @see #getObject(int)
      * @see #array(JsonArrayAction)
      * @since 1.10

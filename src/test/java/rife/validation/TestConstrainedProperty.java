@@ -780,9 +780,18 @@ public class TestConstrainedProperty {
         clone.getInList()[0] = "changed";
         assertEquals("draft", property.getInList()[0]);
 
-        // a value that can't be cloned stays shared
+        // a format isn't thread-safe, so it can't be shared either
+        property.format(new java.text.SimpleDateFormat("yyyy"));
+        assertNotSame(property.getFormat(), property.clone().getFormat());
+
+        // and neither are the associations that can be copied
         property.manyToOne(BeanImpl.class, "column");
-        assertSame(property.getManyToOne(), property.clone().getManyToOne());
+        assertNotSame(property.getManyToOne(), property.clone().getManyToOne());
+        assertEquals("column", property.clone().getManyToOne().getColumn());
+
+        // while a value that can't be copied is shared without any harm
+        property.defaultValue("the default");
+        assertSame(property.getDefaultValue(), property.clone().getDefaultValue());
     }
 
     @Test

@@ -2306,19 +2306,18 @@ public class ConstrainedProperty implements Cloneable {
             new_instance = (ConstrainedProperty) super.clone();
 
             new_instance.constraints_ = new LinkedHashMap<>(constraints_);
-            // the mutable container values are copied as well, so that a
-            // clone can't reach into the constraints of the original
+            // the values that can be copied are copied as well, so that a
+            // clone can't reach into the constraints of the original, and
+            // so that the ones that aren't thread-safe, like the formats,
+            // aren't used from several places at the same time
             for (var entry : new_instance.constraints_.entrySet()) {
                 var value = entry.getValue();
-                if (value != null &&
-                    (value.getClass().isArray() ||
-                     value instanceof Date ||
-                     value instanceof Collection ||
-                     value instanceof Map)) {
+                if (value != null) {
                     try {
                         entry.setValue(ObjectUtils.deepClone(value));
                     } catch (CloneNotSupportedException e) {
-                        // a value that can't be cloned stays shared
+                        // an immutable value, or one that can't be cloned,
+                        // is shared without any harm being done
                     }
                 }
             }

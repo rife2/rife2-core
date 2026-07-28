@@ -2570,12 +2570,14 @@ public class DbQueryManager implements Cloneable {
         }
 
         var started_transaction = false;
+        var previous_isolation = -1;
         DbConnection connection = null;
         try {
             synchronized (datasource_) {
                 connection = datasource_.getConnection();
                 var isolation = full_user.getTransactionIsolation();
                 if (isolation != -1) {
+                    previous_isolation = connection.getTransactionIsolation();
                     connection.setTransactionIsolation(isolation);
                 }
                 started_transaction = connection.beginTransaction();
@@ -2584,6 +2586,7 @@ public class DbQueryManager implements Cloneable {
             var result = (ResultType) full_user.useTransaction();
             if (started_transaction) {
                 connection.commit();
+                restoreTransactionIsolation(connection, previous_isolation);
                 if (!datasource_.isPooled()) {
                     connection.close();
                 }
@@ -2592,6 +2595,7 @@ public class DbQueryManager implements Cloneable {
         } catch (RollbackException e) {
             if (connection != null) {
                 connection.rollback();
+                restoreTransactionIsolation(connection, previous_isolation);
                 if (!datasource_.isPooled()) {
                     connection.close();
                 }
@@ -2608,8 +2612,10 @@ public class DbQueryManager implements Cloneable {
                 try {
                     if (e instanceof ControlFlowRuntimeException) {
                         connection.commit();
+                        restoreTransactionIsolation(connection, previous_isolation);
                     } else {
                         connection.rollback();
+                        restoreTransactionIsolation(connection, previous_isolation);
                         if (!datasource_.isPooled()) {
                             connection.close();
                         }
@@ -2626,6 +2632,7 @@ public class DbQueryManager implements Cloneable {
                 connection != null) {
                 try {
                     connection.rollback();
+                    restoreTransactionIsolation(connection, previous_isolation);
                     if (!datasource_.isPooled()) {
                         connection.close();
                     }
@@ -2636,6 +2643,19 @@ public class DbQueryManager implements Cloneable {
                 }
             }
             throw e;
+        }
+    }
+
+    private static void restoreTransactionIsolation(DbConnection connection, int isolation) {
+        if (isolation == -1) {
+            return;
+        }
+
+        try {
+            connection.setTransactionIsolation(isolation);
+        } catch (DatabaseException e) {
+            // the connection has been cleaned up and
+            // will not return to the pool as-is
         }
     }
 

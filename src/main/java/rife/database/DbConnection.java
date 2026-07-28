@@ -1078,6 +1078,31 @@ public class DbConnection implements AutoCloseable {
     }
 
     /**
+     * Retrieves the current transaction isolation level of this
+     * {@code DbConnection} object. The constants defined in the interface
+     * {@code Connection} are the possible transaction isolation levels.
+     *
+     * @return the transaction isolation level constant defined in the {@code {@link
+     * java.sql.Connection Connection}} interface
+     * @throws DatabaseException if a database access error occurs
+     * @see java.sql.Connection
+     * @since 1.10
+     */
+    public int getTransactionIsolation()
+    throws DatabaseException {
+        try {
+            detectCleanup();
+
+            return connection_.getTransactionIsolation();
+        } catch (DatabaseException e) {
+            throw e;
+        } catch (Exception e) {
+            handleException();
+            throw new ConnectionMetaDataErrorException(datasource_, e);
+        }
+    }
+
+    /**
      * Attempts to change the transaction isolation level for this
      * {@code DbConnection} object to the one given. The constants
      * defined in the interface {@code Connection} are the possible

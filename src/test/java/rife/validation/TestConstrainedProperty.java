@@ -772,6 +772,20 @@ public class TestConstrainedProperty {
     }
 
     @Test
+    void testCloneCopiesTheMutableValues() {
+        var property = new ConstrainedProperty("the_name");
+        property.inList("draft", "published");
+
+        var clone = property.clone();
+        clone.getInList()[0] = "changed";
+        assertEquals("draft", property.getInList()[0]);
+
+        // a value that can't be cloned stays shared
+        property.manyToOne(BeanImpl.class, "column");
+        assertSame(property.getManyToOne(), property.clone().getManyToOne());
+    }
+
+    @Test
     void testManyToOne() {
         var property = new ConstrainedProperty("the_name");
         assertSame(property, property.manyToOne(BeanImpl.class, "column"));

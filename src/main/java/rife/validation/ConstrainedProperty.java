@@ -10,6 +10,7 @@ import rife.cmf.MimeType;
 import rife.cmf.transform.ContentTransformer;
 import rife.database.queries.CreateTable;
 import rife.tools.ClassUtils;
+import rife.tools.ObjectUtils;
 import rife.tools.Convert;
 
 import java.text.Format;
@@ -2305,6 +2306,22 @@ public class ConstrainedProperty implements Cloneable {
             new_instance = (ConstrainedProperty) super.clone();
 
             new_instance.constraints_ = new LinkedHashMap<>(constraints_);
+            // the mutable container values are copied as well, so that a
+            // clone can't reach into the constraints of the original
+            for (var entry : new_instance.constraints_.entrySet()) {
+                var value = entry.getValue();
+                if (value != null &&
+                    (value.getClass().isArray() ||
+                     value instanceof Date ||
+                     value instanceof Collection ||
+                     value instanceof Map)) {
+                    try {
+                        entry.setValue(ObjectUtils.deepClone(value));
+                    } catch (CloneNotSupportedException e) {
+                        // a value that can't be cloned stays shared
+                    }
+                }
+            }
 
             if (listeners_ != null) {
                 new_instance.listeners_ = new ArrayList<>(listeners_);

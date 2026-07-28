@@ -2576,11 +2576,22 @@ public class DbQueryManager implements Cloneable {
             synchronized (datasource_) {
                 connection = datasource_.getConnection();
                 var isolation = full_user.getTransactionIsolation();
-                if (isolation != -1) {
+                // a nested transaction executes inside the one that is
+                // already ongoing, whose isolation can't be changed anymore
+                // and is simply inherited
+                if (isolation != -1 &&
+                    !connection.isTransactionValidForThread()) {
                     previous_isolation = connection.getTransactionIsolation();
                     connection.setTransactionIsolation(isolation);
                 }
                 started_transaction = connection.beginTransaction();
+            }
+
+            // a transaction that didn't start never reaches the completion
+            // paths that restore the isolation
+            if (!started_transaction) {
+                restoreTransactionIsolation(connection, previous_isolation);
+                previous_isolation = -1;
             }
 
             var result = (ResultType) full_user.useTransaction();

@@ -40,6 +40,10 @@ public abstract class DbTransactionUser<ResultType, DataType> implements Cloneab
     /**
      * Should be overridden if the transaction has to be executed in another
      * isolation level.
+     * <p>The isolation is only changed by the transaction user that actually
+     * starts the transaction. One that executes inside an already ongoing
+     * transaction inherits the isolation of that transaction, since it can't
+     * be changed anymore once it has started.
      *
      * @return {@code -1} when the active isolation level should be
      * preserved; or

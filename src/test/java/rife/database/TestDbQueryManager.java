@@ -162,6 +162,45 @@ public class TestDbQueryManager {
 
     @ParameterizedTest
     @ArgumentsSource(TestDatasources.class)
+    void testNestedTransactionUserInheritsIsolation(Datasource datasource) {
+        final var manager = new DbQueryManager(datasource);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+
+            if (manager.getConnection().supportsTransactions()) {
+                var original_isolation = manager.getConnection().getTransactionIsolation();
+                assertNotEquals(Connection.TRANSACTION_SERIALIZABLE, original_isolation);
+
+                final var transaction_connection = new DbConnection[1];
+                manager.inTransaction(() -> {
+                    transaction_connection[0] = manager.getConnection();
+                    manager.inTransaction(new DbTransactionUserWithoutResult<>() {
+                        public void useTransactionWithoutResult()
+                        throws InnerClassException {
+                            assertEquals(original_isolation, transaction_connection[0].getTransactionIsolation());
+                            manager.executeUpdate(insert);
+                        }
+
+                        public int getTransactionIsolation() {
+                            return Connection.TRANSACTION_SERIALIZABLE;
+                        }
+                    });
+                    assertEquals(original_isolation, transaction_connection[0].getTransactionIsolation());
+                });
+
+                assertEquals(original_isolation, transaction_connection[0].getTransactionIsolation());
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            tearDown(datasource);
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
     void testTransactionUserIsolationRestored(Datasource datasource) {
         final var manager = new DbQueryManager(datasource);
         var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";

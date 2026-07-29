@@ -2513,11 +2513,19 @@ public class DbQueryManager implements Cloneable {
      * {@link DbTransactionUser} instance are executed inside a transaction
      * and committed afterwards. This doesn't mean that a new transaction will
      * always be created. If a transaction is already active, it will simply
-     * be re-used. The commit will also only be take place if a new
+     * be re-used. The commit will also only take place if a new
      * transaction has actually been started, otherwise it's the
-     * responsibility of the enclosing code to execute the commit. If a
-     * runtime exception occurs during the execution and a new transaction has
-     * been started beforehand, it will be automatically rolled back.
+     * responsibility of the enclosing code to execute the commit.
+     * <p>What happens to a transaction that was started here is decided by the
+     * exception that ends it. Most exceptions roll it back and keep being
+     * thrown. A {@link rife.tools.exceptions.ControlFlowRuntimeException}
+     * states that what came before it is expected and positive, so the
+     * transaction is committed instead and the exception is thrown afterwards.
+     * The control flow of the web engine works this way, its exceptions extend
+     * {@link rife.tools.exceptions.LightweightError} and carry that same
+     * contract. A commit that fails is thrown in the place of the exception
+     * that asked for it, since the redirect or the response that follows would
+     * otherwise report work that never reached the database.
      * <p>If you need to explicitly roll back an active transaction, use the
      * {@link DbTransactionUser#rollback() rollback} method of the
      * {@code DbTransactionUser} class. If you use a regular rollback
@@ -2597,18 +2605,18 @@ public class DbQueryManager implements Cloneable {
             var result = (ResultType) full_user.useTransaction();
             if (started_transaction) {
                 connection.commit();
-                restoreTransactionIsolation(connection, previous_isolation);
-                if (!datasource_.isPooled()) {
-                    connection.close();
-                }
+                releaseTransactionConnection(connection, previous_isolation);
             }
             return result;
         } catch (RollbackException e) {
             if (connection != null) {
+                // the rollback is what was asked for and happens right away,
+                // while handing the connection back is for the level that
+                // took it out, since the ones around this one still have to
+                // complete their own transaction on it
                 connection.rollback();
-                restoreTransactionIsolation(connection, previous_isolation);
-                if (!datasource_.isPooled()) {
-                    connection.close();
+                if (started_transaction) {
+                    releaseTransactionConnection(connection, previous_isolation);
                 }
             }
 
@@ -2620,40 +2628,69 @@ public class DbQueryManager implements Cloneable {
         } catch (RuntimeException e) {
             if (started_transaction &&
                 connection != null) {
-                try {
-                    if (e instanceof ControlFlowRuntimeException) {
-                        connection.commit();
-                        restoreTransactionIsolation(connection, previous_isolation);
-                    } else {
-                        connection.rollback();
-                        restoreTransactionIsolation(connection, previous_isolation);
-                        if (!datasource_.isPooled()) {
-                            connection.close();
-                        }
-                    }
-                } catch (DatabaseException e2) {
-                    // nothing that can be done about this
-                    // the connection is probably closed since
-                    // a database error occurred
-                }
+                completeAfterThrowable(e, connection, previous_isolation);
             }
             throw e;
         } catch (Error e) {
+            // the control flow signals extend Error to stay lightweight,
+            // so an error is completed exactly like a runtime exception
+            // rather than being taken for a failure by its type
             if (started_transaction &&
                 connection != null) {
-                try {
-                    connection.rollback();
-                    restoreTransactionIsolation(connection, previous_isolation);
-                    if (!datasource_.isPooled()) {
-                        connection.close();
-                    }
-                } catch (DatabaseException e2) {
-                    // nothing that can be done about this
-                    // the connection is probably closed since
-                    // a database error occurred
-                }
+                completeAfterThrowable(e, connection, previous_isolation);
             }
             throw e;
+        }
+    }
+
+    // a control flow exception says that what came before it is expected and
+    // positive, so it's committed, and a commit that fails replaces it since
+    // it would otherwise report work that never reached the database
+    // everything else keeps reporting what was thrown, a rollback that fails
+    // included, since that failure would hide the one that caused it
+    private void completeAfterThrowable(Throwable error, DbConnection connection, int previousIsolation) {
+        if (error instanceof ControlFlowRuntimeException) {
+            try {
+                connection.commit();
+            } catch (DatabaseException e) {
+                // the exception that asked for the commit is kept with the
+                // failure, since it's the only remaining trace of the
+                // response that was going to be sent
+                e.addSuppressed(error);
+                throw e;
+            }
+            releaseTransactionConnection(connection, previousIsolation, error);
+        } else {
+            try {
+                connection.rollback();
+                releaseTransactionConnection(connection, previousIsolation, error);
+            } catch (DatabaseException e) {
+                // the failure that is being reported stays the one that
+                // caused this, with the one from taking the transaction back
+                // kept alongside it
+                error.addSuppressed(e);
+            }
+        }
+    }
+
+    private void releaseTransactionConnection(DbConnection connection, int previousIsolation) {
+        releaseTransactionConnection(connection, previousIsolation, null);
+    }
+
+    // the transaction is settled by the time its connection is handed back,
+    // so one that can't be tidied up doesn't take the place of what already
+    // happened to the data, it's kept with the failure that is on its way out
+    // when there is one
+    private void releaseTransactionConnection(DbConnection connection, int previousIsolation, Throwable reported) {
+        try {
+            restoreTransactionIsolation(connection, previousIsolation);
+            if (!datasource_.isPooled()) {
+                connection.close();
+            }
+        } catch (DatabaseException e) {
+            if (reported != null) {
+                reported.addSuppressed(e);
+            }
         }
     }
 

@@ -7,10 +7,12 @@ package rife.database;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import rife.database.exceptions.DatabaseException;
+import rife.database.exceptions.RollbackException;
 import rife.database.queries.*;
 import rife.template.TemplateFactory;
 import rife.tools.*;
 import rife.tools.exceptions.ControlFlowRuntimeException;
+import rife.tools.exceptions.LightweightError;
 import rife.tools.exceptions.FileUtilsErrorException;
 
 import java.io.InputStream;
@@ -383,6 +385,510 @@ public class TestDbQueryManager {
             fail(ExceptionUtils.getExceptionStackTrace(e));
         } finally {
             tearDown(datasource);
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testTransactionUserCommittingExceptionClosesUnpooledConnection(Datasource datasource) {
+        // a datasource without a pool hands out a new connection every time,
+        // so one that isn't given back stays open for good
+        var unpooled = new Datasource(datasource.getDriver(), datasource.getUrl(),
+            datasource.getUser(), datasource.getPassword(), 0);
+        final var manager = new DbQueryManager(unpooled);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+            final var select = new Select(unpooled).from("tbltest").field("count(*)");
+
+            if (manager.getConnection().supportsTransactions()) {
+                final var used = new DbConnection[1];
+                try {
+                    manager.inTransaction(() -> {
+                        used[0] = manager.getConnection();
+                        manager.executeUpdate(insert);
+                        throw new TestCommittingRuntimeException("something happened");
+                    });
+
+                    fail();
+                } catch (RuntimeException e) {
+                    assertEquals("something happened", e.getMessage());
+                }
+
+                // the transaction was committed, and the connection that it
+                // was committed on was handed back like every other one
+                assertEquals(1, manager.executeGetFirstInt(select));
+                assertTrue(used[0].isClosed());
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            try {
+                manager.executeUpdate("DROP TABLE tbltest");
+            } catch (DatabaseException e) {
+                // a datasource that was broken on purpose can't
+                // always drop it, which is nothing that should keep
+                // the pool from being cleaned up
+            }
+            unpooled.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testTransactionUserCommittingError(Datasource datasource) {
+        final var manager = new DbQueryManager(datasource);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+            final var select = new Select(datasource).from("tbltest").field("count(*)");
+
+            if (manager.getConnection().supportsTransactions()) {
+                try {
+                    manager.inTransaction(() -> {
+                        manager.executeUpdate(insert);
+                        assertEquals(1, manager.executeGetFirstInt(select));
+
+                        manager.inTransaction(() -> {
+                            manager.inTransaction(() -> {
+                                manager.executeUpdate(insert);
+                                throw new TestCommittingError("something happened");
+                            });
+
+                            manager.executeUpdate(insert);
+                            fail();
+                        });
+
+                        fail();
+                    });
+
+                    fail();
+                } catch (Error e) {
+                    assertEquals("something happened", e.getMessage());
+                }
+
+                assertEquals(2, manager.executeGetFirstInt(select));
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            tearDown(datasource);
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testTransactionUserCommittingErrorClosesUnpooledConnection(Datasource datasource) {
+        var unpooled = new Datasource(datasource.getDriver(), datasource.getUrl(),
+            datasource.getUser(), datasource.getPassword(), 0);
+        final var manager = new DbQueryManager(unpooled);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+            final var select = new Select(unpooled).from("tbltest").field("count(*)");
+
+            if (manager.getConnection().supportsTransactions()) {
+                final var used = new DbConnection[1];
+                try {
+                    manager.inTransaction(() -> {
+                        used[0] = manager.getConnection();
+                        manager.executeUpdate(insert);
+                        throw new TestCommittingError("something happened");
+                    });
+
+                    fail();
+                } catch (Error e) {
+                    assertEquals("something happened", e.getMessage());
+                }
+
+                assertEquals(1, manager.executeGetFirstInt(select));
+                assertTrue(used[0].isClosed());
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            try {
+                manager.executeUpdate("DROP TABLE tbltest");
+            } catch (DatabaseException e) {
+                // a datasource that was broken on purpose can't
+                // always drop it, which is nothing that should keep
+                // the pool from being cleaned up
+            }
+            unpooled.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testTransactionUserCommittingErrorReportsAFailedCommit(Datasource datasource) {
+        assertFailedCommitReplacesSignal(datasource, new TestCommittingError("redirecting"));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testTransactionUserCommittingExceptionReportsAFailedCommit(Datasource datasource) {
+        assertFailedCommitReplacesSignal(datasource, new TestCommittingRuntimeException("redirecting"));
+    }
+
+    /**
+     * A control flow signal says that what came before it happened, so a
+     * commit that couldn't put it in the database has to be what the caller
+     * hears about instead.
+     */
+    private void assertFailedCommitReplacesSignal(Datasource datasource, Throwable signal) {
+        // the connection is broken on purpose, so it's kept out of a pool
+        // that would hand it to something else afterwards
+        var unpooled = new Datasource(datasource.getDriver(), datasource.getUrl(),
+            datasource.getUser(), datasource.getPassword(), 0);
+        final var manager = new DbQueryManager(unpooled);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+            final var select = new Select(unpooled).from("tbltest").field("count(*)");
+
+            if (manager.getConnection().supportsTransactions()) {
+                try {
+                    manager.inTransaction(() -> {
+                        manager.executeUpdate(insert);
+                        // the connection is gone by the time the transaction
+                        // is committed, which is what a lost database looks
+                        // like from here
+                        manager.getConnection().cleanup();
+                        if (signal instanceof RuntimeException runtime) {
+                            throw runtime;
+                        }
+                        throw (Error) signal;
+                    });
+
+                    fail("expected the commit to be reported");
+                } catch (DatabaseException e) {
+                    assertNotSame(signal, e);
+                    // the signal that was discarded is the only trace left of
+                    // the response that was going to be sent
+                    assertSame(signal, e.getSuppressed()[0]);
+                }
+
+                assertEquals(0, manager.executeGetFirstInt(select));
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            try {
+                manager.executeUpdate("DROP TABLE tbltest");
+            } catch (DatabaseException e) {
+                // a datasource that was broken on purpose can't
+                // always drop it, which is nothing that should keep
+                // the pool from being cleaned up
+            }
+            unpooled.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testASettledTransactionIsntUndoneByAConnectionThatWontClose(Datasource datasource) {
+        var unclosable = new UnclosableDatasource(datasource);
+        final var manager = new DbQueryManager(unclosable);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+            final var select = new Select(unclosable).from("tbltest").field("count(*)");
+
+            if (manager.getConnection().supportsTransactions()) {
+                unclosable.failClose = true;
+                try {
+                    manager.inTransaction(() -> manager.executeUpdate(insert));
+                } finally {
+                    unclosable.failClose = false;
+                }
+
+                // handing the connection back is the last thing that happens
+                // and it happens to a transaction that is already settled, so
+                // it can't turn a commit into something the caller retries
+                assertEquals(1, manager.executeGetFirstInt(select));
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            try {
+                manager.executeUpdate("DROP TABLE tbltest");
+            } catch (DatabaseException e) {
+                // a datasource that was broken on purpose can't
+                // always drop it, which is nothing that should keep
+                // the pool from being cleaned up
+            }
+            unclosable.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testAFailedRollbackIsKeptWithTheFailureThatCausedIt(Datasource datasource) {
+        var unpooled = new Datasource(datasource.getDriver(), datasource.getUrl(),
+            datasource.getUser(), datasource.getPassword(), 0);
+        final var manager = new DbQueryManager(unpooled);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+
+            if (manager.getConnection().supportsTransactions()) {
+                try {
+                    manager.inTransaction(() -> {
+                        manager.executeUpdate(insert);
+                        // taking the transaction back is going to fail too
+                        manager.getConnection().cleanup();
+                        throw new IllegalStateException("the work failed");
+                    });
+
+                    fail("expected the failure to be reported");
+                } catch (IllegalStateException e) {
+                    // what caused this is what keeps being reported, with the
+                    // rollback that failed kept alongside it instead of lost
+                    assertEquals("the work failed", e.getMessage());
+                    assertEquals(1, e.getSuppressed().length);
+                    assertInstanceOf(DatabaseException.class, e.getSuppressed()[0]);
+                }
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            try {
+                manager.executeUpdate("DROP TABLE tbltest");
+            } catch (DatabaseException e) {
+                // a datasource that was broken on purpose can't
+                // always drop it, which is nothing that should keep
+                // the pool from being cleaned up
+            }
+            unpooled.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testAConnectionThatWontCloseIsKeptWithTheFailureThatCausedIt(Datasource datasource) {
+        var unclosable = new UnclosableDatasource(datasource);
+        final var manager = new DbQueryManager(unclosable);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+
+            if (manager.getConnection().supportsTransactions()) {
+                unclosable.failClose = true;
+                try {
+                    manager.inTransaction(() -> {
+                        manager.executeUpdate(insert);
+                        throw new IllegalStateException("the work failed");
+                    });
+
+                    fail("expected the failure to be reported");
+                } catch (IllegalStateException e) {
+                    // the connection that couldn't be handed back is kept with
+                    // the failure instead of disappearing
+                    assertEquals("the work failed", e.getMessage());
+                    assertEquals(1, e.getSuppressed().length);
+                    assertInstanceOf(DatabaseException.class, e.getSuppressed()[0]);
+                } finally {
+                    unclosable.failClose = false;
+                }
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            try {
+                manager.executeUpdate("DROP TABLE tbltest");
+            } catch (DatabaseException e) {
+                // a datasource that was broken on purpose can't
+                // always drop it, which is nothing that should keep
+                // the pool from being cleaned up
+            }
+            unclosable.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testAPooledCommitFailureTakesTheConnectionOutOfThePool(Datasource datasource) {
+        // a pool of its own, so a connection that is broken on purpose can't
+        // be handed to anything else that is running
+        var pooled = new BreakableDatasource(datasource, 1);
+        final var manager = new DbQueryManager(pooled);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+            final var select = new Select(pooled).from("tbltest").field("count(*)");
+
+            if (manager.getConnection().supportsTransactions()) {
+                final var used = new DbConnection[1];
+                final var signal = new TestCommittingError("redirecting");
+                try {
+                    manager.inTransaction(() -> {
+                        used[0] = manager.getConnection();
+                        manager.executeUpdate(insert);
+                        // the database goes away underneath the connection,
+                        // which leaves the connection itself believing that
+                        // it's still usable
+                        try {
+                            // some drivers refuse to close a connection that
+                            // still holds a transaction, which is why this
+                            // ends it before taking the connection away
+                            pooled.lastRaw.rollback();
+                            pooled.lastRaw.close();
+                        } catch (SQLException e) {
+                            throw new DatabaseException(e);
+                        }
+                        throw signal;
+                    });
+
+                    fail("expected the commit to be reported");
+                } catch (DatabaseException e) {
+                    assertNotSame(signal, e);
+                    assertEquals(1, e.getSuppressed().length);
+                    assertSame(signal, e.getSuppressed()[0]);
+                }
+
+                // the connection that failed is taken out of the pool instead
+                // of being handed to the next request with whatever state the
+                // failure left on it
+                assertNotSame(used[0], manager.getConnection());
+                assertEquals(0, manager.executeGetFirstInt(select));
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            try {
+                manager.executeUpdate("DROP TABLE tbltest");
+            } catch (DatabaseException e) {
+                // a datasource that was broken on purpose can't
+                // always drop it, which is nothing that should keep
+                // the pool from being cleaned up
+            }
+            pooled.cleanup();
+        }
+    }
+
+    /**
+     * Hands out connections whose underlying JDBC connection stays reachable,
+     * so that a test can break one the way a database that goes away does,
+     * without the connection knowing that it has been cleaned up.
+     */
+    static class BreakableDatasource extends Datasource {
+        Connection lastRaw = null;
+
+        BreakableDatasource(Datasource other, int poolSize) {
+            super(other.getDriver(), other.getUrl(), other.getUser(), other.getPassword(), poolSize);
+        }
+
+        DbConnection createConnection()
+        throws DatabaseException {
+            try {
+                try {
+                    Class.forName(getDriver());
+                } catch (ClassNotFoundException e) {
+                    // a driver that registers itself doesn't have to be found
+                }
+                lastRaw = java.sql.DriverManager.getConnection(getUrl(), getUser(), getPassword());
+                return new DbConnection(lastRaw, this);
+            } catch (SQLException e) {
+                throw new DatabaseException(e);
+            }
+        }
+    }
+
+    /**
+     * Hands out connections that refuse to be closed once a transaction has
+     * ended, which is what a database that went away between the commit and
+     * the cleanup looks like.
+     */
+    static class UnclosableDatasource extends Datasource {
+        boolean failClose = false;
+
+        UnclosableDatasource(Datasource other) {
+            super(other.getDriver(), other.getUrl(), other.getUser(), other.getPassword(), 0);
+        }
+
+        DbConnection createConnection()
+        throws DatabaseException {
+            try {
+                try {
+                    Class.forName(getDriver());
+                } catch (ClassNotFoundException e) {
+                    // a driver that registers itself doesn't have to be found
+                }
+                var raw = java.sql.DriverManager.getConnection(getUrl(), getUser(), getPassword());
+                return new DbConnection(raw, this) {
+                    public void close()
+                    throws DatabaseException {
+                        // the statements of an ongoing transaction hand their
+                        // connection back too, which isn't the moment that
+                        // this is about
+                        var ongoing = isTransactionValidForThread();
+                        super.close();
+                        if (failClose && !ongoing) {
+                            throw new DatabaseException("the connection couldn't be closed");
+                        }
+                    }
+                };
+            } catch (SQLException e) {
+                throw new DatabaseException(e);
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testANestedRollbackLeavesTheConnectionUsable(Datasource datasource) {
+        // without a pool every connection is a new one, so a level that hands
+        // back a connection it didn't take out is visible right away
+        var unpooled = new Datasource(datasource.getDriver(), datasource.getUrl(),
+            datasource.getUser(), datasource.getPassword(), 0);
+        final var manager = new DbQueryManager(unpooled);
+        var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";
+        manager.executeUpdate(create);
+        try {
+            final var insert = "INSERT INTO tbltest VALUES (232, 'somestring')";
+            final var select = new Select(unpooled).from("tbltest").field("count(*)");
+
+            if (manager.getConnection().supportsTransactions()) {
+                manager.inTransaction(() -> {
+                    manager.executeUpdate(insert);
+
+                    manager.inTransaction(() -> {
+                        manager.executeUpdate(insert);
+                        throw new RollbackException();
+                    });
+
+                    fail("the rollback leaves every level of the transaction");
+                });
+
+                // the whole transaction was taken back and the connection is
+                // still something the next statement can use
+                assertEquals(0, manager.executeGetFirstInt(select));
+            }
+        } catch (DatabaseException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        } finally {
+            try {
+                manager.executeUpdate("DROP TABLE tbltest");
+            } catch (DatabaseException e) {
+                // a datasource that was broken on purpose can't
+                // always drop it, which is nothing that should keep
+                // the pool from being cleaned up
+            }
+            unpooled.cleanup();
+        }
+    }
+
+    public static class TestCommittingError extends LightweightError implements ControlFlowRuntimeException {
+        public TestCommittingError(String message) {
+            super(message);
         }
     }
 

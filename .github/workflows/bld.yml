@@ -103,6 +103,7 @@ jobs:
           distribution: "corretto"
           java-version: ${{ matrix.java-version }}
           check-latest: true
+          cache-jdk: true
 
       - name: Run tests
         run: >-
@@ -132,6 +133,7 @@ jobs:
           distribution: "corretto"
           java-version: ${{ matrix.java-version }}
           check-latest: true
+          cache-jdk: true
 
       - name: Run tests
         run: >-
@@ -161,6 +163,7 @@ jobs:
           distribution: "corretto"
           java-version: ${{ matrix.java-version }}
           check-latest: true
+          cache-jdk: true
 
       - name: Run tests
         run: >-

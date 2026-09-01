@@ -25,6 +25,11 @@ public class TestValidityChecks {
         assertTrue(ValidityChecks.checkNotEmpty((CharSequence) null));
         assertTrue(ValidityChecks.checkNotEmpty("ok"));
         assertFalse(ValidityChecks.checkNotEmpty(""));
+        // a StringBuilder or StringBuffer holds text too
+        assertTrue(ValidityChecks.checkNotEmpty((Object) new StringBuilder("ok")));
+        assertFalse(ValidityChecks.checkNotEmpty((Object) new StringBuilder()));
+        assertTrue(ValidityChecks.checkNotEmpty((Object) new StringBuffer("ok")));
+        assertFalse(ValidityChecks.checkNotEmpty((Object) new StringBuffer()));
     }
 
     @Test
@@ -405,6 +410,14 @@ public class TestValidityChecks {
         assertFalse(ValidityChecks.checkInList(new String[]{"test", "three"}, new String[]{"one", "two", "test", "aaa"}));
         assertTrue(ValidityChecks.checkInList(new int[]{98, 17, 3}, new String[]{"3", "98", "4", "17"}));
         assertFalse(ValidityChecks.checkInList(new int[]{1, 98, 17, 3}, new String[]{"3", "98", "4", "17"}));
+        // a null in the list stands for no choice at all
+        assertTrue(ValidityChecks.checkInList("test", new String[]{"one", null, "test"}));
+        assertFalse(ValidityChecks.checkInList("three", new String[]{"one", null, "test"}));
+        assertTrue(ValidityChecks.checkInList("", new String[]{"one", null, "test"}));
+        // and a null value has nothing to look up
+        assertTrue(ValidityChecks.checkInList(new String[]{null}, new String[]{"one", "test"}));
+        assertTrue(ValidityChecks.checkInList(new String[]{null, "test"}, new String[]{"one", "test"}));
+        assertFalse(ValidityChecks.checkInList(new String[]{null, "three"}, new String[]{"one", "test"}));
     }
 
     @Test

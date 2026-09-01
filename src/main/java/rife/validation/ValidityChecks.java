@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.*;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,7 +45,9 @@ public abstract class ValidityChecks {
         }
 
         if (value instanceof CharSequence) {
-            return checkNotEmpty((String) value);
+            // a StringBuilder or StringBuffer holds text too, it just has
+            // to be converted first
+            return checkNotEmpty(value.toString());
         } else if (value instanceof Character) {
             return checkNotEmpty((Character) value);
         } else if (value instanceof Byte) {
@@ -385,11 +388,13 @@ public abstract class ValidityChecks {
             return true;
         }
 
-        String[] sorted = list.clone();
-        Arrays.sort(sorted);
+        // a null in the list stands for no choice at all and can't be
+        // sorted or compared against
+        String[] sorted = Arrays.stream(list).filter(Objects::nonNull).sorted().toArray(String[]::new);
 
         for (String string : strings) {
-            if (string.isEmpty()) {
+            // a null value has nothing to look up
+            if (null == string || string.isEmpty()) {
                 continue;
             }
 

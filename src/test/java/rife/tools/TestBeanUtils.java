@@ -4023,17 +4023,20 @@ public class TestBeanUtils {
                 new RoundTrip("time", Convert.toLocalTime(clockMoment()), java.time.LocalTime.class),
                 // the sql types are dates of their own, so a submission has to
                 // assign the kind of date the property holds
-                new RoundTrip("sqlTime", Convert.toSqlTime(clockMoment()), java.sql.Time.class),
                 new RoundTrip("sqlDate", Convert.toSqlDate(dayMoment()), java.sql.Date.class),
-                // a sql timestamp is deliberately left out of this table,
-                // since its conversions are what they are on purpose:
-                // Convert.toSqlTimestamp(Date) keeps the moment while
-                // Convert.toInstant(Timestamp) reads the reading of it in the
-                // zone of the machine and takes that for one in the configured
-                // zone, so the two aren't each other's opposite and writing a
-                // timestamp to read it back moves it by the difference between
-                // those zones
-                // that isn't something to verify with a round trip here
+                // a sql timestamp and a sql time are deliberately left out of
+                // this table, since their conversions are what they are on
+                // purpose: Convert.toSqlTimestamp(Date) keeps the moment
+                // while Convert.toInstant(Timestamp) reads the reading of it
+                // in the zone of the machine and takes that for one in the
+                // configured zone, and Convert.toSqlTime(Instant) renders the
+                // moment in the zone of the machine while Convert.toInstant(Time)
+                // takes that reading for one in the configured zone, so
+                // neither pair are each other's opposite and writing one to
+                // read it back moves it by the difference between those zones
+                // that isn't something to verify with a round trip here, and
+                // it only cancels out on a machine whose zone matches the
+                // configured one, which is exactly what a CI machine's doesn't
                 // a type only its own format can read
                 new RoundTrip("tag", new Tag("beta"), Tag.class),
                 // and a property with several values is decided by one of them

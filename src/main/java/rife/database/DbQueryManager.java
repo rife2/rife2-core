@@ -2578,6 +2578,10 @@ public class DbQueryManager implements Cloneable {
         }
 
         var started_transaction = false;
+        // a datasource without transactions never starts one and never binds
+        // the connection to the thread, so each level works with its own
+        // connection and is the one that releases it
+        var owns_connection = false;
         var previous_isolation = -1;
         DbConnection connection = null;
         try {
@@ -2593,6 +2597,7 @@ public class DbQueryManager implements Cloneable {
                     connection.setTransactionIsolation(isolation);
                 }
                 started_transaction = connection.beginTransaction();
+                owns_connection = started_transaction || !connection.supportsTransactions();
             }
 
             // a transaction that didn't start never reaches the completion
@@ -2606,6 +2611,8 @@ public class DbQueryManager implements Cloneable {
             if (started_transaction) {
                 connection.commit();
                 releaseTransactionConnection(connection, previous_isolation);
+            } else if (owns_connection) {
+                releaseTransactionConnection(connection, previous_isolation);
             }
             return result;
         } catch (RollbackException e) {
@@ -2614,8 +2621,13 @@ public class DbQueryManager implements Cloneable {
                 // while handing the connection back is for the level that
                 // took it out, since the ones around this one still have to
                 // complete their own transaction on it
-                connection.rollback();
-                if (started_transaction) {
+                // the rollback marks the enclosing transaction to be taken
+                // back, while a datasource without transactions has nothing
+                // to roll back at all
+                if (connection.supportsTransactions()) {
+                    connection.rollback();
+                }
+                if (owns_connection) {
                     releaseTransactionConnection(connection, previous_isolation);
                 }
             }
@@ -2629,6 +2641,10 @@ public class DbQueryManager implements Cloneable {
             if (started_transaction &&
                 connection != null) {
                 completeAfterThrowable(e, connection, previous_isolation);
+            } else if (owns_connection) {
+                // no transaction was started, so only the connection still
+                // has to be released
+                releaseTransactionConnection(connection, previous_isolation, e);
             }
             throw e;
         } catch (Error e) {
@@ -2638,6 +2654,8 @@ public class DbQueryManager implements Cloneable {
             if (started_transaction &&
                 connection != null) {
                 completeAfterThrowable(e, connection, previous_isolation);
+            } else if (owns_connection) {
+                releaseTransactionConnection(connection, previous_isolation, e);
             }
             throw e;
         }

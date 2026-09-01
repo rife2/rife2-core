@@ -201,6 +201,88 @@ public class TestDbQueryManager {
         }
     }
 
+    @org.junit.jupiter.api.Test
+    void testTransactionWithoutSupportStillHandsTheConnectionBack() {
+        // a datasource whose driver has no transactions never starts one, so
+        // an unpooled connection is only ever released by the level that took
+        // it out
+        var closed = new int[]{0};
+        var datasource = transactionless(closed);
+
+        var probe = datasource.getConnection();
+        assertFalse(probe.supportsTransactions(), "the proxy has to say it has no transactions");
+        assertEquals(0, closed[0], "asking a connection about transactions closed it");
+
+        var ran = new boolean[]{false};
+        new DbQueryManager(datasource).inTransaction(() -> ran[0] = true);
+        assertTrue(ran[0]);
+        assertEquals(1, closed[0], "the connection wasn't released by the level that took it out");
+
+        // and an exception releases the connection too
+        assertThrows(IllegalStateException.class, () ->
+            new DbQueryManager(datasource).inTransaction(() -> {
+                throw new IllegalStateException("no");
+            }));
+        assertEquals(2, closed[0]);
+
+        // as does a rollback with nothing to roll back
+        assertThrows(RollbackException.class, () ->
+            new DbQueryManager(datasource).inTransaction(() -> {
+                throw new RollbackException();
+            }));
+        assertEquals(3, closed[0]);
+    }
+
+    /**
+     * A datasource of connections that say they have no transactions, which
+     * none of the databases that these tests run against do, and that count
+     * how often one of them was released.
+     */
+    private Datasource transactionless(int[] closed) {
+        var real = TestDatasources.H2;
+        var source = new javax.sql.DataSource() {
+            public Connection getConnection()
+            throws SQLException {
+                var connection = DriverManager.getConnection(real.getUrl(), real.getUser(), real.getPassword());
+                return (Connection) java.lang.reflect.Proxy.newProxyInstance(
+                    getClass().getClassLoader(), new Class<?>[]{Connection.class},
+                    (proxy, method, args) -> {
+                        switch (method.getName()) {
+                            case "getMetaData" -> {
+                                var data = connection.getMetaData();
+                                return java.lang.reflect.Proxy.newProxyInstance(
+                                    getClass().getClassLoader(), new Class<?>[]{DatabaseMetaData.class},
+                                    (p, m, a) -> "supportsTransactions".equals(m.getName()) ? Boolean.FALSE : m.invoke(data, a));
+                            }
+                            case "close" -> {
+                                closed[0]++;
+                                connection.close();
+                                return null;
+                            }
+                            default -> {
+                                return method.invoke(connection, args);
+                            }
+                        }
+                    });
+            }
+
+            public Connection getConnection(String user, String password)
+            throws SQLException {
+                return getConnection();
+            }
+
+            public java.util.logging.Logger getParentLogger() { return null; }
+            public java.io.PrintWriter getLogWriter() { return null; }
+            public void setLogWriter(java.io.PrintWriter out) { }
+            public void setLoginTimeout(int seconds) { }
+            public int getLoginTimeout() { return 0; }
+            public <T> T unwrap(Class<T> iface) { return null; }
+            public boolean isWrapperFor(Class<?> iface) { return false; }
+        };
+
+        return new Datasource(source, 0);
+    }
+
     @ParameterizedTest
     @ArgumentsSource(TestDatasources.class)
     void testTransactionUserIsolationRestored(Datasource datasource) {

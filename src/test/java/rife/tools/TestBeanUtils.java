@@ -12,7 +12,9 @@ import rife.config.RifeConfig;
 import rife.tools.exceptions.BeanUtilsException;
 import rife.tools.exceptions.SerializationUtilsErrorException;
 import rife.engine.UploadedFile;
+import rife.tools.exceptions.ConversionException;
 import rife.validation.ConstrainedProperty;
+import rife.validation.MetaData;
 import rife.validation.Validation;
 
 import java.beans.PropertyDescriptor;
@@ -3603,6 +3605,516 @@ public class TestBeanUtils {
         assertEquals("20230123134523142-0500", BeanUtils.formatPropertyValue(Convert.toLocalDateTime(cal), null));
         assertEquals("20230123000000000-0500", BeanUtils.formatPropertyValue(Convert.toLocalDate(cal), null));
         assertEquals("134523142-0500", BeanUtils.formatPropertyValue(Convert.toLocalTime(cal), null));
+    }
+
+    @Test
+    void testParsesWithFormat() {
+        // these are read back through the format of their constraints
+        assertTrue(BeanUtils.parsesWithFormat(int.class));
+        assertTrue(BeanUtils.parsesWithFormat(Integer.class));
+        assertTrue(BeanUtils.parsesWithFormat(long.class));
+        assertTrue(BeanUtils.parsesWithFormat(short.class));
+        assertTrue(BeanUtils.parsesWithFormat(byte.class));
+        assertTrue(BeanUtils.parsesWithFormat(double.class));
+        assertTrue(BeanUtils.parsesWithFormat(float.class));
+        assertTrue(BeanUtils.parsesWithFormat(java.math.BigDecimal.class));
+        assertTrue(BeanUtils.parsesWithFormat(java.util.Date.class));
+        assertTrue(BeanUtils.parsesWithFormat(java.time.LocalDate.class));
+        assertTrue(BeanUtils.parsesWithFormat(java.time.LocalTime.class));
+        assertTrue(BeanUtils.parsesWithFormat(Object.class));
+
+        // and these are assigned straight from the text that arrives
+        assertFalse(BeanUtils.parsesWithFormat(String.class));
+        assertFalse(BeanUtils.parsesWithFormat(char.class));
+        assertFalse(BeanUtils.parsesWithFormat(Character.class));
+        assertFalse(BeanUtils.parsesWithFormat(boolean.class));
+        assertFalse(BeanUtils.parsesWithFormat(Boolean.class));
+        assertFalse(BeanUtils.parsesWithFormat(StringBuffer.class));
+        assertFalse(BeanUtils.parsesWithFormat(StringBuilder.class));
+        assertFalse(BeanUtils.parsesWithFormat(java.time.DayOfWeek.class));
+
+        // the type of an array is decided by the type it holds
+        assertTrue(BeanUtils.parsesWithFormat(int[].class));
+        assertFalse(BeanUtils.parsesWithFormat(boolean[].class));
+        assertFalse(BeanUtils.parsesWithFormat(String[].class));
+
+        assertFalse(BeanUtils.parsesWithFormat(null));
+    }
+
+    @Test
+    void testFormatPropertyValueForInput() {
+        var constraint = new ConstrainedProperty("test").format(new java.text.DecimalFormat("$#,##0"));
+
+        // a number is read back through its format, so that's what it shows
+        assertEquals("$1,000", BeanUtils.formatPropertyValueForInput(1000, int.class, constraint));
+
+        // a boolean is read back from its own literal, so a format that
+        // writes something else isn't what the field shows
+        var words = new ConstrainedProperty("test").format(new java.text.Format() {
+            public StringBuffer format(Object object, StringBuffer buffer, java.text.FieldPosition position) {
+                return buffer.append(Boolean.TRUE.equals(object) ? "Yes" : "No");
+            }
+
+            public Object parseObject(String source, java.text.ParsePosition position) {
+                position.setIndex(source.length());
+                return source;
+            }
+        });
+        assertEquals("true", BeanUtils.formatPropertyValueForInput(Boolean.TRUE, Boolean.class, words));
+        assertEquals("Yes", BeanUtils.formatPropertyValue(Boolean.TRUE, words));
+    }
+
+    @Test
+    void testTextThatHoldsMoreThanOneCharacterIsntShortened()
+    throws Exception {
+        var properties = BeanUtils.getUppercasedBeanProperties(RoundTripBean.class);
+
+        // a single character property can't keep more than one, so longer
+        // text is reported instead of being shortened
+        var bean = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("letter", new String[]{"abc"}, null, properties, bean, null);
+        assertEquals('\u0000', bean.getLetter());
+        assertEquals(1, bean.countValidationErrors());
+        var error = bean.getValidationErrors().iterator().next();
+        assertEquals("letter", error.getSubject());
+        assertEquals("abc", error.getErroneousValue());
+
+        // while a single character still arrives as before
+        var single = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("letter", new String[]{"x"}, null, properties, single, null);
+        assertEquals('x', single.getLetter());
+        assertEquals(0, single.countValidationErrors());
+
+        // and an array element is held to the same rule
+        var several = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("letters", new String[]{"ab", "c"}, null, properties, several, null);
+        assertEquals('\u0000', several.getLetters()[0]);
+        assertEquals('c', several.getLetters()[1]);
+        assertEquals(1, several.countValidationErrors());
+        assertEquals("ab", several.getValidationErrors().iterator().next().getErroneousValue());
+    }
+
+    @Test
+    void testFormattedTextThatOnlyStartsWithAValueIsntRead()
+    throws Exception {
+        var properties = BeanUtils.getUppercasedBeanProperties(RoundTripBean.class);
+
+        // a format is happy with whatever it could make of the start of the
+        // text, which would store a value the rest of the submission was
+        // thrown away for
+        var bean = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("count", new String[]{"$1,000oops"}, null, properties, bean, null);
+        assertEquals(0, bean.getCount());
+        assertEquals(1, bean.countValidationErrors());
+        assertEquals("$1,000oops", bean.getValidationErrors().iterator().next().getErroneousValue());
+
+        // while text the format reads completely is accepted
+        var whole = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("count", new String[]{"$1,000"}, null, properties, whole, null);
+        assertEquals(1000, whole.getCount());
+        assertEquals(0, whole.countValidationErrors());
+
+        // and an array element is held to the same rule, where nothing is
+        // stored for the property one of them was refused for
+        var several = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("picks", new String[]{"$2,000oops"}, null, properties, several, null);
+        assertNull(several.getPicks());
+        assertEquals(1, several.countValidationErrors());
+    }
+
+    @Test
+    void testAFormattedNumberThatDoesntFitIsntWrappedAround()
+    throws Exception {
+        var properties = BeanUtils.getUppercasedBeanProperties(RoundTripBean.class);
+
+        // a format reads a number of whatever width it saw fit, and assigning
+        // one that doesn't fit would wrap it around into a value nobody
+        // submitted
+        var wrapped = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("count", new String[]{"$2,147,483,648"}, null, properties, wrapped, null);
+        assertEquals(0, wrapped.getCount());
+        assertEquals(1, wrapped.countValidationErrors());
+        assertEquals("$2,147,483,648", wrapped.getValidationErrors().iterator().next().getErroneousValue());
+
+        // each width is held to its own bounds
+        var narrowed = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("tiny", new String[]{"$128"}, null, properties, narrowed, null);
+        assertEquals(0, narrowed.getTiny());
+        assertEquals(1, narrowed.countValidationErrors());
+
+        var short_ = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("small", new String[]{"$32,768"}, null, properties, short_, null);
+        assertEquals(0, short_.getSmall());
+        assertEquals(1, short_.countValidationErrors());
+
+        // a fraction has nowhere to go in a whole number either
+        var fraction = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("count", new String[]{"$1.50"}, null, properties, fraction, null);
+        assertEquals(0, fraction.getCount());
+        assertEquals(1, fraction.countValidationErrors());
+
+        // while a number that fits still arrives
+        var fits = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("tiny", new String[]{"$127"}, null, properties, fits, null);
+        assertEquals((byte) 127, fits.getTiny());
+        assertEquals(0, fits.countValidationErrors());
+
+        // and an array element is held to the same rule
+        var several = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("picks", new String[]{"$2,147,483,648"}, null, properties, several, null);
+        assertNull(several.getPicks());
+        assertEquals(1, several.countValidationErrors());
+    }
+
+    @Test
+    void testWhatIsntANumberAtAllIsRefusedByAWholeNumber()
+    throws Exception {
+        var properties = BeanUtils.getUppercasedBeanProperties(RoundTripBean.class);
+
+        // a decimal format reads these as an infinite or NaN double, which no
+        // whole number stands for and no decimal can be made of, so they're
+        // reported like anything else that can't be read
+        for (var text : new String[]{"NaN", "\u221e", "-\u221e"}) {
+            var bean = new RoundTripBean();
+            BeanUtils.setUppercasedBeanProperty("plainCount", new String[]{text}, null, properties, bean, null);
+            assertEquals(0, bean.getPlainCount(), text);
+            assertEquals(1, bean.countValidationErrors(), text);
+            assertEquals(text, bean.getValidationErrors().iterator().next().getErroneousValue());
+        }
+
+        // a BigDecimal has nothing to make of them either
+        var decimal = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("amount", new String[]{"$NaN"}, null, properties, decimal, null);
+        assertNull(decimal.getAmount());
+        assertEquals(1, decimal.countValidationErrors());
+
+        // while a real number still arrives
+        var whole = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("plainCount", new String[]{"1,000"}, null, properties, whole, null);
+        assertEquals(1000, whole.getPlainCount());
+        assertEquals(0, whole.countValidationErrors());
+    }
+
+    @Test
+    void testAFractionThatADoubleWouldRoundAwayIsStillRefused()
+    throws Exception {
+        var properties = BeanUtils.getUppercasedBeanProperties(RoundTripBean.class);
+
+        // a double has no room for the fraction of a number this large, so
+        // reading one would store a whole number nobody submitted instead of
+        // reporting what was
+        var bean = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("big", new String[]{"$9,007,199,254,740,992.5"}, null, properties, bean, null);
+        assertEquals(0L, bean.getBig());
+        assertEquals(1, bean.countValidationErrors());
+
+        // while the whole number next to it still arrives
+        var whole = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("big", new String[]{"$9,007,199,254,740,993"}, null, properties, whole, null);
+        assertEquals(9007199254740993L, whole.getBig());
+        assertEquals(0, whole.countValidationErrors());
+    }
+
+    @Test
+    void testAFormattedDecimalKeepsWhatWasSubmitted()
+    throws Exception {
+        var properties = BeanUtils.getUppercasedBeanProperties(RoundTripBean.class);
+
+        // a decimal format reads a double unless it's told otherwise, and a
+        // double has no room for the digits of every submitted decimal
+        var bean = new RoundTripBean();
+        BeanUtils.setUppercasedBeanProperty("amount", new String[]{"$1,000.50"}, null, properties, bean, null);
+        assertEquals(new BigDecimal("1000.50"), bean.getAmount());
+        assertEquals(2, bean.getAmount().scale());
+        assertEquals(0, bean.countValidationErrors());
+    }
+
+    @Test
+    void testParseInputValueHandsOverWhatTheReadingProduced()
+    throws Exception {
+        var money = new ConstrainedProperty("test").format(new java.text.DecimalFormat("$#,##0"));
+
+        // the value is whatever the format read, which isn't the property's
+        // type but is what writing it out again works from
+        var read = BeanUtils.parseInputValue("$1,000", int.class, money);
+        assertEquals(1000L, Convert.toLong(read));
+        assertEquals("$1,000", BeanUtils.formatPropertyValue(read, money));
+
+        // a decimal's digits are read the way assigning one reads them, so
+        // the field shows what the property holds rather than the nearest
+        // double
+        var precise = new ConstrainedProperty("test").format(new java.text.DecimalFormat("#0.###################"));
+        var digits = "0.1234567890123456789";
+        assertEquals(new BigDecimal(digits), BeanUtils.parseInputValue(digits, BigDecimal.class, precise));
+
+        // a type only its own format reads comes back as itself
+        var tagged = new ConstrainedProperty("test").format(RoundTripBean.TAGS);
+        assertEquals("beta", ((RoundTripBean.Tag) BeanUtils.parseInputValue("#beta", RoundTripBean.Tag.class, tagged)).getName());
+
+        // while the types assigned straight from the submitted text never
+        // reach the format, whatever it would have made of the same text
+        var decisions = new ConstrainedProperty("test").format(new java.text.Format() {
+            public StringBuffer format(Object object, StringBuffer buffer, java.text.FieldPosition position) {
+                return buffer.append(Boolean.TRUE.equals(object) ? "Approved" : "Refused");
+            }
+
+            public Object parseObject(String source, java.text.ParsePosition position) {
+                position.setIndex(source.length());
+                return "Approved".equals(source);
+            }
+        });
+        assertEquals(Boolean.TRUE, BeanUtils.parseInputValue("true", Boolean.class, decisions));
+
+        // and text nothing can read is reported
+        assertThrows(ConversionException.class, () -> BeanUtils.parseInputValue("nope", int.class, null));
+    }
+
+    @Test
+    void testEveryTypeIsReadBackTheWayAFieldWritesIt()
+    throws Exception {
+        // what a field shows is what a submission reads, for every type a
+        // property is allowed to be, so a value survives being shown and
+        // submitted again unchanged
+        var bean = new RoundTripBean();
+        var properties = BeanUtils.getUppercasedBeanProperties(RoundTripBean.class);
+
+        for (var entry : RoundTripBean.entries()) {
+            var constraint = bean.getConstrainedProperty(entry.property());
+            var text = BeanUtils.formatPropertyValueForInput(entry.value(), entry.type(), constraint);
+
+            // a property's format is only consulted for the types read back
+            // through it, which is why each of these formats deliberately
+            // writes something other than the plain value
+            assertEquals(BeanUtils.parsesWithFormat(entry.type()),
+                !text.equals(Convert.toString(entry.value())),
+                entry.property() + " wrote " + text);
+
+            var target = new RoundTripBean();
+            BeanUtils.setUppercasedBeanProperty(entry.property(), new String[]{text}, null, properties, target, null);
+            assertRead(entry.read(), BeanUtils.getPropertyValue(target, entry.property()), entry.property());
+        }
+    }
+
+    private void assertRead(Object expected, Object actual, String property) {
+        if (expected instanceof StringBuffer || expected instanceof StringBuilder) {
+            assertEquals(expected.toString(), String.valueOf(actual), property);
+        } else if (expected instanceof BigDecimal decimal) {
+            // a decimal keeps its digits, so it comes back as the value that
+            // was written rather than one that merely counts the same
+            assertEquals(decimal, actual, property);
+        } else if (expected instanceof int[] numbers) {
+            assertArrayEquals(numbers, (int[]) actual, property);
+        } else if (expected instanceof RoundTripBean.Tag tag) {
+            assertEquals(tag.getName(), ((RoundTripBean.Tag) actual).getName(), property);
+        } else {
+            assertEquals(expected, actual, property + " read " + actual);
+        }
+    }
+
+    /**
+     * One value of one property, as it goes into a field and as it comes back
+     * out of a submission, which is the same thing except for a property with
+     * several values, where a field carries one of them at a time.
+     */
+    public record RoundTrip(String property, Object value, Class type, Object read) {
+        public RoundTrip(String property, Object value, Class type) {
+            this(property, value, type, value);
+        }
+    }
+
+    public static class RoundTripBean extends MetaData {
+        static final java.text.Format STAR = new java.text.Format() {
+            public StringBuffer format(Object object, StringBuffer buffer, java.text.FieldPosition position) {
+                return buffer.append(object).append("*");
+            }
+
+            public Object parseObject(String source, java.text.ParsePosition position) {
+                position.setIndex(source.length());
+                return source;
+            }
+        };
+
+        public static class Tag {
+            private final String name_;
+
+            public Tag(String name) { name_ = name; }
+            public String getName() { return name_; }
+        }
+
+        static final java.text.Format TAGS = new java.text.Format() {
+            public StringBuffer format(Object object, StringBuffer buffer, java.text.FieldPosition position) {
+                return buffer.append("#").append(((Tag) object).getName());
+            }
+
+            public Object parseObject(String source, java.text.ParsePosition position) {
+                position.setIndex(source.length());
+                return new Tag(source.startsWith("#") ? source.substring(1) : source);
+            }
+        };
+
+        static java.text.Format money() { return new java.text.DecimalFormat("$#,##0"); }
+        static java.text.Format cents() { return new java.text.DecimalFormat("$#,##0.00"); }
+        // the formats come from the configuration, since that's the zone the
+        // conversions are made in, and a format from another zone reads back
+        // a moment that sits a day or an hour away
+        // the patterns are deliberately not the ones these types write
+        // themselves, so a format that is wrongly consulted shows up
+        static java.text.Format stamp() { return RifeConfig.tools().getSimpleDateFormat("yyyy-MM-dd HH:mm:ss"); }
+        static java.text.Format day() { return RifeConfig.tools().getSimpleDateFormat("dd/MM/yyyy"); }
+        static java.text.Format clock() { return RifeConfig.tools().getSimpleDateFormat("HH.mm.ss"); }
+
+        // the moments are read from the same formats that write them, so the
+        // values carry no convention about which zone a text stands in and
+        // only the round trip is being verified
+        static java.util.Date moment() {
+            try {
+                return (java.util.Date) stamp().parseObject("2026-07-29 13:45:23");
+            } catch (java.text.ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        static java.util.Date clockMoment() {
+            try {
+                return (java.util.Date) clock().parseObject("13.45.23");
+            } catch (java.text.ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        static java.util.Date dayMoment() {
+            try {
+                return (java.util.Date) day().parseObject("29/07/2026");
+            } catch (java.text.ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public static java.util.List<RoundTrip> entries() {
+            return java.util.List.of(
+                // the types assigned straight from the submitted text
+                new RoundTrip("text", "abc", String.class),
+                new RoundTrip("letter", 'x', char.class),
+                new RoundTrip("boxedLetter", Character.valueOf('y'), Character.class),
+                new RoundTrip("flag", true, boolean.class),
+                new RoundTrip("boxedFlag", Boolean.TRUE, Boolean.class),
+                new RoundTrip("buffer", new StringBuffer("buf"), StringBuffer.class),
+                new RoundTrip("builder", new StringBuilder("bld"), StringBuilder.class),
+                new RoundTrip("weekday", java.time.DayOfWeek.FRIDAY, java.time.DayOfWeek.class),
+                // the numbers, which are read back through their format
+                new RoundTrip("count", 1000, int.class),
+                new RoundTrip("boxedCount", Integer.valueOf(2000), Integer.class),
+                new RoundTrip("tiny", (byte) 100, byte.class),
+                new RoundTrip("boxedTiny", Byte.valueOf((byte) 101), Byte.class),
+                new RoundTrip("small", (short) 300, short.class),
+                new RoundTrip("boxedSmall", Short.valueOf((short) 301), Short.class),
+                new RoundTrip("big", 4000L, long.class),
+                new RoundTrip("boxedBig", Long.valueOf(4001L), Long.class),
+                new RoundTrip("ratio", 12.5d, double.class),
+                new RoundTrip("boxedRatio", Double.valueOf(13.5d), Double.class),
+                new RoundTrip("rate", 14.5f, float.class),
+                new RoundTrip("boxedRate", Float.valueOf(15.5f), Float.class),
+                new RoundTrip("amount", new BigDecimal("1000.50"), BigDecimal.class),
+                // the moments, which are read back through their format as well
+                new RoundTrip("moment", moment(), java.util.Date.class),
+                new RoundTrip("instant", moment().toInstant(), java.time.Instant.class),
+                new RoundTrip("stamp", Convert.toLocalDateTime(moment()), java.time.LocalDateTime.class),
+                new RoundTrip("date", Convert.toLocalDate(dayMoment()), java.time.LocalDate.class),
+                new RoundTrip("time", Convert.toLocalTime(clockMoment()), java.time.LocalTime.class),
+                // the sql types are dates of their own, so a submission has to
+                // assign the kind of date the property holds
+                new RoundTrip("sqlTime", Convert.toSqlTime(clockMoment()), java.sql.Time.class),
+                new RoundTrip("sqlDate", Convert.toSqlDate(dayMoment()), java.sql.Date.class),
+                // a sql timestamp is deliberately left out of this table,
+                // since its conversions are what they are on purpose:
+                // Convert.toSqlTimestamp(Date) keeps the moment while
+                // Convert.toInstant(Timestamp) reads the reading of it in the
+                // zone of the machine and takes that for one in the configured
+                // zone, so the two aren't each other's opposite and writing a
+                // timestamp to read it back moves it by the difference between
+                // those zones
+                // that isn't something to verify with a round trip here
+                // a type only its own format can read
+                new RoundTrip("tag", new Tag("beta"), Tag.class),
+                // and a property with several values is decided by one of them
+                new RoundTrip("picks", 1000, int[].class, new int[]{1000})
+            );
+        }
+
+        public void activateMetaData() {
+            for (var property : new String[]{"text", "letter", "boxedLetter", "flag", "boxedFlag", "buffer", "builder", "weekday"}) {
+                addConstraint(new ConstrainedProperty(property).format(STAR));
+            }
+            for (var property : new String[]{"count", "boxedCount", "tiny", "boxedTiny", "small", "boxedSmall", "big", "boxedBig", "picks"}) {
+                addConstraint(new ConstrainedProperty(property).format(money()));
+            }
+            for (var property : new String[]{"ratio", "boxedRatio", "rate", "boxedRate", "amount"}) {
+                addConstraint(new ConstrainedProperty(property).format(cents()));
+            }
+            for (var property : new String[]{"moment", "instant", "stamp"}) {
+                addConstraint(new ConstrainedProperty(property).format(stamp()));
+            }
+            addConstraint(new ConstrainedProperty("date").format(day()));
+            addConstraint(new ConstrainedProperty("time").format(clock()));
+            addConstraint(new ConstrainedProperty("sqlTime").format(clock()));
+            addConstraint(new ConstrainedProperty("sqlDate").format(day()));
+            addConstraint(new ConstrainedProperty("sqlStamp").format(stamp()));
+            addConstraint(new ConstrainedProperty("tag").format(TAGS));
+            addConstraint(new ConstrainedProperty("plainCount").format(new java.text.DecimalFormat("#,##0")));
+        }
+
+        private String text_; private char letter_; private Character boxedLetter_;
+        private boolean flag_; private Boolean boxedFlag_;
+        private StringBuffer buffer_; private StringBuilder builder_;
+        private java.time.DayOfWeek weekday_;
+        private int count_; private Integer boxedCount_;
+        private byte tiny_; private Byte boxedTiny_;
+        private short small_; private Short boxedSmall_;
+        private long big_; private Long boxedBig_;
+        private double ratio_; private Double boxedRatio_;
+        private float rate_; private Float boxedRate_;
+        private BigDecimal amount_;
+        private java.util.Date moment_; private java.time.Instant instant_;
+        private java.time.LocalDateTime stamp_; private java.time.LocalDate date_;
+        private java.time.LocalTime time_; private java.sql.Time sqlTime_;
+        private char[] letters_;
+        private int plainCount_;
+        private java.sql.Date sqlDate_; private java.sql.Timestamp sqlStamp_;
+        private Tag tag_; private int[] picks_;
+
+        public void setText(String v) { text_ = v; } public String getText() { return text_; }
+        public void setLetter(char v) { letter_ = v; } public char getLetter() { return letter_; }
+        public void setBoxedLetter(Character v) { boxedLetter_ = v; } public Character getBoxedLetter() { return boxedLetter_; }
+        public void setFlag(boolean v) { flag_ = v; } public boolean getFlag() { return flag_; }
+        public void setBoxedFlag(Boolean v) { boxedFlag_ = v; } public Boolean getBoxedFlag() { return boxedFlag_; }
+        public void setBuffer(StringBuffer v) { buffer_ = v; } public StringBuffer getBuffer() { return buffer_; }
+        public void setBuilder(StringBuilder v) { builder_ = v; } public StringBuilder getBuilder() { return builder_; }
+        public void setWeekday(java.time.DayOfWeek v) { weekday_ = v; } public java.time.DayOfWeek getWeekday() { return weekday_; }
+        public void setCount(int v) { count_ = v; } public int getCount() { return count_; }
+        public void setBoxedCount(Integer v) { boxedCount_ = v; } public Integer getBoxedCount() { return boxedCount_; }
+        public void setTiny(byte v) { tiny_ = v; } public byte getTiny() { return tiny_; }
+        public void setBoxedTiny(Byte v) { boxedTiny_ = v; } public Byte getBoxedTiny() { return boxedTiny_; }
+        public void setSmall(short v) { small_ = v; } public short getSmall() { return small_; }
+        public void setBoxedSmall(Short v) { boxedSmall_ = v; } public Short getBoxedSmall() { return boxedSmall_; }
+        public void setBig(long v) { big_ = v; } public long getBig() { return big_; }
+        public void setBoxedBig(Long v) { boxedBig_ = v; } public Long getBoxedBig() { return boxedBig_; }
+        public void setRatio(double v) { ratio_ = v; } public double getRatio() { return ratio_; }
+        public void setBoxedRatio(Double v) { boxedRatio_ = v; } public Double getBoxedRatio() { return boxedRatio_; }
+        public void setRate(float v) { rate_ = v; } public float getRate() { return rate_; }
+        public void setBoxedRate(Float v) { boxedRate_ = v; } public Float getBoxedRate() { return boxedRate_; }
+        public void setAmount(BigDecimal v) { amount_ = v; } public BigDecimal getAmount() { return amount_; }
+        public void setMoment(java.util.Date v) { moment_ = v; } public java.util.Date getMoment() { return moment_; }
+        public void setInstant(java.time.Instant v) { instant_ = v; } public java.time.Instant getInstant() { return instant_; }
+        public void setStamp(java.time.LocalDateTime v) { stamp_ = v; } public java.time.LocalDateTime getStamp() { return stamp_; }
+        public void setDate(java.time.LocalDate v) { date_ = v; } public java.time.LocalDate getDate() { return date_; }
+        public void setTime(java.time.LocalTime v) { time_ = v; } public java.time.LocalTime getTime() { return time_; }
+        public void setSqlTime(java.sql.Time v) { sqlTime_ = v; } public java.sql.Time getSqlTime() { return sqlTime_; }
+        public void setPlainCount(int v) { plainCount_ = v; } public int getPlainCount() { return plainCount_; }
+        public void setLetters(char[] v) { letters_ = v; } public char[] getLetters() { return letters_; }
+        public void setSqlDate(java.sql.Date v) { sqlDate_ = v; } public java.sql.Date getSqlDate() { return sqlDate_; }
+        public void setSqlStamp(java.sql.Timestamp v) { sqlStamp_ = v; } public java.sql.Timestamp getSqlStamp() { return sqlStamp_; }
+        public void setTag(Tag v) { tag_ = v; } public Tag getTag() { return tag_; }
+        public void setPicks(int[] v) { picks_ = v; } public int[] getPicks() { return picks_; }
     }
 
     @Test

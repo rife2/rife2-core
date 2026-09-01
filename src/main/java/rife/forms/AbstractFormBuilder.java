@@ -8,6 +8,7 @@ import rife.template.Template;
 import rife.template.exceptions.TemplateException;
 import rife.tools.*;
 import rife.tools.exceptions.BeanUtilsException;
+import rife.tools.exceptions.ConversionException;
 import rife.validation.*;
 
 import java.util.*;
@@ -168,7 +169,10 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                     for (var error : previous_errors) {
                         if (error.getErroneousValue() != null &&
                             error.getSubject().equals(name)) {
-                            property_values = ArrayUtils.createStringArray(error.getErroneousValue(), constrainedProperty);
+                            // the submitted text is put back into the field
+                            // exactly as it was typed
+                            property_values = ArrayUtils.createStringArray(error.getErroneousValue(),
+                                BeanUtils.parsesWithFormat(descriptor.getPropertyType()) ? constrainedProperty : null);
                             break;
                         }
                     }
@@ -187,9 +191,22 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                         if (null == value) {
                             property_values = null;
                         } else {
-                            property_values = ArrayUtils.createStringArray(value, constrainedProperty);
+                            // the format is only applied when it can also
+                            // read the value back, otherwise the field shows
+                            // text that the next submission can't parse
+                            property_values = ArrayUtils.createStringArray(value,
+                                BeanUtils.parsesWithFormat(descriptor.getPropertyType()) ? constrainedProperty : null);
                         }
                     }
+                }
+
+                // the default is provided as the field's value, since the
+                // property type is known here and a field that writes its
+                // own default would write it differently
+                if (isEmpty(property_values) &&
+                    constrainedProperty != null &&
+                    constrainedProperty.hasDefaultValue()) {
+                    property_values = new String[]{writtenValue(constrainedProperty.getDefaultValue(), descriptor.getPropertyType(), constrainedProperty)};
                 }
 
                 // generate the form field
@@ -362,7 +379,10 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                 value = template.getEncoder().encode(values[0]);
             } else if (property != null &&
                 property.hasDefaultValue()) {
-                value = template.getEncoder().encode(property.getDefaultValue().toString());
+                // this kind of field isn't told the property type, which is
+                // what decides whether the format applies, so the default is
+                // converted plainly instead
+                value = template.getEncoder().encode(Convert.toString(property.getDefaultValue()));
             }
 
             // set the attributes that the user provided through a block value
@@ -513,7 +533,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                 property != null &&
                 property.hasDefaultValue()) {
                 active_values = new ArrayList<>();
-                active_values.add(property.getDefaultValue().toString());
+                active_values.add(writtenValue(property.getDefaultValue(), propertyType, property));
             }
 
             String[] list_values = null;
@@ -551,7 +571,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                             template.setValue(ID_FORM_VALUE, template.getEncoder().encode(values[0]));
                         } else if (property != null &&
                             property.hasDefaultValue()) {
-                            template.setValue(ID_FORM_VALUE, template.getEncoder().encode(property.getDefaultValue().toString()));
+                            template.setValue(ID_FORM_VALUE, template.getEncoder().encode(writtenValue(property.getDefaultValue(), propertyType, property)));
                         }
                     }
 
@@ -616,12 +636,13 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                     }
 
                     // set the value of the field entry
-                    builderTemplate.setValue(getIdValue(), template.getEncoder().encode(value));
+                    var written = writtenValue(value, propertyType, property);
+                    builderTemplate.setValue(getIdValue(), template.getEncoder().encode(written));
                     builderTemplate.appendBlock(getIdAttributes(), getIdValue());
 
                     // set the field entry that corresponds to the active value
                     if (active_values != null &&
-                        active_values.contains(value)) {
+                        active_values.contains(written)) {
                         builderTemplate.appendBlock(getIdAttributes(), getIdChecked());
                     }
 
@@ -692,6 +713,48 @@ public abstract class AbstractFormBuilder implements FormBuilder {
         }
     }
 
+    private static boolean isEmpty(String[] values) {
+        if (null == values) {
+            return true;
+        }
+        // a property with several values doesn't have to hold the first one,
+        // so the default only applies when none of them is filled in
+        for (var value : values) {
+            if (value != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Writes a value the way its form field will submit it back, which is the
+     * form that provided values arrive in, that active values are compared
+     * with, and that submissions are read from.
+     *
+     * @since 1.10
+     */
+    private static String writtenValue(Object value, Class propertyType, ConstrainedProperty property) {
+        if (null == value) {
+            return null;
+        }
+        if (!BeanUtils.parsesWithFormat(propertyType)) {
+            return Convert.toString(value);
+        }
+        try {
+            // a list value arrives as text and is read the way a submission
+            // reads it, while a default is already what the property holds
+            // and stays that way
+            var typed = value instanceof String text
+                ? BeanUtils.parseInputValue(text, propertyType, property)
+                : value;
+            return BeanUtils.formatPropertyValueForInput(typed, propertyType, property);
+        } catch (ConversionException e) {
+            // a value the property can't hold is left as it was given
+            return Convert.toString(value);
+        }
+    }
+
     protected void generateFieldSelect(Template template, String templateFieldName, Class propertyType, String name, ConstrainedProperty property, String[] values, Template builderTemplate, ArrayList<String> setValues, boolean replaceExistingValues) {
         StringBuilder field_buffer;
         String field;
@@ -723,7 +786,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                 property != null &&
                 property.hasDefaultValue()) {
                 active_values = new ArrayList<>();
-                active_values.add(property.getDefaultValue().toString());
+                active_values.add(writtenValue(property.getDefaultValue(), propertyType, property));
             }
 
             String[] list_values = null;
@@ -747,12 +810,18 @@ public abstract class AbstractFormBuilder implements FormBuilder {
             if (list_values != null) {
                 var list = Arrays.asList(list_values);
 
+                // a default the list already offers isn't offered twice,
+                // compared in written form since that's the only form a
+                // default and a list value have in common
                 String default_value = null;
                 if (property != null &&
                     property.hasDefaultValue()) {
-                    default_value = Convert.toString(property.getDefaultValue());
-                    if (list.contains(default_value)) {
-                        default_value = null;
+                    default_value = writtenValue(property.getDefaultValue(), propertyType, property);
+                    for (var listed : list) {
+                        if (default_value.equals(writtenValue(listed, propertyType, property))) {
+                            default_value = null;
+                            break;
+                        }
                     }
                 }
 
@@ -760,9 +829,11 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                 var i = 0;
                 while (i < list.size()) {
                     String value;
+                    var written_already = false;
                     if (default_value != null) {
                         value = default_value;
                         default_value = null;
+                        written_already = true;
                     } else {
                         value = list.get(i);
                         i++;
@@ -773,11 +844,12 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                     }
 
                     // set the value of the field entry
-                    builderTemplate.setValue(getIdValue(), template.getEncoder().encode(value));
+                    var written = written_already ? value : writtenValue(value, propertyType, property);
+                    builderTemplate.setValue(getIdValue(), template.getEncoder().encode(written));
 
                     // set the field entry that corresponds to the active value
                     if (active_values != null &&
-                        active_values.contains(value)) {
+                        active_values.contains(written)) {
                         builderTemplate.setBlock(getIdAttributes(), getIdSelected());
                     } else {
                         builderTemplate.setValue(getIdAttributes(), "");
@@ -868,7 +940,7 @@ public abstract class AbstractFormBuilder implements FormBuilder {
                     value = template.getEncoder().encode(values[counter]);
                 } else if (property != null &&
                     property.hasDefaultValue()) {
-                    value = template.getEncoder().encode(property.getDefaultValue().toString());
+                    value = template.getEncoder().encode(writtenValue(property.getDefaultValue(), propertyType, property));
                 }
 
                 // set the attributes that the user provided through a block value

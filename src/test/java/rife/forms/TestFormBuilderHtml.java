@@ -6,6 +6,7 @@ package rife.forms;
 
 import org.junit.jupiter.api.Test;
 import rife.template.TemplateFactory;
+import rife.validation.MetaData;
 import rife.tools.ExceptionUtils;
 import rife.tools.StringUtils;
 import rife.tools.exceptions.BeanUtilsException;
@@ -50,6 +51,300 @@ public class TestFormBuilderHtml {
 
         public String toString() {
             return String.valueOf(number_);
+        }
+    }
+
+    static final String DIGITS = "0.1234567890123456789";
+
+    @Test
+    void testGenerateFormWritesValuesTheWayTheyAreReadBack() {
+        var builder = new FormBuilderHtml();
+        var template = TemplateFactory.HTML.get("formbuilder_formatted");
+
+        var bean = new FormattedBean();
+        bean.setAmount(1000);
+        bean.setEnabled(Boolean.TRUE);
+        bean.setDay(java.time.DayOfWeek.FRIDAY);
+        bean.setTier(2000);
+        bean.setPicks(new int[]{2000});
+        bean.setTag(new Tag("beta"));
+        bean.setPrecise(new java.math.BigDecimal(DIGITS));
+        bean.setLoose(Double.parseDouble(DIGITS));
+
+        try {
+            builder.generateForm(template, bean, null, null);
+        } catch (BeanUtilsException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        }
+
+        var content = template.getContent();
+
+        // a number is read back through its format, so that's what the field
+        // shows and what selects its option
+        assertTrue(content.contains("value=\"$1,000\""), content);
+
+        // a boolean and an enum are assigned straight from the submitted
+        // text, so writing them through a format would store that formatted
+        // text on the next unchanged submission
+        assertTrue(content.contains("<option value=\"true\" selected"), content);
+        assertFalse(content.contains("value=\"Yes\""), content);
+        assertTrue(content.contains("<option value=\"FRIDAY\" selected"), content);
+
+        // an option of a number carries the formatted value too, since that's
+        // what reads it back and what the current value is compared with
+        assertTrue(content.contains("<option value=\"$2,000\" selected"), content);
+        assertTrue(content.contains("<option value=\"$1,000\""), content);
+        assertFalse(content.contains("value=\"friday!\""), content);
+
+        // a property with several values holds each one separately, so each
+        // entry is written the way a single value is
+        assertTrue(content.contains("value=\"$2,000\" checked"), content);
+        assertTrue(content.contains("value=\"$1,000\""), content);
+        assertFalse(content.contains("value=\"2000\""), content);
+        assertFalse(content.contains("value=\"1000\""), content);
+
+        // a type only its own format reads is read from an option the way a
+        // submission reads it, so the property and the option agree
+        assertTrue(content.contains("<option value=\"#beta\" selected"), content);
+        assertTrue(content.contains("<option value=\"#alpha\""), content);
+        assertFalse(content.contains("<option value=\"beta\""), content);
+
+        // a decimal option keeps the digits the property holds, since reading
+        // it as the nearest double first would show a different value
+        assertTrue(content.contains("<option value=\"" + DIGITS + "\" selected"), content);
+
+        // while a property that keeps the nearest double shows that instead,
+        // since an option has to agree with its value
+        var kept = new java.text.DecimalFormat("#0.###################").format(bean.getLoose());
+        assertTrue(content.contains("<option value=\"" + kept + "\" selected"), content);
+        assertNotEquals(DIGITS, kept);
+    }
+
+    @Test
+    void testGenerateFormEchoesASubmittedValueTheWayItIsReadBack() {
+        var builder = new FormBuilderHtml();
+        var template = TemplateFactory.HTML.get("formbuilder_formatted");
+
+        // the text a submission was refused for goes back into the field,
+        // exactly as it will be submitted again
+        var bean = new FormattedBean();
+        bean.addValidationError(new rife.validation.ValidationError.INVALID("enabled").erroneousValue(Boolean.TRUE));
+
+        try {
+            builder.generateForm(template, bean, null, null);
+        } catch (BeanUtilsException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        }
+
+        var content = template.getContent();
+        assertTrue(content.contains("<option value=\"true\" selected"), content);
+    }
+
+    @Test
+    void testGenerateFormEchoesTextThatCouldntBeReadAtAll() {
+        var builder = new FormBuilderHtml();
+        var template = TemplateFactory.HTML.get("formbuilder_formatted");
+
+        // a submission that couldn't be read into the property is kept as the
+        // text that arrived, which no format can write, so the form shows it
+        // back unchanged
+        var bean = new FormattedBean();
+        bean.addValidationError(new rife.validation.ValidationError.INVALID("amount").erroneousValue("invalid"));
+        bean.addValidationError(new rife.validation.ValidationError.INVALID("tier").erroneousValue("not a tier"));
+
+        try {
+            builder.generateForm(template, bean, null, null);
+        } catch (BeanUtilsException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        }
+
+        var content = template.getContent();
+        assertTrue(content.contains("value=\"invalid\""), content);
+        // and an option nothing submitted stays unselected
+        assertFalse(content.contains("selected=\"selected\" value=\"not a tier\""), content);
+    }
+
+    @Test
+    void testGenerateFormWritesADefaultTheWayAValueIsWritten() {
+        var builder = new FormBuilderHtml();
+        var template = TemplateFactory.HTML.get("formbuilder_formatted_default");
+
+        // nothing is filled in, so every field falls back to the default of
+        // its constraints, written the same way a provided value is
+        try {
+            builder.generateForm(template, new DefaultedBean(), null, null);
+        } catch (BeanUtilsException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        }
+
+        var content = template.getContent();
+
+        // an input holds what reads the value back, so a default written as
+        // the plain number couldn't be submitted at all
+        assertTrue(content.contains("value=\"$1,000\""), content);
+
+        // the default's own option is the selected one, which only works when
+        // both are written the same way
+        assertTrue(content.contains("<option value=\"$3,000\" selected"), content);
+        assertFalse(content.contains("<option value=\"3000\""), content);
+
+        // a radio submits its value through the same format
+        assertTrue(content.contains("value=\"$5,000\" checked"), content);
+
+        // and a display-only field shows the same as one that is filled in
+        assertTrue(content.contains("$7,000"), content);
+
+        // a property with several values has nothing filled in either
+        assertTrue(content.contains("<option value=\"fallback\" selected"), content);
+
+        // a default is already what the property holds, so it's written
+        // through that property's format rather than through the text the
+        // value describes itself with
+        var day = DAY_FORMAT.format(MOMENT);
+        assertTrue(content.contains("value=\"" + day + "\""), content);
+        assertTrue(content.contains("<option value=\"" + day + "\" selected"), content);
+        assertFalse(content.contains(MOMENT.toString()), content);
+    }
+
+    @Test
+    void testGenerateFormKeepsAValueThatIsntTheFirstOne() {
+        var builder = new FormBuilderHtml();
+        var template = TemplateFactory.HTML.get("formbuilder_formatted_default");
+
+        // a property with several values doesn't have to hold the first one,
+        // which still counts as filled in rather than as a field the default
+        // stands in for
+        var bean = new DefaultedBean();
+        bean.setTags(new String[]{null, "chosen"});
+
+        try {
+            builder.generateForm(template, bean, null, null);
+        } catch (BeanUtilsException e) {
+            fail(ExceptionUtils.getExceptionStackTrace(e));
+        }
+
+        var content = template.getContent();
+        assertTrue(content.contains("<option value=\"chosen\" selected"), content);
+        assertFalse(content.contains("<option value=\"fallback\" selected"), content);
+    }
+
+    static final java.text.SimpleDateFormat DAY_FORMAT = new java.text.SimpleDateFormat("yyyy-MM-dd");
+    static final java.util.Date MOMENT = new java.util.GregorianCalendar(2026, java.util.Calendar.JULY, 29).getTime();
+
+    public static class DefaultedBean extends MetaData {
+        private Integer amount_ = null;
+        private Integer tier_ = null;
+        private Integer level_ = null;
+        private Integer total_ = null;
+        private String[] tags_ = null;
+        private java.util.Date moment_ = null;
+        private java.util.Date era_ = null;
+
+        public void activateMetaData() {
+            var format = new java.text.DecimalFormat("$#,##0");
+            addConstraint(new ConstrainedProperty("amount").format(format).defaultValue(1000));
+            addConstraint(new ConstrainedProperty("tier").inList("2000", "3000").format(format).defaultValue(3000));
+            addConstraint(new ConstrainedProperty("level").inList("4000", "5000").format(format).defaultValue(5000));
+            addConstraint(new ConstrainedProperty("total").format(format).defaultValue(7000));
+            addConstraint(new ConstrainedProperty("tags").inList("chosen", "fallback").defaultValue("fallback"));
+            addConstraint(new ConstrainedProperty("moment").format(DAY_FORMAT).defaultValue(MOMENT));
+            addConstraint(new ConstrainedProperty("era").inList(DAY_FORMAT.format(MOMENT)).format(DAY_FORMAT).defaultValue(MOMENT));
+        }
+
+        public void setAmount(Integer amount) { amount_ = amount; }
+        public Integer getAmount() { return amount_; }
+        public void setTier(Integer tier) { tier_ = tier; }
+        public Integer getTier() { return tier_; }
+        public void setLevel(Integer level) { level_ = level; }
+        public Integer getLevel() { return level_; }
+        public void setTotal(Integer total) { total_ = total; }
+        public Integer getTotal() { return total_; }
+        public void setTags(String[] tags) { tags_ = tags; }
+        public String[] getTags() { return tags_; }
+        public void setMoment(java.util.Date moment) { moment_ = moment; }
+        public java.util.Date getMoment() { return moment_; }
+        public void setEra(java.util.Date era) { era_ = era; }
+        public java.util.Date getEra() { return era_; }
+    }
+
+    public static class FormattedBean extends MetaData {
+        private int amount_ = 0;
+        private Boolean enabled_ = null;
+        private java.time.DayOfWeek day_ = null;
+        private int tier_ = 0;
+        private int[] picks_ = null;
+        private Tag tag_ = null;
+        private java.math.BigDecimal precise_ = null;
+        private double loose_ = 0;
+
+        public void activateMetaData() {
+            addConstraint(new ConstrainedProperty("amount").format(new java.text.DecimalFormat("$#,##0")));
+            addConstraint(new ConstrainedProperty("enabled").inList("true", "false").format(new WordsFormat("Yes", "No")));
+            addConstraint(new ConstrainedProperty("day").format(new WordsFormat("friday!", "other!")));
+            addConstraint(new ConstrainedProperty("tier").inList("1000", "2000").format(new java.text.DecimalFormat("$#,##0")));
+            addConstraint(new ConstrainedProperty("picks").inList("1000", "2000").format(new java.text.DecimalFormat("$#,##0")));
+            addConstraint(new ConstrainedProperty("tag").inList("alpha", "beta").format(new TagFormat()));
+            addConstraint(new ConstrainedProperty("precise").inList(DIGITS, "0.2").format(new java.text.DecimalFormat("#0.###################")));
+            addConstraint(new ConstrainedProperty("loose").inList(DIGITS, "0.2").format(new java.text.DecimalFormat("#0.###################")));
+        }
+
+        public void setAmount(int amount) { amount_ = amount; }
+        public int getAmount() { return amount_; }
+        public void setEnabled(Boolean enabled) { enabled_ = enabled; }
+        public Boolean getEnabled() { return enabled_; }
+        public void setTier(int tier) { tier_ = tier; }
+        public int getTier() { return tier_; }
+        public void setDay(java.time.DayOfWeek day) { day_ = day; }
+        public java.time.DayOfWeek getDay() { return day_; }
+        public void setPicks(int[] picks) { picks_ = picks; }
+        public int[] getPicks() { return picks_; }
+        public void setTag(Tag tag) { tag_ = tag; }
+        public Tag getTag() { return tag_; }
+        public void setPrecise(java.math.BigDecimal precise) { precise_ = precise; }
+        public java.math.BigDecimal getPrecise() { return precise_; }
+        public void setLoose(double loose) { loose_ = loose; }
+        public double getLoose() { return loose_; }
+    }
+
+    /**
+     * A type that only the format of its property is able to read from text,
+     * since nothing constructs one from a string of its own.
+     */
+    public static class Tag {
+        private final String name_;
+
+        public Tag(String name) { name_ = name; }
+        public String getName() { return name_; }
+    }
+
+    public static class TagFormat extends java.text.Format {
+        public StringBuffer format(Object object, StringBuffer buffer, java.text.FieldPosition position) {
+            return buffer.append("#").append(((Tag) object).getName());
+        }
+
+        public Object parseObject(String source, java.text.ParsePosition position) {
+            position.setIndex(source.length());
+            return new Tag(source.startsWith("#") ? source.substring(1) : source);
+        }
+    }
+
+    public static class WordsFormat extends java.text.Format {
+        private final String affirmative_;
+        private final String negative_;
+
+        public WordsFormat(String affirmative, String negative) {
+            affirmative_ = affirmative;
+            negative_ = negative;
+        }
+
+        public StringBuffer format(Object object, StringBuffer buffer, java.text.FieldPosition position) {
+            var affirmative = Boolean.TRUE.equals(object) || java.time.DayOfWeek.FRIDAY == object;
+            return buffer.append(affirmative ? affirmative_ : negative_);
+        }
+
+        public Object parseObject(String source, java.text.ParsePosition position) {
+            position.setIndex(source.length());
+            return source;
         }
     }
 

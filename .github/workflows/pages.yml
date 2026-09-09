@@ -37,10 +37,11 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: "corretto"
           java-version: 17
+          cache-jdk: true
 
       - name: Build Javadocs
         run: ./bld clean download clean compile javadoc

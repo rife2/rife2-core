@@ -98,11 +98,12 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: "corretto"
           java-version: ${{ matrix.java-version }}
           check-latest: true
+          cache-jdk: true
 
       - name: Run tests
         run: >-
@@ -127,11 +128,12 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: "corretto"
           java-version: ${{ matrix.java-version }}
           check-latest: true
+          cache-jdk: true
 
       - name: Run tests
         run: >-
@@ -156,11 +158,12 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: "corretto"
           java-version: ${{ matrix.java-version }}
           check-latest: true
+          cache-jdk: true
 
       - name: Run tests
         run: >-

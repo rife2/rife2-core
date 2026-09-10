@@ -41,7 +41,6 @@ jobs:
         with:
           distribution: "corretto"
           java-version: 17
-          cache-jdk: true
 
       - name: Build Javadocs
         run: ./bld clean download clean compile javadoc

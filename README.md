@@ -1,9 +1,9 @@
 [![License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java](https://img.shields.io/badge/java-17%2B-blue)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-[![bld](https://img.shields.io/badge/2.3.0-FA9052?label=bld&labelColor=2392FF)](https://rife2.com/bld)
+[![bld](https://img.shields.io/badge/3.0.0-FA9052?label=bld&labelColor=2392FF)](https://rife2.com/bld)
 [![Maven Central](https://img.shields.io/maven-central/v/com.uwyn.rife2/rife2-core)](https://central.sonatype.com/artifact/com.uwyn.rife2/rife2-core)
-[![Nexus Snapshot](https://img.shields.io/nexus/s/com.uwyn.rife2/rife2-core?server=https%3A%2F%2Fs01.oss.sonatype.org%2F)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/uwyn/rife2/rife2-core/)
-[![gradle-ci](https://github.com/rife2/rife2-core/actions/workflows/bld.yml/badge.svg)](https://github.com/rife2/rife2-core/actions/workflows/bld.yml)
+[![Snapshot](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fcom%2Fuwyn%2Frife2%2Frife2-core%2Fmaven-metadata.xml&label=snapshot)](https://central.sonatype.com/repository/maven-snapshots/com/uwyn/rife2/rife2-core/)
+[![bld-ci](https://github.com/rife2/rife2-core/actions/workflows/bld.yml/badge.svg)](https://github.com/rife2/rife2-core/actions/workflows/bld.yml)
 [![Tests](https://rife2.com/tests-badge/badge/com.uwyn.rife2/rife2-core)](https://github.com/rife2/rife2-core/actions/workflows/bld.yml)
 
 <br>

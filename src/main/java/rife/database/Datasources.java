@@ -109,7 +109,8 @@ public class Datasources implements AutoCloseable {
     }
 
     /**
-     * Cleans up all connections that have been reserved by this datasource.
+     * Cleans up each datasource in this collection with
+     * {@link Datasource#cleanup()} and then removes them all from it.
      *
      * @throws DatabaseException when an error occurred during the cleanup
      * @since 1.0

@@ -93,8 +93,8 @@ public class ConnectionPool implements AutoCloseable {
     }
 
     /**
-     * Cleans up all connections that have been reserved by this
-     * datasource.
+     * Cleans up all the connections in this pool and forgets which
+     * connection each thread had reserved.
      *
      * @throws DatabaseException when an error occurred during the
      *                           clearing of the pool

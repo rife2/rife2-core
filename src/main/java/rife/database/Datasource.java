@@ -11,7 +11,6 @@ import rife.database.types.SqlConversion;
 import rife.tools.ExceptionUtils;
 import rife.tools.StringUtils;
 
-import java.lang.ref.WeakReference;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -73,8 +72,11 @@ public class Datasource implements AutoCloseable, Cloneable {
     }
 
     private static final Set<Datasource> activeDatasources = Collections.newSetFromMap(new WeakHashMap<>());
+    // the drivers loading caused this classloader to register; connections open
+    // through these instances, so releasing one from DriverManager strands nothing
+    private static final Map<String, Driver> registeredDrivers = new HashMap<>();
 
-    private WeakReference<Driver> activeDriver_ = null;
+    private boolean driverChecked_ = false;
     private String driver_ = null;
     private String url_ = null;
     private String user_ = null;
@@ -215,42 +217,32 @@ public class Datasource implements AutoCloseable, Cloneable {
                 }
             }
         } else {
+            Driver driver;
             try {
-                synchronized (DriverManager.class) {
-                    if (activeDriver_ == null || activeDriver_.get() == null) {
-                        synchronized (activeDatasources) {
-                            activeDatasources.add(this);
-                        }
-
-                        // keep track of the drivers that were there before
-                        final var initial_driver_set = new HashSet<Driver>();
-                        DriverManager.getDrivers().asIterator().forEachRemaining(initial_driver_set::add);
-
-                        // load the driver class
-                        var driver_class = Class.forName(driver_);
-
-                        // keep track of the drivers that are there afterward
-                        final var post_driver_set = new HashSet<Driver>();
-                        DriverManager.getDrivers().asIterator().forEachRemaining(post_driver_set::add);
-                        // remove all the drivers before
-                        post_driver_set.removeAll(initial_driver_set);
-                        // detect which new driver applies
-                        for (var post_driver : post_driver_set) {
-                            if (driver_class.isAssignableFrom(post_driver.getClass()) &&
-                                post_driver.getClass().getClassLoader() == getClass().getClassLoader()) {
-                                activeDriver_ = new WeakReference<>(post_driver);
-                                break;
-                            }
-                        }
-                    }
-                }
+                driver = activeDriver();
             } catch (ClassNotFoundException e) {
                 throw new DriverInstantiationErrorException(driver_, e);
             }
 
             // try to create a jdbc connection
-            if (null != user_ &&
-                null != password_) {
+            if (driver != null) {
+                var properties = new Properties();
+                if (user_ != null) {
+                    properties.put("user", user_);
+                }
+                if (password_ != null) {
+                    properties.put("password", password_);
+                }
+                try {
+                    connection = driver.connect(url_, properties);
+                } catch (SQLException e) {
+                    throw new ConnectionOpenErrorException(url_, user_, password_, e);
+                }
+                if (connection == null) {
+                    throw new ConnectionOpenErrorException(url_, new SQLException("The driver didn't accept the connection url."));
+                }
+            } else if (null != user_ &&
+                       null != password_) {
                 try {
                     connection = DriverManager.getConnection(url_, user_, password_);
                 } catch (SQLException e) {
@@ -678,7 +670,63 @@ public class Datasource implements AutoCloseable, Cloneable {
     }
 
     /**
-     * Cleans up all connections that have been reserved by this datasource.
+     * Loads the JDBC driver and returns the instance that loading it registered, or
+     * {@code null} when something else had already registered it, leaving
+     * DriverManager to resolve the connection as before.
+     */
+    private Driver activeDriver()
+    throws ClassNotFoundException {
+        synchronized (DriverManager.class) {
+            var registered = registeredDrivers.get(driver_);
+            if (registered != null) {
+                // cleanup deregistered it, put it back while a datasource is open in
+                // case other JDBC code looks it up
+                if (!isRegistered(registered)) {
+                    try {
+                        DriverManager.registerDriver(registered);
+                    } catch (SQLException e) {
+                        throw new DatabaseException(e);
+                    }
+                }
+                return registered;
+            }
+            if (driverChecked_) {
+                return null;
+            }
+
+            driverChecked_ = true;
+            synchronized (activeDatasources) {
+                activeDatasources.add(this);
+            }
+
+            // keep track of the drivers that were there before
+            final var initial_driver_set = new HashSet<Driver>();
+            DriverManager.getDrivers().asIterator().forEachRemaining(initial_driver_set::add);
+
+            // load the driver class
+            var driver_class = Class.forName(driver_);
+
+            // keep track of the drivers that are there afterward
+            final var post_driver_set = new HashSet<Driver>();
+            DriverManager.getDrivers().asIterator().forEachRemaining(post_driver_set::add);
+            // remove all the drivers before
+            post_driver_set.removeAll(initial_driver_set);
+            // detect which new driver applies
+            for (var post_driver : post_driver_set) {
+                if (driver_class.isAssignableFrom(post_driver.getClass()) &&
+                    post_driver.getClass().getClassLoader() == getClass().getClassLoader()) {
+                    registeredDrivers.put(driver_, post_driver);
+                    break;
+                }
+            }
+
+            return registeredDrivers.get(driver_);
+        }
+    }
+
+    /**
+     * Cleans up all connections that have been reserved by this datasource, and
+     * deregisters the JDBC driver if loading it is what registered it.
      *
      * @throws DatabaseException when an error occurred during the cleanup
      * @since 1.0
@@ -687,22 +735,31 @@ public class Datasource implements AutoCloseable, Cloneable {
     throws DatabaseException {
         connectionPool_.cleanup();
 
+        // the entry stays, only the DriverManager registration is released
         synchronized (DriverManager.class) {
-            synchronized (activeDatasources) {
-                activeDatasources.remove(this);
+            var registered = registeredDrivers.get(driver_);
+            if (registered != null) {
+                deregisterDriver(registered);
             }
+        }
+    }
 
-            if (activeDriver_ != null) {
-                var driver = activeDriver_.get();
-                if (driver != null) {
-                    try {
-                        DriverManager.deregisterDriver(driver);
-                    } catch (SQLException e) {
-                        throw new DatabaseException(e);
-                    }
-                }
-                activeDriver_ = null;
+    private static boolean isRegistered(Driver driver) {
+        var drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            if (drivers.nextElement() == driver) {
+                return true;
             }
+        }
+        return false;
+    }
+
+    private static void deregisterDriver(Driver driver)
+    throws DatabaseException {
+        try {
+            DriverManager.deregisterDriver(driver);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
         }
     }
 
@@ -740,6 +797,13 @@ public class Datasource implements AutoCloseable, Cloneable {
 
         for (var datasource : active_datasources) {
             datasource.cleanup();
+        }
+
+        synchronized (DriverManager.class) {
+            for (var driver : registeredDrivers.values()) {
+                deregisterDriver(driver);
+            }
+            registeredDrivers.clear();
         }
     }
 }

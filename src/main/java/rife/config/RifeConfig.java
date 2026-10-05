@@ -230,6 +230,7 @@ public class RifeConfig {
         }
 
         public AuthenticationConfig setSessionPurgeScale(int scale) {
+            if (scale <= 0) throw new IllegalArgumentException("scale has to be bigger than 0.");
             sessionPurgeScale_ = scale;
             return this;
         }
@@ -266,6 +267,7 @@ public class RifeConfig {
         }
 
         public AuthenticationConfig setRememberPurgeScale(int scale) {
+            if (scale <= 0) throw new IllegalArgumentException("scale has to be bigger than 0.");
             rememberPurgeScale_ = scale;
             return this;
         }
@@ -722,8 +724,9 @@ public class RifeConfig {
             return continuationPurgeScale_;
         }
 
-        public EngineConfig setContinuationPurgeScale(int frequency) {
-            continuationPurgeScale_ = frequency;
+        public EngineConfig setContinuationPurgeScale(int scale) {
+            if (scale <= 0) throw new IllegalArgumentException("scale has to be bigger than 0.");
+            continuationPurgeScale_ = scale;
             return this;
         }
 

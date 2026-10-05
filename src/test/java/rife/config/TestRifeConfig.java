@@ -242,4 +242,22 @@ public class TestRifeConfig {
         RifeConfig.tools().setDefaultShortDatePattern(shortDate);
         RifeConfig.tools().setDefaultLongDatePattern(longDate);
     }
+
+    @Test
+    void testInvalidPurgeScales() {
+        var authentication = RifeConfig.authentication();
+        var engine = RifeConfig.engine();
+        var session_scale = authentication.getSessionPurgeScale();
+        var remember_scale = authentication.getRememberPurgeScale();
+        var continuation_scale = engine.getContinuationPurgeScale();
+
+        assertThrows(IllegalArgumentException.class, () -> authentication.setSessionPurgeScale(0));
+        assertThrows(IllegalArgumentException.class, () -> authentication.setRememberPurgeScale(0));
+        assertThrows(IllegalArgumentException.class, () -> engine.setContinuationPurgeScale(0));
+        assertThrows(IllegalArgumentException.class, () -> engine.setContinuationPurgeScale(-1));
+
+        assertEquals(session_scale, authentication.getSessionPurgeScale());
+        assertEquals(remember_scale, authentication.getRememberPurgeScale());
+        assertEquals(continuation_scale, engine.getContinuationPurgeScale());
+    }
 }

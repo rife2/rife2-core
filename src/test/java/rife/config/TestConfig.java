@@ -5,6 +5,7 @@
 package rife.config;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import rife.config.exceptions.ConfigErrorException;
 import rife.resources.ResourceFinderDirectories;
 import rife.tools.SerializationUtils;
@@ -817,6 +818,19 @@ public class TestConfig {
         } finally {
             xml_file.delete();
         }
+    }
+
+    @Test
+    void testXmlResourceFileWithPlus(@TempDir File tempDirectory)
+    throws ConfigErrorException {
+        var xml_dir = new File(tempDirectory, "c++ config");
+        assertTrue(xml_dir.mkdirs());
+        var xml_file = new File(xml_dir, "config.xml");
+        new Config().put("param", "value").storeToXml(xml_file);
+
+        var config = Config.fromXmlResource("config.xml", new ResourceFinderDirectories(xml_dir));
+        assertEquals("value", config.getString("param"));
+        assertEquals(xml_file.getAbsoluteFile(), config.getXmlFile().getAbsoluteFile());
     }
 
     @Test

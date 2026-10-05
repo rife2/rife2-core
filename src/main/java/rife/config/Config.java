@@ -22,7 +22,6 @@ import rife.xml.exceptions.XmlErrorException;
 
 import java.io.File;
 import java.io.Serializable;
-import java.net.URLDecoder;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -233,7 +232,7 @@ public class Config implements Cloneable {
             var content = resourceFinder.getContent(resourceName, StandardCharsets.UTF_8.name());
             xml_config.processXml(content, resourceFinder);
 
-            return new Config(new File(URLDecoder.decode(config_resource.getPath(), StandardCharsets.UTF_8)),
+            return new Config(new File(StringUtils.decodeUrl(config_resource.getPath())),
                 xml_config.getParameters(), xml_config.getFinalParameters(),
                 xml_config.getLists(), xml_config.getFinalLists());
         } catch (ResourceFinderErrorException | XmlErrorException e) {

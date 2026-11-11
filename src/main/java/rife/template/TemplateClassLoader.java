@@ -38,7 +38,7 @@ class TemplateClassLoader extends ClassLoader {
             // if an already loaded version was found, check whether it's outdated or not
             // this can only be Template classes since those are the only ones that are
             // handled by this classloader
-            if (RifeConfig.template().getAutoReload()) {
+            if (autoReload()) {
                 // if the template was modified, don't use the cached class
                 // otherwise, just take the previous template class
                 if (isTemplateModified(c)) {
@@ -65,7 +65,7 @@ class TemplateClassLoader extends ClassLoader {
                     // class was found in the parent classloader. If that class came from a jar
                     // file, make sure it's returned immediately and don't try to recompile it
                     if (c != null &&
-                        RifeConfig.template().getAutoReload()) {
+                        autoReload()) {
                         var resource = parent.getResource(classname.replace('.', '/') + ".class");
                         if (resource != null &&
                             resource.getPath().indexOf('!') != -1) {
@@ -98,7 +98,7 @@ class TemplateClassLoader extends ClassLoader {
                 !classname.startsWith("jakarta.") &&
                 Template.class.isAssignableFrom(c)) {
                 // verify if the template in the classpath has been updated
-                if (RifeConfig.template().getAutoReload() &&
+                if (autoReload() &&
                     isTemplateModified(c)) {
                     c = null;
                 }
@@ -194,6 +194,12 @@ class TemplateClassLoader extends ClassLoader {
             }
         }
         return byte_code;
+    }
+
+    // the tracing agent can't record isModified, since jar templates skip it on the JVM
+    private static boolean autoReload() {
+        return RifeConfig.template().getAutoReload() &&
+               System.getProperty("org.graalvm.nativeimage.imagecode") == null;
     }
 
     private boolean isTemplateModified(Class c) {

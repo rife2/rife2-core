@@ -730,6 +730,36 @@ public class TestTemplateFactory {
     }
 
     @Test
+    void testNoReloadInNativeImage()
+    throws Exception {
+        var resource_finder = TemplateFactory.HTML.getResourceFinder();
+        var template_dir_file = new File(RifeConfig.global().getTempPath());
+        template_dir_file.mkdirs();
+        var template_name = "reload_native_image";
+        var template_file = new File(template_dir_file, template_name + TemplateFactory.HTML.getParser().getExtension());
+        try {
+            TemplateFactory.HTML.setResourceFinder(new ResourceFinderGroup()
+                .add(new ResourceFinderDirectories(template_dir_file))
+                .add(ResourceFinderClasspath.instance()));
+
+            FileUtils.writeString("original", template_file);
+            var template1 = TemplateFactory.HTML.get(template_name);
+
+            System.setProperty("org.graalvm.nativeimage.imagecode", "runtime");
+            FileUtils.writeString("modified", template_file);
+            template_file.setLastModified(template1.getModificationTime() + 2000);
+
+            var template2 = TemplateFactory.HTML.get(template_name);
+            assertSame(template1.getClass(), template2.getClass());
+            assertEquals("original", template2.getContent());
+        } finally {
+            System.clearProperty("org.graalvm.nativeimage.imagecode");
+            TemplateFactory.HTML.setResourceFinder(resource_finder);
+            template_file.delete();
+        }
+    }
+
+    @Test
     public void testFilteredBlocks() {
         var filter1 = "^FILTER1:(\\w+):CONST:(\\w+)$";
         var filter2 = "^FILTER2:(\\w+)$";

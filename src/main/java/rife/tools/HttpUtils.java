@@ -4,6 +4,7 @@
  */
 package rife.tools;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -159,7 +160,7 @@ public final class HttpUtils {
      */
     public static String basicAuthorizationHeader(String username, String password) {
         var valueToEncode = username + ":" + password;
-        return "Basic " + StringUtils.encodeBase64(valueToEncode.getBytes());
+        return "Basic " + StringUtils.encodeBase64(valueToEncode.getBytes(StandardCharsets.UTF_8));
     }
 }
 

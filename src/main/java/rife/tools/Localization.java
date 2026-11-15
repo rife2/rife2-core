@@ -278,72 +278,84 @@ public class Localization {
                 }
             }
 
+            // each found bundle is the parent of the previous one, a bundle
+            // class can't be given a parent so it ends the chain
+            var chain = new ArrayList<Object>();
             while (!candidates.isEmpty()) {
                 var resource_bundle_id = candidates.remove(candidates.size() - 1);
-                try {
-                    // try to load the resource bundle as a class
-                    Class resource_class = null;
-                    try {
-                        resource_class = Localization.class.getClassLoader().loadClass(resource_bundle_id);
-                    } catch (ClassNotFoundException e) {
-                        resource_class = null;
-                    }
-
-                    if (resource_class != null) {
-                        if (ResourceBundle.class.isAssignableFrom(resource_class)) {
-                            try {
-                                result = (ResourceBundle) resource_class.newInstance();
-
-                                return result;
-                            } catch (IllegalAccessException | InstantiationException e) {
-                                resource_class = null;
-                                result = null;
-                            }
-                        }
-                    }
-
-                    // try to load it as a properties file
-                    resource_bundle_id = resource_bundle_id.replace('.', '/');
-
-                    // no previous result found or checks should be made to see if the modification time changed
-                    var name = resource_bundle_id + ".properties";
-                    var resource = ResourceFinderClasspath.instance().getResource(name);
-                    if (resource != null) {
-                        var previous_modification = resourceBundleModificationTimes_.get(most_detailed_candidate);
-
-                        long modification_time = -1;
-                        if (RifeConfig.tools().getResourceBundleAutoReload()) {
-                            try {
-                                modification_time = ResourceFinderClasspath.instance().getModificationTime(resource);
-                            } catch (ResourceFinderErrorException e) {
-                                // don't do anything, the modification time will simply be negative
-                            }
-                        }
-
-                        if (previous_modification != null &&
-                            modification_time <= previous_modification.longValue()) {
-                            result = resourceBundlesOpened_.get(most_detailed_candidate);
-                        } else {
-                            try {
-                                result = new ReloadingBundle(resource);
-
-                                resourceBundleModificationTimes_.put(most_detailed_candidate, modification_time);
-                                resourceBundlesOpened_.put(most_detailed_candidate, result);
-                            } catch (IOException e) {
-                                result = null;
-                            }
-                        }
-                    }
-                } catch (MissingResourceException e) {
-                    result = null;
+                var class_bundle = instantiateBundleClass(resource_bundle_id);
+                if (class_bundle != null) {
+                    chain.add(class_bundle);
+                    break;
                 }
 
-                if (result != null) {
-                    return result;
+                var resource = ResourceFinderClasspath.instance().getResource(resource_bundle_id.replace('.', '/') + ".properties");
+                if (resource != null) {
+                    chain.add(resource);
                 }
             }
+
+            if (chain.isEmpty()) {
+                return null;
+            }
+            if (chain.get(0) instanceof ResourceBundle bundle) {
+                return bundle;
+            }
+
+            long modification_time = -1;
+            if (RifeConfig.tools().getResourceBundleAutoReload()) {
+                for (var entry : chain) {
+                    if (entry instanceof URL resource) {
+                        try {
+                            modification_time = Math.max(modification_time, ResourceFinderClasspath.instance().getModificationTime(resource));
+                        } catch (ResourceFinderErrorException e) {
+                            // don't do anything, the modification time will simply be negative
+                        }
+                    }
+                }
+            }
+
+            var previous_modification = resourceBundleModificationTimes_.get(most_detailed_candidate);
+            var previous_result = resourceBundlesOpened_.get(most_detailed_candidate);
+            if (previous_modification != null && previous_result != null &&
+                modification_time <= previous_modification) {
+                return previous_result;
+            }
+
+            ResourceBundle parent = null;
+            for (var i = chain.size() - 1; i >= 0; i--) {
+                if (chain.get(i) instanceof ResourceBundle bundle) {
+                    parent = bundle;
+                } else {
+                    try {
+                        var bundle = new ReloadingBundle((URL) chain.get(i));
+                        bundle.setParentBundle(parent);
+                        parent = bundle;
+                    } catch (IOException e) {
+                        // leave out a bundle that can't be read
+                    }
+                }
+            }
+
+            if (parent != null) {
+                resourceBundleModificationTimes_.put(most_detailed_candidate, modification_time);
+                resourceBundlesOpened_.put(most_detailed_candidate, parent);
+            }
+            result = parent;
         }
 
+        return result;
+    }
+
+    private static ResourceBundle instantiateBundleClass(String name) {
+        try {
+            var resource_class = Localization.class.getClassLoader().loadClass(name);
+            if (ResourceBundle.class.isAssignableFrom(resource_class)) {
+                return (ResourceBundle) resource_class.getDeclaredConstructor().newInstance();
+            }
+        } catch (ReflectiveOperationException | LinkageError e) {
+            // not a bundle class
+        }
         return null;
     }
 }
@@ -369,7 +381,18 @@ class ReloadingBundle extends ResourceBundle {
         return properties_;
     }
 
-    public Enumeration getKeys() {
-        return Collections.enumeration(properties_.keySet());
+    void setParentBundle(ResourceBundle parent) {
+        setParent(parent);
+    }
+
+    public Enumeration<String> getKeys() {
+        var keys = new LinkedHashSet<String>();
+        for (var key : properties_.keySet()) {
+            keys.add(key.toString());
+        }
+        if (parent != null) {
+            keys.addAll(Collections.list(parent.getKeys()));
+        }
+        return Collections.enumeration(keys);
     }
 }

@@ -6,6 +6,8 @@ package rife.tools;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -19,5 +21,15 @@ public class TestLocalizationUtils {
         assertNull(Localization.extractLocalizedUrl("nl:/afmelden,fr:/deconnection"));
         assertEquals("http://www.uwyn.com", Localization.extractLocalizedUrl("http://www.uwyn.com"));
         assertEquals("http://www.uwyn.com", Localization.extractLocalizedUrl("fr:/racine,en:http://www.uwyn.com,nl:/wortel"));
+    }
+
+    @Test
+    void testRegionalBundleFallsBack() {
+        var bundle = Localization.getResourceBundle("localization.fallback", "fr", "BE");
+        assertEquals("be c", bundle.getString("c"));
+        assertEquals("fr a", bundle.getString("a"));
+        assertEquals("base b", bundle.getString("b"));
+        assertEquals(Set.of("a", "b", "c"), new HashSet<>(Collections.list(bundle.getKeys())));
+        assertEquals("base b", Localization.getString("localization.fallback", "b", "fr", "BE"));
     }
 }

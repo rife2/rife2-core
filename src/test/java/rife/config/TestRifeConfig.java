@@ -267,4 +267,12 @@ public class TestRifeConfig {
         assertEquals("text/javascript", RifeConfig.Mime.getMimeType("js"));
         assertEquals("text/javascript", RifeConfig.Mime.getMimeType("mjs"));
     }
+
+    @Test
+    void testDefaultPassThroughSuffixesCantBeChanged() {
+        var suffixes = new RifeConfig().engine.getPassThroughSuffixes();
+        assertTrue(suffixes.contains("css"));
+        assertThrows(UnsupportedOperationException.class, () -> suffixes.remove("css"));
+        assertTrue(RifeConfig.EngineConfig.DEFAULT_PASS_THROUGH_SUFFIXES.contains("css"));
+    }
 }

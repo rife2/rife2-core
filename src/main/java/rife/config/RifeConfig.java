@@ -537,41 +537,41 @@ public class RifeConfig {
         );
         public static final String DEFAULT_PROXY_ROOT_URL = null;
         public static final String DEFAULT_WEBAPP_CONTEXT_PATH = null;
-        public static final Set<String> DEFAULT_PASS_THROUGH_SUFFIXES = new HashSet<>() {{
-            add("aac");
-            add("arj");
-            add("avi");
-            add("bmp");
-            add("class");
-            add("css");
-            add("flac");
-            add("gif");
-            add("gz");
-            add("htc");
-            add("htm");
-            add("html");
-            add("ico");
-            add("jar");
-            add("jpeg");
-            add("jpg");
-            add("js");
-            add("m4a");
-            add("mov");
-            add("mp3");
-            add("mp4");
-            add("mpg");
-            add("ogg");
-            add("otf");
-            add("png");
-            add("svg");
-            add("swf");
-            add("ttf");
-            add("txt");
-            add("wav");
-            add("wma");
-            add("z");
-            add("zip");
-        }};
+        public static final Set<String> DEFAULT_PASS_THROUGH_SUFFIXES = Set.of(
+            "aac",
+            "arj",
+            "avi",
+            "bmp",
+            "class",
+            "css",
+            "flac",
+            "gif",
+            "gz",
+            "htc",
+            "htm",
+            "html",
+            "ico",
+            "jar",
+            "jpeg",
+            "jpg",
+            "js",
+            "m4a",
+            "mov",
+            "mp3",
+            "mp4",
+            "mpg",
+            "ogg",
+            "otf",
+            "png",
+            "svg",
+            "swf",
+            "ttf",
+            "txt",
+            "wav",
+            "wma",
+            "z",
+            "zip"
+        );
 
         public static final Charset DEFAULT_REQUEST_ENCODING = StandardCharsets.UTF_8;
         public static final Charset DEFAULT_RESPONSE_ENCODING = StandardCharsets.UTF_8;

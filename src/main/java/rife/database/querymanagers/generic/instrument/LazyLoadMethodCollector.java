@@ -14,9 +14,21 @@ import static rife.asm.Opcodes.ASM9;
 
 class LazyLoadMethodCollector extends ClassVisitor {
     private Map<String, String> methods_ = null;
+    private boolean instrumented_ = false;
 
     LazyLoadMethodCollector() {
         super(ASM9);
+    }
+
+    public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+        if (LazyLoadAccessorsBytecodeTransformer.GQM_VAR_NAME.equals(name)) {
+            instrumented_ = true;
+        }
+        return null;
+    }
+
+    boolean isInstrumented() {
+        return instrumented_;
     }
 
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {

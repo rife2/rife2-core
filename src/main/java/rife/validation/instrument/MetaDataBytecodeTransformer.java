@@ -44,6 +44,9 @@ public abstract class MetaDataBytecodeTransformer {
 
 		var method_collector = new MetaDataMethodCollector();
         cr.accept(method_collector, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        if (method_collector.isMerged()) {
+            return origBytes;
+        }
 
         // Preserve the original frames instead of resolving application classes while they are
         // being loaded by the instrumentation agent. The injected bytecode adds no control flow.

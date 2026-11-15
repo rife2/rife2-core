@@ -702,7 +702,7 @@ public final class FileUtils {
         if (null == destination) throw new IllegalArgumentException("destination can't be null.");
 
         try {
-            try (var file_writer = new FileWriter(destination)) {
+            try (var file_writer = new FileWriter(destination, StandardCharsets.UTF_8)) {
                 file_writer.write(content, 0, content.length());
                 file_writer.flush();
             }

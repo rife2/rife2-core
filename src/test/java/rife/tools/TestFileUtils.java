@@ -491,6 +491,18 @@ public class TestFileUtils {
     }
 
     @Test
+    void testWriteStringUsesUtf8()
+    throws Exception {
+        var content = "caf\u00e9 \u2615";
+        var file = new File(tempDir.toFile(), "utf8.txt");
+
+        FileUtils.writeString(content, file);
+
+        assertArrayEquals(content.getBytes(StandardCharsets.UTF_8), Files.readAllBytes(file.toPath()));
+        assertEquals(content, FileUtils.readString(file));
+    }
+
+    @Test
     void testWriteStringContentIsNull() {
         // setup
         String content = null;

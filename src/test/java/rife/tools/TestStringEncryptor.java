@@ -315,4 +315,47 @@ public class TestStringEncryptor {
             fail();
         }
     }
+
+    @Test
+    void testObfuscateNonAscii()
+    throws Exception {
+        var value = "caf\u00e9 \u2615";
+        var obfuscated = StringEncryptor.obfuscate(value);
+        assertTrue(obfuscated.startsWith("OBFU:"));
+        assertEquals(value, StringEncryptor.deobfuscate(obfuscated));
+        assertEquals(obfuscated, StringEncryptor.OBF.encrypt(value));
+        assertEquals(obfuscated, StringEncryptor.OBFU.encrypt(value));
+        assertEquals(obfuscated, StringEncryptor.autoEncrypt("OBF:" + value));
+        assertTrue(StringEncryptor.matches(value, obfuscated));
+        assertFalse(StringEncryptor.matches("caf\u00e9 \u2614", obfuscated));
+
+        // values that the original format represents keep it
+        assertEquals("OBF:1w261wtu1ugo1vo41vmy1uh21wuk1w1c", StringEncryptor.OBF.encrypt("thevalue"));
+    }
+
+    @Test
+    void testObfuscateWithSingleByteDefaultCharset()
+    throws Exception {
+        // values that the original format represents keep their output
+        assertEquals("14ah1shm1shw143p", obfuscationInLatin1("obfuscate", "caf%C3%A9"));
+        assertEquals("caf\u00e9", obfuscationInLatin1("deobfuscate", "14ah1shm1shw143p"));
+        // the original format can't represent this value, it now round-trips
+        assertEquals("\u00e0z", obfuscationInLatin1("roundtrip", "%C3%A0z"));
+        // and the value that the original format stored for it still matches
+        assertEquals("true", obfuscationInLatin1("matches", "%C3%A0z", "OBF:16ud172x"));
+        // a value stored under another default charset keeps matching
+        assertEquals("true", obfuscationInLatin1("matches", "caf%C3%A9", StringEncryptor.OBF.encrypt("caf\u00e9")));
+    }
+
+    private static String obfuscationInLatin1(String... arguments)
+    throws Exception {
+        var command = new java.util.ArrayList<>(java.util.List.of(
+            java.nio.file.Path.of(System.getProperty("java.home"), "bin", "java").toString(),
+            "-Dfile.encoding=ISO-8859-1", "-cp", System.getProperty("java.class.path"), ObfuscationPrinter.class.getName()));
+        command.addAll(java.util.List.of(arguments));
+        var process = new ProcessBuilder(command).redirectError(ProcessBuilder.Redirect.DISCARD).start();
+        var output = new String(process.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        assertTrue(process.waitFor(30, java.util.concurrent.TimeUnit.SECONDS));
+        return output;
+    }
 }

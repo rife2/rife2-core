@@ -17,6 +17,7 @@ public abstract class StringEncryptor extends EnumClass<String> {
     private static final String IDENTIFIER_HLO_SUFFIX = "HLO";
 
     private static final String IDENTIFIER_OBF = "OBF";
+    private static final String IDENTIFIER_OBFU = "OBFU";
     private static final String IDENTIFIER_MD5 = "MD5";
     private static final String IDENTIFIER_MD5HEX = IDENTIFIER_MD5 + IDENTIFIER_HEX_SUFFIX;
     private static final String IDENTIFIER_MD5HLO = IDENTIFIER_MD5 + IDENTIFIER_HLO_SUFFIX;
@@ -119,8 +120,22 @@ public abstract class StringEncryptor extends EnumClass<String> {
         }
     };
     public static final StringEncryptor OBF = new StringEncryptor(IDENTIFIER_OBF, PREFIX_SEPARATOR_SUFFIX) {
+        public String encrypt(String value)
+        throws NoSuchAlgorithmException {
+            var obfuscated = obfuscate(value);
+            if (obfuscated.startsWith(OBFU.prefix())) {
+                return obfuscated;
+            }
+            return prefix() + obfuscated;
+        }
+
         public String performEncryption(String value, String encryptedValue) {
-            return obfuscate(value);
+            return obfuscateLegacy(value);
+        }
+    };
+    public static final StringEncryptor OBFU = new StringEncryptor(IDENTIFIER_OBFU, PREFIX_SEPARATOR_SUFFIX) {
+        public String performEncryption(String value, String encryptedValue) {
+            return obfuscateUtf8(value);
         }
     };
 
@@ -214,28 +229,23 @@ public abstract class StringEncryptor extends EnumClass<String> {
     public static String obfuscate(String value) {
         if (null == value) throw new IllegalArgumentException("value can't be null");
 
-        var buffer = new StringBuilder();
-        var bytes = value.getBytes();
-        for (var i = 0; i < bytes.length; i++) {
-            var b1 = bytes[i];
-            var b2 = bytes[value.length() - (i + 1)];
-            var i1 = (int) b1 + (int) b2 + 127;
-            var i2 = (int) b1 - (int) b2 + 127;
-            var i0 = i1 * 256 + i2;
-            var x = Integer.toString(i0, 36);
-
-            switch (x.length()) {
-                case 1:
-                    buffer.append('0');
-                case 2:
-                    buffer.append('0');
-                case 3:
-                    buffer.append('0');
-                default:
-                    buffer.append(x);
-            }
+        // the original format keeps its output for every value it can represent
+        var legacy = obfuscateLegacy(value);
+        if (value.equals(deobfuscateLegacyOrNull(legacy))) {
+            return legacy;
         }
 
+        return OBFU.prefix() + obfuscateUtf8(value);
+    }
+
+    private static String obfuscateUtf8(String value) {
+        var bytes = value.getBytes(StandardCharsets.UTF_8);
+        var buffer = new StringBuilder(bytes.length * 4);
+        for (var i = 0; i < bytes.length; i++) {
+            var b1 = bytes[i] & 0xff;
+            var b2 = bytes[bytes.length - (i + 1)] & 0xff;
+            appendObfuscated(buffer, (b1 + b2) * 511 + (b1 - b2 + 255));
+        }
         return buffer.toString();
     }
 
@@ -243,9 +253,50 @@ public abstract class StringEncryptor extends EnumClass<String> {
         if (null == value) throw new IllegalArgumentException("value can't be null");
 
         if (value.startsWith(OBF.prefix())) {
-            value = value.substring(OBF.prefix().length());
+            return deobfuscateLegacy(value.substring(OBF.prefix().length()));
+        }
+        if (!value.startsWith(OBFU.prefix())) {
+            return deobfuscateLegacy(value);
         }
 
+        value = value.substring(OBFU.prefix().length());
+        var bytes = new byte[value.length() / 4];
+        for (var i = 0; i < bytes.length; i++) {
+            var i0 = Integer.parseInt(value, i * 4, i * 4 + 4, 36);
+            bytes[i] = (byte) ((i0 / 511 + i0 % 511 - 255) / 2);
+        }
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    // the original format uses the default charset and can't represent
+    // every value, it's kept to reproduce what was stored with it
+    private static String obfuscateLegacy(String value) {
+        var buffer = new StringBuilder();
+        var bytes = value.getBytes();
+        for (var i = 0; i < bytes.length; i++) {
+            var b1 = bytes[i];
+            var b2 = bytes[bytes.length - (i + 1)];
+            var i1 = (int) b1 + (int) b2 + 127;
+            var i2 = (int) b1 - (int) b2 + 127;
+            appendObfuscated(buffer, i1 * 256 + i2);
+        }
+        return buffer.toString();
+    }
+
+    private static void appendObfuscated(StringBuilder buffer, int value) {
+        var x = Integer.toString(value, 36);
+        buffer.append("0".repeat(Math.max(0, 4 - x.length()))).append(x);
+    }
+
+    private static String deobfuscateLegacyOrNull(String value) {
+        try {
+            return deobfuscateLegacy(value);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static String deobfuscateLegacy(String value) {
         var bytes = new byte[value.length() / 2];
         var l = 0;
 
@@ -311,7 +362,7 @@ public abstract class StringEncryptor extends EnumClass<String> {
                 System.exit(0);
             }
             if (arguments[0].equals("-d")) {
-                if (arguments[1].startsWith(OBF.prefix())) {
+                if (arguments[1].startsWith(OBF.prefix()) || arguments[1].startsWith(OBFU.prefix())) {
                     System.err.println(deobfuscate(arguments[1]));
                 } else {
                     System.err.println("ERROR: the algorithm doesn't support decoding.");

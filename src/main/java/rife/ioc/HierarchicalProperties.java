@@ -5,6 +5,7 @@
 package rife.ioc;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import rife.ioc.exceptions.IncompatiblePropertyValueTypeException;
@@ -73,8 +74,8 @@ public class HierarchicalProperties {
                     Logger.getLogger("rife.ioc").warning("Couldn't find the properties file '" + properties_path + "' specified in the '" + SYSTEM_PROPERTY_FILE_NAME + "' environment variable.");
                 } else {
                     var props = new Properties();
-                    try {
-                        props.load(new FileReader(properties_file));
+                    try (var reader = new FileReader(properties_file, StandardCharsets.UTF_8)) {
+                        props.load(reader);
                     } catch (IOException e) {
                         Logger.getLogger("rife.ioc").warning("Couldn't read the properties file '" + properties_path + "' specified in the '" + SYSTEM_PROPERTY_FILE_NAME + "' environment variable\n" + ExceptionUtils.getExceptionStackTrace(e));
                     }

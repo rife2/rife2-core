@@ -5,14 +5,19 @@
 package rife.ioc;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import rife.ioc.exceptions.IncompatiblePropertyValueTypeException;
 import rife.ioc.exceptions.PropertyValueException;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,6 +45,25 @@ public class TestHierarchicalProperties {
         for (var prop : System.getProperties().entrySet()) {
             assertEquals(properties.get(prop.getKey().toString()).getValue(), prop.getValue());
         }
+    }
+
+    @Test
+    void testSystemInstancePropertiesFileIsUtf8(@TempDir Path tempDir)
+    throws Exception {
+        var file = tempDir.resolve("rife2.properties");
+        Files.writeString(file, "greeting=caf\u00e9\n", StandardCharsets.UTF_8);
+
+        // a child JVM, since the file is named by an environment variable,
+        // and with a default charset that differs from the file's
+        var java = Path.of(System.getProperty("java.home"), "bin", "java").toString();
+        var builder = new ProcessBuilder(java, "-Dfile.encoding=ISO-8859-1",
+            "-cp", System.getProperty("java.class.path"), SystemPropertyPrinter.class.getName(), "greeting");
+        builder.environment().put(HierarchicalProperties.SYSTEM_PROPERTY_FILE_NAME, file.toString());
+        builder.redirectError(ProcessBuilder.Redirect.DISCARD);
+        var process = builder.start();
+        var output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        assertTrue(process.waitFor(30, TimeUnit.SECONDS));
+        assertEquals("caf\u00e9", output);
     }
 
     @Test

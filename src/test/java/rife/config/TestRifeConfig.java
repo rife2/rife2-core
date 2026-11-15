@@ -260,4 +260,11 @@ public class TestRifeConfig {
         assertEquals(remember_scale, authentication.getRememberPurgeScale());
         assertEquals(continuation_scale, engine.getContinuationPurgeScale());
     }
+
+    @Test
+    void testJavaScriptMimeType() {
+        // the current standard type, like Jetty serves
+        assertEquals("text/javascript", RifeConfig.Mime.getMimeType("js"));
+        assertEquals("text/javascript", RifeConfig.Mime.getMimeType("mjs"));
+    }
 }

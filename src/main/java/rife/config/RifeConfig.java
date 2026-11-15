@@ -846,7 +846,6 @@ public class RifeConfig {
             put("spl", "application/x-futuresplash");
             put("gtar", "application/x-gtar");
             put("hdf", "application/x-hdf");
-            put("js", "application/x-javascript");
             put("skp", "application/x-koan");
             put("skd", "application/x-koan");
             put("skt", "application/x-koan");
@@ -933,6 +932,8 @@ public class RifeConfig {
             put("css", "text/css");
             put("html", "text/html");
             put("htm", "text/html");
+            put("js", "text/javascript");
+            put("mjs", "text/javascript");
             put("asc", "text/plain");
             put("txt", "text/plain");
             put("rtx", "text/richtext");

@@ -249,6 +249,25 @@ public class TestTemplate {
     }
 
     @Test
+    void testAppendValueTemplate() {
+        var template = TemplateFactory.HTML.get("values_typed");
+        var value_template = TemplateFactory.HTML.get("values");
+        value_template.setValue("VALUE1", "thevalue1");
+        value_template.setValue("VALUE3", "thevalue3");
+
+        // the content is appended, not the result of toString
+        template.appendValue("VALUE", value_template);
+        template.appendValue("VALUE", (Template) null);
+        template.appendValue("VALUE", value_template);
+        var content = value_template.getContent();
+        assertEquals(content + content, template.getValue("VALUE"));
+
+        var unset = TemplateFactory.HTML.get("values_typed");
+        unset.appendValue("VALUE", (Template) null);
+        assertFalse(unset.isValueSet("VALUE"));
+    }
+
+    @Test
     void testRemoveValues() {
         var template = TemplateFactory.HTML.get("values");
         var value1 = "aaab";

@@ -776,6 +776,27 @@ public interface Template extends Cloneable {
     throws TemplateException;
 
     /**
+     * Appends the current content of the given template to the specified
+     * value in this template.
+     * <p>If the given template is {@code null}, nothing is appended.
+     *
+     * @param id       the ID of the value in this template
+     * @param template a template
+     * @throws TemplateException if the specified value ID does not exist
+     *                           in this template; or
+     *                           <p>if an error occurred during the evaluation of the template parameter
+     * @see #setValue(String, Template)
+     * @see #appendValueEncoded
+     * @see #isValueSet
+     * @see #removeValue
+     * @see #blankValue
+     * @see #hasValueId
+     * @since 1.11.0
+     */
+    void appendValue(String id, Template template)
+    throws TemplateException;
+
+    /**
      * Appends the result of calling {@link String#valueOf(Object)
      * String.valueOf} on the given {@code value} to the specified value
      * in this template.

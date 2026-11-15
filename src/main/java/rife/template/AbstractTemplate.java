@@ -512,6 +512,11 @@ public abstract class AbstractTemplate implements Template {
         beanHandler_.removeBean(this, bean, prefix);
     }
 
+    public final void appendValue(String id, Template template)
+    throws TemplateException {
+        appendValue(id, null == template ? null : template.getContent());
+    }
+
     public final void appendValue(String id, Object value)
     throws TemplateException {
         appendValue(id, String.valueOf(value));

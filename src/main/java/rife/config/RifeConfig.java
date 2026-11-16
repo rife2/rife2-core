@@ -531,6 +531,7 @@ public class RifeConfig {
             "text/plain",
             "text/css",
             "text/javascript",
+            "application/json",
             "application/xml",
             "application/xhtml+xml",
             "image/svg+xml"

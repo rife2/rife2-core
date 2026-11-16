@@ -489,6 +489,7 @@ public class RifeConfig {
         private String csrfCookieName_ = DEFAULT_CSRF_COOKIE_NAME;
         private String csrfParameterName_ = DEFAULT_CSRF_PARAMETER_NAME;
         private String csrfHeaderName_ = DEFAULT_CSRF_HEADER_NAME;
+        private String secret_ = null;
 
         /**
          * The default duration is 20 minutes.
@@ -644,6 +645,42 @@ public class RifeConfig {
             if (null == name) throw new IllegalArgumentException("name can't be null.");
             if (name.isEmpty()) throw new IllegalArgumentException("name can't be empty.");
             csrfHeaderName_ = name;
+            return this;
+        }
+
+        /**
+         * Retrieves the secret that the engine uses to sign values, like
+         * the CSRF tokens of users that are logged in.
+         * <p>There's no secret by default, which means that nothing will
+         * be signed.
+         *
+         * @return the secret; or
+         * <p>{@code null} when no secret has been set
+         * @see #setSecret(String)
+         * @since 1.11.0
+         */
+        public String getSecret() {
+            return secret_;
+        }
+
+        /**
+         * Sets the secret that the engine uses to sign values, like the
+         * CSRF tokens of users that are logged in.
+         * <p>The secret has to be at least 32 bytes long, and you should
+         * keep it out of your sources, for instance by reading it from an
+         * environment variable. All the instances of your application have
+         * to use the same secret, and it has to stay the same when your
+         * application restarts, otherwise the pages that your users had
+         * open while logged in can't submit their forms anymore.
+         *
+         * @param secret the secret; or {@code null} to sign nothing
+         * @return this engine configuration
+         * @see #getSecret()
+         * @since 1.11.0
+         */
+        public EngineConfig setSecret(String secret) {
+            if (secret != null && secret.getBytes(StandardCharsets.UTF_8).length < 32) throw new IllegalArgumentException("secret has to be at least 32 bytes long.");
+            secret_ = secret;
             return this;
         }
 

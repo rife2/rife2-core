@@ -13,6 +13,8 @@ import rife.tools.InnerClassException;
 import java.sql.*;
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 public class TestDbConcurrency {
     public static boolean VERBOSE = false;
     public static boolean DEBUG = false;
@@ -72,6 +74,7 @@ public class TestDbConcurrency {
 
         var thread_alive = true;
         var thread_advanced = false;
+        var deadlocked = false;
         synchronized (main_lock) {
             while (thread_alive) {
                 try {
@@ -102,12 +105,16 @@ public class TestDbConcurrency {
                     }
 
                     thread_alive = false;
-                    System.out.println();
-                    System.out.println("Concurrency deadlock for datasource with driver: '" + datasource.getDriver() + "'.");
-                    System.exit(1);
+                    deadlocked = true;
                     break;
                 }
             }
+        }
+
+        // the threads that are stuck keep their connections and locks
+        // until the pool is cleaned up
+        if (deadlocked) {
+            datasource.cleanup();
         }
 
         try {
@@ -117,6 +124,8 @@ public class TestDbConcurrency {
         }
 
         datasource.cleanup();
+
+        assertFalse(deadlocked, "Concurrency deadlock for datasource with driver: '" + datasource.getDriver() + "'.");
     }
 }
 

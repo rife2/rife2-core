@@ -32,4 +32,21 @@ public class TestLocalizationUtils {
         assertEquals(Set.of("a", "b", "c"), new HashSet<>(Collections.list(bundle.getKeys())));
         assertEquals("base b", Localization.getString("localization.fallback", "b", "fr", "BE"));
     }
+
+    @Test
+    void testDefaultLocaleOnlyWithoutRequestedBundle() {
+        var default_locale = Locale.getDefault();
+        Locale.setDefault(new Locale("nl"));
+        try {
+            var french = Localization.getResourceBundle("localization.defaulted", "fr", null);
+            assertEquals("fr a", french.getString("a"));
+            assertEquals("base b", french.getString("b"));
+
+            var german = Localization.getResourceBundle("localization.defaulted", "de", null);
+            assertEquals("nl a", german.getString("a"));
+            assertEquals("nl b", german.getString("b"));
+        } finally {
+            Locale.setDefault(default_locale);
+        }
+    }
 }

@@ -218,80 +218,16 @@ public class Localization {
                 resourceBundleLastChecks_.put(most_detailed_candidate, System.currentTimeMillis());
             }
 
-            // build the list of possible candidates
-            var candidates = new ArrayList<String>();
-
-            var resource_bundle_id_buffer = new StringBuilder(basename);
-
-            candidates.add(basename);
-
-            var default_locale = Locale.getDefault();
-            if (!default_locale.getLanguage().isEmpty()) {
-                resource_bundle_id_buffer.append("_");
-                resource_bundle_id_buffer.append(default_locale.getLanguage());
-
-                candidates.add(resource_bundle_id_buffer.toString());
+            // like ResourceBundle.getBundle, the default locale is only used
+            // when the requested one has nothing more specific than the base
+            var chain = localeBundleChain(basename, locale);
+            if (chain.isEmpty()) {
+                chain = localeBundleChain(basename, Locale.getDefault());
             }
-
-            if (!default_locale.getCountry().isEmpty()) {
-                resource_bundle_id_buffer.append("_");
-                resource_bundle_id_buffer.append(default_locale.getCountry());
-
-                candidates.add(resource_bundle_id_buffer.toString());
-            }
-
-            if (!default_locale.getVariant().isEmpty()) {
-                resource_bundle_id_buffer.append("_");
-                resource_bundle_id_buffer.append(default_locale.getVariant());
-
-                candidates.add(resource_bundle_id_buffer.toString());
-            }
-
-            resource_bundle_id_buffer = new StringBuilder(basename);
-            if (!locale.getLanguage().isEmpty()) {
-                resource_bundle_id_buffer.append("_");
-                resource_bundle_id_buffer.append(locale.getLanguage());
-
-                var candidate = resource_bundle_id_buffer.toString();
-                if (!candidates.contains(candidate)) {
-                    candidates.add(candidate);
-                }
-            }
-
-            if (!locale.getCountry().isEmpty()) {
-                resource_bundle_id_buffer.append("_");
-                resource_bundle_id_buffer.append(locale.getCountry());
-
-                var candidate = resource_bundle_id_buffer.toString();
-                if (!candidates.contains(candidate)) {
-                    candidates.add(candidate);
-                }
-            }
-
-            if (!locale.getVariant().isEmpty()) {
-                resource_bundle_id_buffer.append("_");
-                resource_bundle_id_buffer.append(locale.getVariant());
-
-                var candidate = resource_bundle_id_buffer.toString();
-                if (!candidates.contains(candidate)) {
-                    candidates.add(candidate);
-                }
-            }
-
-            // each found bundle is the parent of the previous one, a bundle
-            // class can't be given a parent so it ends the chain
-            var chain = new ArrayList<Object>();
-            while (!candidates.isEmpty()) {
-                var resource_bundle_id = candidates.remove(candidates.size() - 1);
-                var class_bundle = instantiateBundleClass(resource_bundle_id);
-                if (class_bundle != null) {
-                    chain.add(class_bundle);
-                    break;
-                }
-
-                var resource = ResourceFinderClasspath.instance().getResource(resource_bundle_id.replace('.', '/') + ".properties");
-                if (resource != null) {
-                    chain.add(resource);
+            if (chain.isEmpty() || !(chain.get(chain.size() - 1) instanceof ResourceBundle)) {
+                var base = findBundle(basename);
+                if (base != null) {
+                    chain.add(base);
                 }
             }
 
@@ -345,6 +281,40 @@ public class Localization {
         }
 
         return result;
+    }
+
+    // each found bundle is the parent of the previous one, a bundle class
+    // can't be given a parent so it ends the chain
+    private static List<Object> localeBundleChain(String basename, Locale locale) {
+        var candidates = new ArrayList<String>();
+        var id = new StringBuilder(basename);
+        for (var part : new String[]{locale.getLanguage(), locale.getCountry(), locale.getVariant()}) {
+            if (part.isEmpty()) {
+                continue;
+            }
+            id.append('_').append(part);
+            candidates.add(0, id.toString());
+        }
+
+        var chain = new ArrayList<Object>();
+        for (var candidate : candidates) {
+            var bundle = findBundle(candidate);
+            if (bundle != null) {
+                chain.add(bundle);
+                if (bundle instanceof ResourceBundle) {
+                    break;
+                }
+            }
+        }
+        return chain;
+    }
+
+    private static Object findBundle(String id) {
+        var class_bundle = instantiateBundleClass(id);
+        if (class_bundle != null) {
+            return class_bundle;
+        }
+        return ResourceFinderClasspath.instance().getResource(id.replace('.', '/') + ".properties");
     }
 
     private static ResourceBundle instantiateBundleClass(String name) {

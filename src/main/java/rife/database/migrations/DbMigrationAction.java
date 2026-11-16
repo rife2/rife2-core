@@ -12,9 +12,9 @@ import rife.database.DbQueryManager;
  *
  * <p>Actions are declared in a migration with
  * {@link DbMigration#add(DbMigrationAction)} and execute in sequence with
- * the other steps. They run when the migration is executed, not when it is
- * declared, which means that you have to use the query manager that is
- * passed in since {@code DbMigration.datasource()} isn't available anymore
+ * the other steps. They run when the migration is executed, not when it's
+ * declared, which means that you have to use the query manager that's
+ * passed in, since {@code DbMigration.datasource()} isn't available anymore
  * at that point.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)

@@ -29,21 +29,21 @@ import java.util.List;
  * <p>A migration declares an ordered series of steps in {@link #up} by
  * calling one of the {@code add} methods. The steps are query builders,
  * literal SQL statements, or {@link DbMigrationAction} instances for the
- * data transforms that need Java logic. A migration never executes
- * anything itself, since the steps are merely collected and are afterwards
- * executed by {@link DbMigrations}.
+ * data transforms that need Java logic. A migration will never execute
+ * anything itself, its steps are merely collected so that
+ * {@link DbMigrations} can execute them afterwards.
  *
  * <p>The protected factory methods create query builders that are bound to
  * the datasource that is being migrated. Creating such a builder doesn't
- * add a step by itself, since every step has to be added explicitly with
- * one of the {@code add} methods.
+ * add a step by itself though, you still have to add every step explicitly
+ * with one of the {@code add} methods.
  *
  * <p>A migration that extends this class directly is irreversible, which
  * means that rolling it back raises
  * {@link rife.database.migrations.exceptions.IrreversibleMigrationException}.
- * When a migration can be reversed, it extends
- * {@link ReversibleDbMigration} instead and also declares the reverse
- * steps in its {@code down} method.
+ * When a migration can be reversed, you should extend
+ * {@link ReversibleDbMigration} instead and also declare the reverse steps
+ * in its {@code down} method.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
  * @see ReversibleDbMigration
@@ -57,9 +57,9 @@ public abstract class DbMigration {
 
     /**
      * Declares the steps that perform this migration.
-     * <p>This method will be called while the steps of the migration are
-     * being collected; you declare each of them by calling one of the
-     * {@code add} methods, in the order in which they have to be executed.
+     * <p>This method will be called when the steps of the migration are
+     * collected. You declare each step by calling one of the {@code add}
+     * methods, in the order in which they have to be executed.
      *
      * @see #add(Query)
      * @see #add(String)
@@ -131,9 +131,8 @@ public abstract class DbMigration {
     /**
      * Retrieves the datasource that this migration is being collected for.
      * <p>The datasource is only available while the steps are being
-     * declared, which is why you can only use it and the query builder
-     * factory methods that rely on it from inside {@code up} or
-     * {@code down}.
+     * declared, so you can only use it, and the query builder factory
+     * methods that rely on it, from inside {@code up} or {@code down}.
      *
      * @return the active datasource
      * @since 1.10

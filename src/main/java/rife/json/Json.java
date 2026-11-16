@@ -67,8 +67,8 @@ public final class Json {
 
     /**
      * Parses a JSON document.
-     * <p>This method will parse any JSON document and hand you back
-     * whichever value sits at the top level of it.
+     * <p>This method will parse any JSON document and return the value
+     * that's at the top level of it, whatever its type.
      *
      * @param json the JSON document to parse
      * @return the parsed value: a {@code JsonObject}, {@code JsonArray},

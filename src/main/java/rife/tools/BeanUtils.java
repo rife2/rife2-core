@@ -47,8 +47,8 @@ import static rife.tools.BeanUtils.Accessors.*;
 /**
  * Utility class providing methods for working with Java beans.
  * <p>Since 1.10, bean properties can use {@code Optional} getters. Their
- * values will be unwrapped when they are read, where an empty
- * {@code Optional} means the same as {@code null}, and the type of such a
+ * values will be unwrapped when they're read, an empty {@code Optional}
+ * means the same as {@code null}, and the type of such a
  * property is the {@code Optional}'s value type. Since the standard
  * JavaBeans introspector drops a plain-typed setter that sits next to an
  * {@code Optional} getter, RIFE2 pairs them up again so that the property
@@ -1291,8 +1291,8 @@ public final class BeanUtils {
                             propertyValues[0].isEmpty())) {
                     var read_method = property.getReadMethod();
                     // a setter-only property has nothing to read from the
-                    // empty bean, where the null value lets an Optional
-                    // setter receive an empty Optional
+                    // empty bean, so its null value will give an Optional
+                    // setter an empty Optional
                     var empty_value = read_method == null ? null : readPropertyValue(read_method, emptyBean);
                     // a primitive setter can't receive an absent value, so
                     // leave the property untouched instead of failing the

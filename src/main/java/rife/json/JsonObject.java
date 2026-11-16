@@ -170,8 +170,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * Sets a member of this JSON object to a new nested JSON object that
      * is constructed by the provided action.
      * <p>This method will create the nested {@code JsonObject} for you and
-     * hand it to the action so that you can populate it inline, after which
-     * it is set as the member with the provided name.
+     * call the action with it so that you can populate it inline, after
+     * which it is set as the member with the provided name.
      *
      * @param name   the name of the member
      * @param action the action that constructs the nested object
@@ -191,8 +191,8 @@ public class JsonObject extends LinkedHashMap<String, Object> {
      * Sets a member of this JSON object to a new nested JSON array that
      * is constructed by the provided action.
      * <p>This method will create the nested {@link JsonArray} for you and
-     * hand it to the action so that you can populate it inline, after which
-     * it is set as the member with the provided name.
+     * call the action with it so that you can populate it inline, after
+     * which it is set as the member with the provided name.
      *
      * @param name   the name of the member
      * @param action the action that constructs the nested array

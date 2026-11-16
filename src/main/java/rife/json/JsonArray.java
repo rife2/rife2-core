@@ -146,8 +146,8 @@ public class JsonArray extends ArrayList<Object> {
      * Appends a new nested JSON object that is constructed by the
      * provided action.
      * <p>This method will create the nested {@link JsonObject} for you and
-     * hand it to the action so that you can populate it inline, after which
-     * it is appended to this JSON array.
+     * call the action with it so that you can populate it inline, after
+     * which it is appended to this JSON array.
      *
      * @param action the action that constructs the nested object
      * @return this {@code JsonArray} instance
@@ -166,8 +166,8 @@ public class JsonArray extends ArrayList<Object> {
      * Appends a new nested JSON array that is constructed by the
      * provided action.
      * <p>This method will create the nested {@code JsonArray} for you and
-     * hand it to the action so that you can populate it inline, after which
-     * it is appended to this JSON array.
+     * call the action with it so that you can populate it inline, after
+     * which it is appended to this JSON array.
      *
      * @param action the action that constructs the nested array
      * @return this {@code JsonArray} instance

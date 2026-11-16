@@ -11,7 +11,7 @@ package rife.json;
  * intended to be provided as an inline lambda to
  * {@link JsonObject#array(String, JsonArrayAction)} and
  * {@link JsonArray#array(JsonArrayAction)}. Those methods will construct a
- * nested JSON array, hand it to the action so that you can populate it,
+ * nested JSON array, call the action with it so that you can populate it,
  * and attach it to the enclosing structure afterwards.
  *
  * @author Geert Bevin (gbevin[remove] at uwyn dot com)
@@ -22,8 +22,8 @@ package rife.json;
 public interface JsonArrayAction {
     /**
      * Executes the action on the specified {@code JsonArray} instance.
-     * <p>The JSON array that is handed to you has already been created,
-     * so that you only have to populate it.
+     * <p>The JSON array has already been created, so you only have to
+     * populate it.
      *
      * @param a the {@code JsonArray} instance on which to execute the action
      * @since 1.10

@@ -44,10 +44,10 @@ import java.util.List;
  * at all. The current version is passed in as an argument and the new one
  * is returned, which leaves the storing of it up to you.
  *
- * <p>Each migration executes inside a transaction together with its state
- * update. Note that not every database is able to roll back DDL, where
- * that isn't supported a failed migration can leave part of its schema
- * changes behind while the version stays unchanged.
+ * <p>Each migration will be executed inside a transaction, together with its
+ * state update. Note that not every database is able to roll back DDL, so
+ * where that isn't supported, a failed migration can leave part of its
+ * schema changes behind while the version stays unchanged.
  *
  * <p>Migrations are meant to be run as an explicit operation from a single
  * place, since concurrent {@code migrate} calls from several application
@@ -459,10 +459,9 @@ public class DbMigrations {
     /**
      * Migrates to the highest registered version, tracking the current
      * version in the configured state.
-     * <p>This is the method that you'll typically call to bring the schema
-     * up to date with everything that has been registered. Each migration
-     * is executed together with its state update inside a single
-     * transaction.
+     * <p>You'll typically call this method to bring the schema up to date
+     * with everything that has been registered. Each migration is executed
+     * together with its state update inside a single transaction.
      * <p>This method will never move the schema backwards, so that a stored
      * version that already sits above every registered migration simply
      * doesn't have anything to apply.

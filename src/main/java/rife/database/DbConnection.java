@@ -53,6 +53,7 @@ public class DbConnection implements AutoCloseable {
     private ArrayList<DbStatement> statements_;
     private int supportsTransactions_ = TRANSACTIONS_SUPPORT_UNKNOWN;
     private Thread transactionThread_ = null;
+    private int isolationAfterTransaction_ = -1;
 
     /**
      * Creates a new {@code DbConnection} instance and binds it to a
@@ -178,6 +179,7 @@ public class DbConnection implements AutoCloseable {
      */
     void cleanup()
     throws DatabaseException {
+        isolationAfterTransaction_ = -1;
         Thread transaction_thread = null;
         // unregister a transaction thread
         if (transactionThread_ != null) {
@@ -860,6 +862,8 @@ public class DbConnection implements AutoCloseable {
             handleException();
             throw new TransactionCommitErrorException(datasource_, e);
         } finally {
+            restoreIsolation();
+
             synchronized (this) {
                 if (transactionThread_ != null) {
                     transactionThread_ = null;
@@ -931,6 +935,8 @@ public class DbConnection implements AutoCloseable {
             handleException();
             throw new TransactionRollbackErrorException(datasource_, e);
         } finally {
+            restoreIsolation();
+
             synchronized (this) {
                 if (transactionThread_ != null) {
                     transactionThread_ = null;
@@ -943,6 +949,32 @@ public class DbConnection implements AutoCloseable {
         }
 
         return true;
+    }
+
+    // the isolation is restored while the transaction still owns the
+    // connection, since another thread can obtain it as soon as it's free
+    void restoreIsolationAfterTransaction(int isolation) {
+        isolationAfterTransaction_ = isolation;
+    }
+
+    private void restoreIsolation() {
+        var isolation = isolationAfterTransaction_;
+        isolationAfterTransaction_ = -1;
+        if (isolation == -1 || isCleanedUp()) {
+            return;
+        }
+
+        try {
+            connection_.setTransactionIsolation(isolation);
+        } catch (SQLException e) {
+            // a connection that kept the isolation of the transaction
+            // can't return to the pool as-is
+            try {
+                handleException();
+            } catch (DatabaseException ignored) {
+                // the transaction has ended, so this can't affect the data
+            }
+        }
     }
 
     /**

@@ -2582,11 +2582,11 @@ public class DbQueryManager implements Cloneable {
         // the connection to the thread, so each level works with its own
         // connection and is the one that releases it
         var owns_connection = false;
-        var previous_isolation = -1;
         DbConnection connection = null;
         try {
             synchronized (datasource_) {
                 connection = datasource_.getConnection();
+                var previous_isolation = -1;
                 var isolation = full_user.getTransactionIsolation();
                 // a nested transaction executes inside the one that is
                 // already ongoing, whose isolation can't be changed anymore
@@ -2598,21 +2598,21 @@ public class DbQueryManager implements Cloneable {
                 }
                 started_transaction = connection.beginTransaction();
                 owns_connection = started_transaction || !connection.supportsTransactions();
-            }
-
-            // a transaction that didn't start never reaches the completion
-            // paths that restore the isolation
-            if (!started_transaction) {
-                restoreTransactionIsolation(connection, previous_isolation);
-                previous_isolation = -1;
+                // the connection restores the isolation itself when the
+                // transaction ends, before another thread can obtain it
+                if (started_transaction) {
+                    connection.restoreIsolationAfterTransaction(previous_isolation);
+                } else {
+                    restoreTransactionIsolation(connection, previous_isolation);
+                }
             }
 
             var result = (ResultType) full_user.useTransaction();
             if (started_transaction) {
                 connection.commit();
-                releaseTransactionConnection(connection, previous_isolation);
+                releaseTransactionConnection(connection);
             } else if (owns_connection) {
-                releaseTransactionConnection(connection, previous_isolation);
+                releaseTransactionConnection(connection);
             }
             return result;
         } catch (RollbackException e) {
@@ -2628,7 +2628,7 @@ public class DbQueryManager implements Cloneable {
                     connection.rollback();
                 }
                 if (owns_connection) {
-                    releaseTransactionConnection(connection, previous_isolation);
+                    releaseTransactionConnection(connection);
                 }
             }
 
@@ -2640,11 +2640,11 @@ public class DbQueryManager implements Cloneable {
         } catch (RuntimeException e) {
             if (started_transaction &&
                 connection != null) {
-                completeAfterThrowable(e, connection, previous_isolation);
+                completeAfterThrowable(e, connection);
             } else if (owns_connection) {
                 // no transaction was started, so only the connection still
                 // has to be released
-                releaseTransactionConnection(connection, previous_isolation, e);
+                releaseTransactionConnection(connection, e);
             }
             throw e;
         } catch (Error e) {
@@ -2653,9 +2653,9 @@ public class DbQueryManager implements Cloneable {
             // rather than being taken for a failure by its type
             if (started_transaction &&
                 connection != null) {
-                completeAfterThrowable(e, connection, previous_isolation);
+                completeAfterThrowable(e, connection);
             } else if (owns_connection) {
-                releaseTransactionConnection(connection, previous_isolation, e);
+                releaseTransactionConnection(connection, e);
             }
             throw e;
         }
@@ -2666,7 +2666,7 @@ public class DbQueryManager implements Cloneable {
     // it would otherwise report work that never reached the database
     // everything else keeps reporting what was thrown, a rollback that fails
     // included, since that failure would hide the one that caused it
-    private void completeAfterThrowable(Throwable error, DbConnection connection, int previousIsolation) {
+    private void completeAfterThrowable(Throwable error, DbConnection connection) {
         if (error instanceof ControlFlowRuntimeException) {
             try {
                 connection.commit();
@@ -2677,11 +2677,11 @@ public class DbQueryManager implements Cloneable {
                 e.addSuppressed(error);
                 throw e;
             }
-            releaseTransactionConnection(connection, previousIsolation, error);
+            releaseTransactionConnection(connection, error);
         } else {
             try {
                 connection.rollback();
-                releaseTransactionConnection(connection, previousIsolation, error);
+                releaseTransactionConnection(connection, error);
             } catch (DatabaseException e) {
                 // the failure that is being reported stays the one that
                 // caused this, with the one from taking the transaction back
@@ -2691,17 +2691,16 @@ public class DbQueryManager implements Cloneable {
         }
     }
 
-    private void releaseTransactionConnection(DbConnection connection, int previousIsolation) {
-        releaseTransactionConnection(connection, previousIsolation, null);
+    private void releaseTransactionConnection(DbConnection connection) {
+        releaseTransactionConnection(connection, null);
     }
 
     // the transaction is settled by the time its connection is handed back,
     // so one that can't be tidied up doesn't take the place of what already
     // happened to the data, it's kept with the failure that is on its way out
     // when there is one
-    private void releaseTransactionConnection(DbConnection connection, int previousIsolation, Throwable reported) {
+    private void releaseTransactionConnection(DbConnection connection, Throwable reported) {
         try {
-            restoreTransactionIsolation(connection, previousIsolation);
             if (!datasource_.isPooled()) {
                 connection.close();
             }

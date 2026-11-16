@@ -321,6 +321,54 @@ public class TestDbQueryManager {
 
     @ParameterizedTest
     @ArgumentsSource(TestDatasources.class)
+    void testFailedStatementRestoresIsolationBeforeReleasingConnection(Datasource datasource)
+    throws Exception {
+        // a single connection, so that the other transaction gets the one
+        // that the failed statement released
+        var single = new Datasource(datasource.getDriver(), datasource.getUrl(), datasource.getUser(), datasource.getPassword(), 1);
+        try {
+            final var manager = new DbQueryManager(single);
+            if (!manager.getConnection().supportsTransactions()) {
+                return;
+            }
+
+            var original_isolation = manager.getConnection().getTransactionIsolation();
+            assertNotEquals(Connection.TRANSACTION_SERIALIZABLE, original_isolation);
+
+            var other_isolation = new java.util.concurrent.atomic.AtomicInteger(-1);
+            var other = new Thread(() -> manager.inTransaction(new DbTransactionUserWithoutResult<>() {
+                public void useTransactionWithoutResult()
+                throws InnerClassException {
+                    other_isolation.set(manager.getConnection().getTransactionIsolation());
+                }
+            }));
+            manager.inTransaction(new DbTransactionUserWithoutResult<>() {
+                public void useTransactionWithoutResult()
+                throws InnerClassException {
+                    assertThrows(DatabaseException.class, () -> manager.executeUpdate("INSERT INTO tblunknown VALUES (1)"));
+                    other.start();
+                    try {
+                        other.join(10000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                public int getTransactionIsolation() {
+                    return Connection.TRANSACTION_SERIALIZABLE;
+                }
+            });
+
+            assertFalse(other.isAlive());
+            assertEquals(original_isolation, other_isolation.get());
+            assertEquals(original_isolation, manager.getConnection().getTransactionIsolation());
+        } finally {
+            single.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
     void testTransactionUserRecommendedRollback(Datasource datasource) {
         final var manager = new DbQueryManager(datasource);
         var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";

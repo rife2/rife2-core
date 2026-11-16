@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -563,6 +564,9 @@ public final class Json {
             if (type.isInstance(object)) {
                 return object;
             }
+            if (!isBeanType(type)) {
+                throw new ConversionException(object, type, null);
+            }
             return toBean(object, type);
         }
 
@@ -604,6 +608,25 @@ public final class Json {
             return value;
         }
         return Convert.toType(value, type);
+    }
+
+    // a JSON object can only fill a record or a class with a default constructor
+    private static boolean isBeanType(Class<?> type) {
+        if (type.isRecord()) {
+            return true;
+        }
+        if (type.isInterface() || type.isArray() || type.isPrimitive() || type.isEnum() ||
+            Modifier.isAbstract(type.getModifiers()) ||
+            Collection.class.isAssignableFrom(type) ||
+            CharSequence.class.isAssignableFrom(type)) {
+            return false;
+        }
+        try {
+            type.getDeclaredConstructor();
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
     }
 
     private static Class<?> typeArgumentClass(Class<?> beanClass, Type genericType, int index) {

@@ -596,6 +596,35 @@ public class TestJson {
         assertArrayEquals(new int[]{4, 5}, roundtrip.getCounts());
     }
 
+    @Test
+    void testToBeanObjectForNonBeanProperty() {
+        for (var property : List.of("addresses", "history", "counts", "labels")) {
+            var json = new JsonObject().set(property, new JsonObject().set("city", "Springfield"));
+            var failure = assertThrows(IllegalArgumentException.class, () -> Json.toBean(json, Order.class));
+            assertEquals("Unable to set bean property '" + property + "' of " + Order.class.getName(), failure.getMessage());
+        }
+
+        var element = Json.parseObject("""
+            {"quantities": [{"amount": 1}]}""");
+        var failure = assertThrows(IllegalArgumentException.class, () -> Json.toBean(element, Order.class));
+        assertEquals("Unable to set bean property 'quantities' of " + Order.class.getName(), failure.getMessage());
+
+        var text = new JsonObject().set("name", new JsonObject().set("first", "Jane"));
+        failure = assertThrows(IllegalArgumentException.class, () -> Json.toBean(text, Customer.class));
+        assertEquals("Unable to set bean property 'name' of " + Customer.class.getName(), failure.getMessage());
+
+        var concrete = new JsonObject().set("books", new JsonObject().set("title", "Dune"));
+        failure = assertThrows(IllegalArgumentException.class, () -> Json.toBean(concrete, Shelf.class));
+        assertEquals("Unable to set bean property 'books' of " + Shelf.class.getName(), failure.getMessage());
+    }
+
+    public static class Shelf {
+        private java.util.ArrayList<String> books_;
+
+        public java.util.ArrayList<String> getBooks() { return books_; }
+        public void setBooks(java.util.ArrayList<String> books) { books_ = books; }
+    }
+
     public static class Order {
         private List<Address> addresses_;
         private java.util.Map<String, Address> byCity_;

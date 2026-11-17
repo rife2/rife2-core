@@ -369,6 +369,44 @@ public class TestDbQueryManager {
 
     @ParameterizedTest
     @ArgumentsSource(TestDatasources.class)
+    void testNestedTransactionDoesntWaitForAnotherThread(Datasource datasource)
+    throws Exception {
+        // a single connection, which the outer transaction holds while the
+        // other thread waits for it
+        var single = new Datasource(datasource.getDriver(), datasource.getUrl(), datasource.getUser(), datasource.getPassword(), 1);
+        var nested = new java.util.concurrent.atomic.AtomicBoolean();
+        var manager = new DbQueryManager(single);
+        if (!manager.getConnection().supportsTransactions()) {
+            single.cleanup();
+            return;
+        }
+
+        var other = new Thread(() -> manager.inTransaction(() -> {
+        }));
+        other.setDaemon(true);
+        var outer = new Thread(() -> manager.inTransaction(() -> {
+            other.start();
+            var deadline = System.currentTimeMillis() + 5000;
+            while (other.getState() != Thread.State.WAITING && System.currentTimeMillis() < deadline) {
+                Thread.onSpinWait();
+            }
+            manager.inTransaction(() -> nested.set(true));
+        }));
+        outer.setDaemon(true);
+        outer.start();
+        outer.join(5000);
+        other.join(5000);
+
+        var deadlocked = outer.isAlive() || other.isAlive();
+        if (!deadlocked) {
+            single.cleanup();
+        }
+        assertFalse(deadlocked, "the nested transaction waited for the thread that waited for its connection");
+        assertTrue(nested.get());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
     void testTransactionUserRecommendedRollback(Datasource datasource) {
         final var manager = new DbQueryManager(datasource);
         var create = "CREATE TABLE tbltest (id INTEGER, stringcol VARCHAR(255))";

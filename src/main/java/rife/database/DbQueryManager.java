@@ -2578,34 +2578,24 @@ public class DbQueryManager implements Cloneable {
         }
 
         var started_transaction = false;
-        // a datasource without transactions never starts one and never binds
-        // the connection to the thread, so each level works with its own
-        // connection and is the one that releases it
         var owns_connection = false;
         DbConnection connection = null;
         try {
-            synchronized (datasource_) {
-                connection = datasource_.getConnection();
-                var previous_isolation = -1;
-                var isolation = full_user.getTransactionIsolation();
-                // a nested transaction executes inside the one that is
-                // already ongoing, whose isolation can't be changed anymore
-                // and is simply inherited
-                if (isolation != -1 &&
-                    !connection.isTransactionValidForThread()) {
-                    previous_isolation = connection.getTransactionIsolation();
-                    connection.setTransactionIsolation(isolation);
-                }
-                started_transaction = connection.beginTransaction();
-                owns_connection = started_transaction || !connection.supportsTransactions();
-                // the connection restores the isolation itself when the
-                // transaction ends, before another thread can obtain it
-                if (started_transaction) {
-                    connection.restoreIsolationAfterTransaction(previous_isolation);
-                } else {
-                    restoreTransactionIsolation(connection, previous_isolation);
+            Begun begun;
+            // a transaction that's nested in one of this thread already has
+            // its connection, and mustn't wait for the datasource, which
+            // another thread can hold while it waits for that connection
+            if (datasource_.isPooled() &&
+                datasource_.getPool().hasThreadConnection(Thread.currentThread())) {
+                begun = begin(full_user);
+            } else {
+                synchronized (datasource_) {
+                    begun = begin(full_user);
                 }
             }
+            connection = begun.connection();
+            started_transaction = begun.started();
+            owns_connection = begun.owns();
 
             var result = (ResultType) full_user.useTransaction();
             if (started_transaction) {
@@ -2659,6 +2649,36 @@ public class DbQueryManager implements Cloneable {
             }
             throw e;
         }
+    }
+
+    private record Begun(DbConnection connection, boolean started, boolean owns) {
+    }
+
+    private Begun begin(DbTransactionUser user) {
+        var connection = datasource_.getConnection();
+        var previous_isolation = -1;
+        var isolation = user.getTransactionIsolation();
+        // a nested transaction executes inside the one that is
+        // already ongoing, whose isolation can't be changed anymore
+        // and is simply inherited
+        if (isolation != -1 &&
+            !connection.isTransactionValidForThread()) {
+            previous_isolation = connection.getTransactionIsolation();
+            connection.setTransactionIsolation(isolation);
+        }
+        var started = connection.beginTransaction();
+        // a datasource without transactions never starts one and never binds
+        // the connection to the thread, so each level works with its own
+        // connection and is the one that releases it
+        var owns = started || !connection.supportsTransactions();
+        // the connection restores the isolation itself when the
+        // transaction ends, before another thread can obtain it
+        if (started) {
+            connection.restoreIsolationAfterTransaction(previous_isolation);
+        } else {
+            restoreTransactionIsolation(connection, previous_isolation);
+        }
+        return new Begun(connection, started, owns);
     }
 
     // a control flow exception says that what came before it is expected and

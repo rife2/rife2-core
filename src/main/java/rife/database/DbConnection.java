@@ -53,6 +53,7 @@ public class DbConnection implements AutoCloseable {
     private ArrayList<DbStatement> statements_;
     private int supportsTransactions_ = TRANSACTIONS_SUPPORT_UNKNOWN;
     private Thread transactionThread_ = null;
+    private Thread reservedThread_ = null;
     private int isolationAfterTransaction_ = -1;
 
     /**
@@ -118,7 +119,8 @@ public class DbConnection implements AutoCloseable {
                 // only close the connection when no pool is active and not
                 // inside a transaction
                 if (!datasource_.isPooled() &&
-                    !(hasTransactionThread() && isTransactionValidForThread())) {
+                    !(hasTransactionThread() && isTransactionValidForThread()) &&
+                    null == reservedThread_) {
                     try {
                         try {
                             while (!statements_.isEmpty()) {
@@ -180,6 +182,7 @@ public class DbConnection implements AutoCloseable {
     void cleanup()
     throws DatabaseException {
         isolationAfterTransaction_ = -1;
+        reservedThread_ = null;
         Thread transaction_thread = null;
         // unregister a transaction thread
         if (transactionThread_ != null) {
@@ -872,7 +875,7 @@ public class DbConnection implements AutoCloseable {
                 this.notifyAll();
             }
 
-            datasource_.getPool().unregisterThreadConnection(Thread.currentThread());
+            unregisterTransactionThread();
         }
 
         return true;
@@ -945,7 +948,7 @@ public class DbConnection implements AutoCloseable {
                 this.notifyAll();
             }
 
-            datasource_.getPool().unregisterThreadConnection(Thread.currentThread());
+            unregisterTransactionThread();
         }
 
         return true;
@@ -998,12 +1001,47 @@ public class DbConnection implements AutoCloseable {
                 return false;
             }
 
+            if (reservedThread_ != null &&
+                reservedThread_ != Thread.currentThread()) {
+                return false;
+            }
+
             if (!hasTransactionThread()) {
                 return true;
             }
 
             return isTransactionValidForThread();
         }
+    }
+
+    // a reservation keeps the connection for its thread past the
+    // transactions that run inside it
+    private void unregisterTransactionThread() {
+        if (reservedThread_ != Thread.currentThread()) {
+            datasource_.getPool().unregisterThreadConnection(Thread.currentThread());
+        }
+    }
+
+    // keeps the other threads from using this connection, which
+    // DbQueryManager.reserveConnection needs without a transaction
+    boolean reserve() {
+        synchronized (this) {
+            if (reservedThread_ != null || hasTransactionThread()) {
+                return false;
+            }
+
+            reservedThread_ = Thread.currentThread();
+            return true;
+        }
+    }
+
+    void release()
+    throws DatabaseException {
+        synchronized (this) {
+            reservedThread_ = null;
+            this.notifyAll();
+        }
+        close();
     }
 
     /**

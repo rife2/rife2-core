@@ -3770,6 +3770,118 @@ public class TestDbQueryManager {
 
     @ParameterizedTest
     @ArgumentsSource(TestDatasources.class)
+    void testReservedConnectionDoesntBlockOtherThreads(Datasource datasource)
+    throws Exception {
+        var pooled = new Datasource(datasource.getDriver(), datasource.getUrl(), datasource.getUser(), datasource.getPassword(), 2);
+        var manager = new DbQueryManager(pooled);
+        if (!manager.getConnection().supportsTransactions()) {
+            pooled.cleanup();
+            return;
+        }
+
+        var reserved = new java.util.concurrent.CountDownLatch(1);
+        var finished = new java.util.concurrent.CountDownLatch(1);
+        var waited_for = new java.util.concurrent.atomic.AtomicBoolean();
+        // like an insert that waits for a row that the transaction locked
+        var reserving = new Thread(() -> manager.reserveConnection(new DbConnectionUser<>() {
+            public Object useConnection(DbConnection connection) {
+                reserved.countDown();
+                try {
+                    waited_for.set(finished.await(5, java.util.concurrent.TimeUnit.SECONDS));
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                return null;
+            }
+        }));
+        reserving.setDaemon(true);
+        try {
+            manager.inTransaction(() -> {
+                reserving.start();
+                try {
+                    assertTrue(reserved.await(5, java.util.concurrent.TimeUnit.SECONDS));
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                manager.getConnection();
+                finished.countDown();
+            });
+            reserving.join(10000);
+            assertTrue(waited_for.get(), "the transaction couldn't go on while another thread reserved a connection");
+        } finally {
+            pooled.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testReservedConnectionIsntGivenToAnotherThread(Datasource datasource)
+    throws Exception {
+        var single = new Datasource(datasource.getDriver(), datasource.getUrl(), datasource.getUser(), datasource.getPassword(), 1);
+        var manager = new DbQueryManager(single);
+        var other = new java.util.concurrent.atomic.AtomicReference<DbConnection>();
+        var thread = new Thread(() -> other.set(manager.getConnection()));
+        thread.setDaemon(true);
+        try {
+            var reserved = manager.reserveConnection(new DbConnectionUser<DbConnection, Object>() {
+                public DbConnection useConnection(DbConnection connection) {
+                    thread.start();
+                    var deadline = System.currentTimeMillis() + 5000;
+                    while (thread.getState() != Thread.State.WAITING && System.currentTimeMillis() < deadline) {
+                        Thread.onSpinWait();
+                    }
+                    assertNull(other.get(), "another thread got the reserved connection");
+                    return connection;
+                }
+            });
+            thread.join(5000);
+            assertSame(reserved, other.get());
+        } finally {
+            single.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testReservedConnectionOutlivesNestedTransaction(Datasource datasource) {
+        var pooled = new Datasource(datasource.getDriver(), datasource.getUrl(), datasource.getUser(), datasource.getPassword(), 2);
+        var manager = new DbQueryManager(pooled);
+        try {
+            manager.reserveConnection(new DbConnectionUser<>() {
+                public Object useConnection(DbConnection connection) {
+                    manager.inTransaction(() -> assertSame(connection, manager.getConnection()));
+                    assertSame(connection, manager.getConnection());
+                    return null;
+                }
+            });
+        } finally {
+            pooled.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
+    void testReservedConnectionWithoutPool(Datasource datasource) {
+        var unpooled = new Datasource(datasource.getDriver(), datasource.getUrl(), datasource.getUser(), datasource.getPassword(), 0);
+        var manager = new DbQueryManager(unpooled);
+        manager.executeUpdate("CREATE TABLE tblreserve (id INTEGER)");
+        try {
+            int count = manager.reserveConnection(new DbConnectionUser<Integer, Object>() {
+                public Integer useConnection(DbConnection connection) {
+                    manager.executeUpdate("INSERT INTO tblreserve VALUES (1)");
+                    assertSame(connection, manager.getConnection());
+                    return manager.executeGetFirstInt(new Select(unpooled).from("tblreserve").field("count(*)"));
+                }
+            });
+            assertEquals(1, count);
+        } finally {
+            manager.executeUpdate("DROP TABLE tblreserve");
+            unpooled.cleanup();
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(TestDatasources.class)
     void testIllegalExecuteQuerySql(Datasource datasource) {
         var manager = new DbQueryManager(datasource);
         try {

@@ -262,6 +262,34 @@ public class ConnectionPool implements AutoCloseable {
         }
     }
 
+    // the connection stays this thread's until it's released, without
+    // holding this pool, which the other threads need for their connections
+    DbConnection reserveConnection(Datasource datasource)
+    throws DatabaseException {
+        synchronized (this) {
+            while (true) {
+                var connection = getConnection(datasource);
+                if (connection.reserve()) {
+                    registerThreadConnection(Thread.currentThread(), connection);
+                    return connection;
+                }
+
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    Thread.yield();
+                }
+            }
+        }
+    }
+
+    void releaseConnection(DbConnection connection)
+    throws DatabaseException {
+        connection.release();
+        // wakes the threads that wait for a free connection
+        unregisterThreadConnection(Thread.currentThread());
+    }
+
     @Override
     public void close()
     throws DatabaseException {

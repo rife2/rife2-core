@@ -2467,6 +2467,9 @@ public class DbQueryManager implements Cloneable {
      * <p>This is typically used to ensure that a series of operations is done
      * with the same connection, even though a database pool is used in the
      * background.
+     * <p>The other threads can't use the reserved connection until the
+     * {@code DbConnectionUser} returns, but they keep getting the other
+     * connections of the pool in the meantime.
      * <h4>Example</h4>
      * <pre>Person person;
      * final var store_data = new Insert(datasource).into("person").fields(person);
@@ -2494,17 +2497,16 @@ public class DbQueryManager implements Cloneable {
     throws InnerClassException, DatabaseException {
         if (null == user) throw new IllegalArgumentException("user can't be null.");
 
-        var connection = datasource_.getConnection();
         var pool = datasource_.getPool();
-        synchronized (pool) {
-            var does_threadconnection_exist = pool.hasThreadConnection(Thread.currentThread());
-            try {
-                if (!does_threadconnection_exist) pool.registerThreadConnection(Thread.currentThread(), connection);
+        if (pool.hasThreadConnection(Thread.currentThread())) {
+            return (ResultType) user.useConnection(datasource_.getConnection());
+        }
 
-                return (ResultType) user.useConnection(connection);
-            } finally {
-                if (!does_threadconnection_exist) pool.unregisterThreadConnection(Thread.currentThread());
-            }
+        var connection = pool.reserveConnection(datasource_);
+        try {
+            return (ResultType) user.useConnection(connection);
+        } finally {
+            pool.releaseConnection(connection);
         }
     }
 
